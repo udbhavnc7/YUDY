@@ -18,9 +18,9 @@ export default {
         sky: "#8FB8D8",
       },
       fontFamily: {
-        display: ["Cinzel", "Playfair Display", "Georgia", "serif"],
-        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
-        mono: ["Space Mono", "Courier Prime", "monospace"],
+        display: ["'Bodoni Moda'", "Cinzel", "serif"],
+        sans: ["Geist", "Inter", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["'JetBrains Mono'", "Space Mono", "monospace"],
         handwriting: ["Caveat", "cursive"],
       }
     },
