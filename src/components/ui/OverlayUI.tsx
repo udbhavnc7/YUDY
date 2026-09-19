@@ -8,6 +8,9 @@ export function OverlayUI() {
   const toggleReducedMotion = useWorldStore((s) => s.toggleReducedMotion);
   const hovered = useWorldStore((s) => s.hovered);
 
+  const railNode = useWorldStore((s) => s.railNode);
+  const setPhase = useWorldStore((s) => s.setPhase);
+
   const handleSoundToggle = () => {
     const next = !soundOn;
     toggleSound();
@@ -23,12 +26,22 @@ export function OverlayUI() {
             YUDY
           </span>
           <span className="font-sans text-[10px] tracking-wider text-ivory/40 uppercase">
-            Paris Dusk · Live Rail
+            {railNode === 'terrace' ? 'Paris Dusk · Live Rail' : 'The Workshop · Cantilevered Studio'}
           </span>
         </div>
 
-        {/* Global Controls: Skip to work & Sound */}
+        {/* Global Controls: Skip to work, Sound, and Forward on Rail */}
         <div className="flex items-center space-x-5">
+          {railNode === 'workshop' && (
+            <button
+              onClick={() => setPhase('surfacing')}
+              className="font-mono text-xs tracking-wider text-gold hover:text-ivory transition-colors flex items-center space-x-1 border border-gold/30 px-3 py-1 rounded-full bg-gold/10 hover:bg-gold/20 focus:outline-none focus:ring-1 focus:ring-gold"
+            >
+              <span>Continue on rail</span>
+              <span>→</span>
+            </button>
+          )}
+
           <a
             href="#work"
             className="font-mono text-xs tracking-wider text-ivory/60 hover:text-gold transition-colors underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-gold"
@@ -46,13 +59,14 @@ export function OverlayUI() {
         </div>
       </header>
 
-      {/* Hover Object Label / Interaction Feedback (Quiet rack focus hint) */}
+      {/* Hover Object Label / Interaction Feedback */}
       <div className="flex justify-center items-center h-12">
         {hovered && (
           <div className="bg-ink/80 backdrop-blur border border-ivory/10 px-4 py-1.5 rounded-full text-xs font-sans tracking-widest uppercase text-gold animate-fade-in pointer-events-none">
-            {hovered === 'laptop' && 'Workshop · Enter the Cantilever'}
+            {hovered === 'laptop' && 'Workshop · Click to dive'}
             {hovered === 'coffee' && 'Espresso · Golden Hour'}
             {hovered === 'map' && 'Folded Rail Map · Forward Path'}
+            {hovered === 'project-observatory' && 'The Cantilevered Observatory · Click to inspect receipt'}
           </div>
         )}
       </div>

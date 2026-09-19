@@ -5,6 +5,8 @@ import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { OverlayUI } from '../components/ui/OverlayUI';
 import { PROJECTS } from '../data/projects';
 
+import { ReceiptPanel } from '../components/ui/ReceiptPanel';
+
 export function App() {
   const phase = useWorldStore((s) => s.phase);
   const setPhase = useWorldStore((s) => s.setPhase);
@@ -28,6 +30,9 @@ export function App() {
 
       {/* Head-Up Controls and Information */}
       <OverlayUI />
+
+      {/* Thermal Paper Receipt Panel for Case Studies */}
+      <ReceiptPanel onContinue={() => setPhase('surfacing')} />
 
       {/* Accessible Plain HTML Work Modal / Anchor for Skip to Work */}
       <section

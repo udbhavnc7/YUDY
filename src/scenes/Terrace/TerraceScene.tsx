@@ -1,9 +1,11 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { MeshPortalMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { useWorldStore } from '../../app/worldStore';
 import { PALETTE } from '../../data/palette';
 import { getParisHourFraction, getParisLighting } from '../../systems/live/parisTime';
+import { WorkshopScene } from '../Workshop/WorkshopScene';
 
 // Instanced rain component
 function InstancedRain({ restStage }: { restStage: number }) {
@@ -160,6 +162,25 @@ function RooftopSurroundings() {
 function TerraceTable() {
   const hovered = useWorldStore((s) => s.hovered);
   const setHovered = useWorldStore((s) => s.setHovered);
+  const phase = useWorldStore((s) => s.phase);
+  const setPhase = useWorldStore((s) => s.setPhase);
+
+  const portalRef = useRef<any>(null);
+  const screenPos = useMemo(() => new THREE.Vector3(0, 1.03, -0.16), []);
+
+  useFrame((state) => {
+    if (portalRef.current) {
+      const dist = state.camera.position.distanceTo(screenPos);
+      if (dist > 0.85) {
+        portalRef.current.blend = 0;
+      } else if (dist <= 0.06) {
+        portalRef.current.blend = 1;
+      } else {
+        const t = (0.85 - dist) / (0.85 - 0.06);
+        portalRef.current.blend = Math.max(0, Math.min(1, t * t));
+      }
+    }
+  });
 
   return (
     <group position={[0, 0, 0]}>
@@ -197,6 +218,12 @@ function TerraceTable() {
             document.body.style.cursor = 'default';
             setHovered(null);
           }}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (phase === 'dwelling') {
+              setPhase('diving');
+            }
+          }}
         >
           <boxGeometry args={[0.45, 0.3, 0.35]} />
           <meshBasicMaterial visible={false} />
@@ -217,10 +244,12 @@ function TerraceTable() {
             <boxGeometry args={[0.38, 0.24, 0.012]} />
             <meshStandardMaterial color={PALETTE.ink} roughness={0.4} />
           </mesh>
-          {/* Screen glow (warm lamplight promise inside) */}
+          {/* Screen with MeshPortalMaterial to Workshop */}
           <mesh position={[0, 0.12, 0.007]}>
             <planeGeometry args={[0.35, 0.21]} />
-            <meshBasicMaterial color={hovered === 'laptop' ? PALETTE.ivory : PALETTE.paper} />
+            <MeshPortalMaterial ref={portalRef} blend={0}>
+              <WorkshopScene insidePortal={true} />
+            </MeshPortalMaterial>
           </mesh>
         </group>
       </group>
@@ -327,8 +356,8 @@ export function TerraceScene() {
   return (
     <>
       {/* Paris Live Sky & Ambient Environment */}
-      <color attach="background" args={[lighting.skyTop.getHexString()]} />
-      <fog attach="fog" args={[lighting.fogColor.getHex(), 5, 26]} />
+      <color attach="background" args={[lighting.skyTop]} />
+      <fog attach="fog" args={[lighting.fogColor, 5, 26]} />
 
       <ambientLight color={lighting.ambientColor} intensity={lighting.ambientIntensity} />
 
