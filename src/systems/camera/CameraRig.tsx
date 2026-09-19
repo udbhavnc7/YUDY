@@ -160,7 +160,7 @@ export function CameraRig() {
         targetLookAt.current.set(-0.8, 3.2, -16.0);
       }
     } else if (railNode === 'workshop') {
-      if (hovered === 'project-observatory') {
+      if (hovered === 'project-kawach') {
         targetPos.current.set(0, 1.08, 1.45);
         targetLookAt.current.set(0.12, 1.02, 0);
       }

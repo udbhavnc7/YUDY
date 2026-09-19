@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { useWorldStore } from '../../app/worldStore';
 import { PALETTE } from '../../data/palette';
 
-// The Cantilevered Observatory (Featured scale-model project)
+// KAWACH & VORTEX (Featured award-winning engineering projects)
 function ScaleModel({ onClick }: { onClick: () => void }) {
   const hovered = useWorldStore((s) => s.hovered);
   const setHovered = useWorldStore((s) => s.setHovered);
@@ -12,7 +12,7 @@ function ScaleModel({ onClick }: { onClick: () => void }) {
 
   useFrame((state) => {
     if (modelGroup.current) {
-      // Gentle floating animation of cantilevered components
+      // Gentle floating animation of cantilevered mesh antenna
       modelGroup.current.position.y = 1.05 + Math.sin(state.clock.elapsedTime * 0.8) * 0.015;
     }
   });
@@ -24,7 +24,7 @@ function ScaleModel({ onClick }: { onClick: () => void }) {
       onPointerOver={(e) => {
         e.stopPropagation();
         document.body.style.cursor = 'pointer';
-        setHovered('project-observatory');
+        setHovered('project-kawach');
       }}
       onPointerOut={(e) => {
         e.stopPropagation();
@@ -93,7 +93,7 @@ function ScaleModel({ onClick }: { onClick: () => void }) {
       </mesh>
 
       {/* Hover ring outline */}
-      {hovered === 'project-observatory' && (
+      {hovered === 'project-kawach' && (
         <mesh position={[0, -0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.48, 0.5, 32]} />
           <meshBasicMaterial color={PALETTE.gold} />

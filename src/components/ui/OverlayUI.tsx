@@ -38,7 +38,7 @@ export function OverlayUI() {
             className="font-mono text-xs tracking-wider text-gold hover:text-ivory px-3 py-1 bg-gold/10 hover:bg-gold/20 border border-gold/40 rounded-full transition-all flex items-center space-x-1.5 focus:outline-none focus:ring-1 focus:ring-gold"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></span>
-            <span>Portfolio & Works (4)</span>
+            <span>Portfolio & Projects (6)</span>
           </button>
 
           {railNode === 'workshop' && (
@@ -73,11 +73,11 @@ export function OverlayUI() {
         {hovered && (
           <div className="bg-ink/85 backdrop-blur border border-gold/30 px-5 py-2 rounded-full text-xs font-sans tracking-widest uppercase text-gold animate-fade-in pointer-events-none shadow-lg">
             {hovered === 'laptop' && 'The Workshop · Click to dive through screen'}
-            {hovered === 'dossier' && 'Selected Works Dossier · Click to inspect 4 projects'}
+            {hovered === 'dossier' && 'Udbhav N C · Selected Works Dossier (6 Projects)'}
             {hovered === 'coffee' && 'Espresso · Parisian Sunset Evening'}
             {hovered === 'map' && 'Folded Rail Map · Forward Path'}
             {hovered === 'eiffel' && 'Eiffel Tower · Paris Sunset Vista'}
-            {hovered === 'project-observatory' && 'The Cantilevered Observatory · Click to inspect dossier'}
+            {hovered === 'project-kawach' && 'KAWACH — Disaster Emergency Mesh · Best Startup Award'}
           </div>
         )}
       </div>
