@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useWorldStore } from '../../app/worldStore';
 import { PROJECTS, Project } from '../../data/projects';
 
 export function ReceiptPanel({ onContinue }: { onContinue: () => void }) {
   const activePanel = useWorldStore((s) => s.activePanel);
   const setActivePanel = useWorldStore((s) => s.setActivePanel);
-  const [selectedIdx, setSelectedIdx] = useState(0);
+  const activeProjectIndex = useWorldStore((s) => s.activeProjectIndex);
+  const setActiveProjectIndex = useWorldStore((s) => s.setActiveProjectIndex);
 
-  const project: Project = PROJECTS[selectedIdx] || PROJECTS[0];
+  const project: Project = PROJECTS[activeProjectIndex] || PROJECTS[0];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -54,9 +55,9 @@ export function ReceiptPanel({ onContinue }: { onContinue: () => void }) {
             {PROJECTS.map((p, idx) => (
               <button
                 key={p.id}
-                onClick={() => setSelectedIdx(idx)}
+                onClick={() => setActiveProjectIndex(idx)}
                 className={`text-[10px] px-2.5 py-1 rounded border font-mono transition-all ${
-                  idx === selectedIdx
+                  idx === activeProjectIndex
                     ? 'bg-ink text-paper border-ink font-bold shadow'
                     : 'bg-transparent text-ink/70 border-ink/20 hover:border-ink/50'
                 }`}

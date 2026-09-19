@@ -13,12 +13,14 @@ export type WorldState = {
   soundOn: boolean;
   letterUnlocked: boolean;
   activePanel: 'receipt' | null;
+  activeProjectIndex: number;
   setPhase: (phase: Phase) => void;
   setRailNode: (node: string) => void;
   setActiveMoment: (moment: MomentId | null) => void;
   setHovered: (hovered: string | null) => void;
   setRestStage: (stage: 0 | 1 | 2 | 3 | 4) => void;
   setActivePanel: (panel: 'receipt' | null) => void;
+  setActiveProjectIndex: (idx: number) => void;
   toggleReducedMotion: () => void;
   toggleSound: () => void;
   setSoundOn: (on: boolean) => void;
@@ -35,12 +37,14 @@ export const useWorldStore = create<WorldState>((set) => ({
   soundOn: false,
   letterUnlocked: false,
   activePanel: null,
+  activeProjectIndex: 0,
   setPhase: (phase) => set({ phase }),
   setRailNode: (railNode) => set({ railNode }),
   setActiveMoment: (activeMoment) => set({ activeMoment }),
   setHovered: (hovered) => set({ hovered }),
   setRestStage: (restStage) => set({ restStage }),
   setActivePanel: (activePanel) => set({ activePanel }),
+  setActiveProjectIndex: (activeProjectIndex) => set({ activeProjectIndex }),
   toggleReducedMotion: () => set((state) => ({ reducedMotion: !state.reducedMotion })),
   toggleSound: () => set((state) => ({ soundOn: !state.soundOn })),
   setSoundOn: (soundOn) => set({ soundOn }),

@@ -5,10 +5,112 @@ import * as THREE from 'three';
 import { useWorldStore } from '../../app/worldStore';
 import { PALETTE } from '../../data/palette';
 import { WorkshopScene } from '../Workshop/WorkshopScene';
+import { EiffelTower3D, ParisianRooftops3D, ParisSkyDome } from './ParisCityscape3D';
+
+// Parisian Balcony Floor & Haussmann Wrought-Iron Railing
+function BalconyArchitecture() {
+  const balusterPositions = useMemo(() => {
+    const pos = [];
+    for (let x = -3.8; x <= 3.8; x += 0.22) {
+      pos.push(x);
+    }
+    return pos;
+  }, []);
+
+  const fairyLights = useMemo(() => {
+    const lights = [];
+    for (let x = -3.4; x <= 3.4; x += 0.52) {
+      lights.push({
+        x,
+        y: 1.08 + Math.sin(x * 3.2) * 0.03,
+        z: -0.7,
+      });
+    }
+    return lights;
+  }, []);
+
+  return (
+    <group>
+      {/* Parisian Stone Terrace Decking Floor with Wet Sheen */}
+      <mesh position={[0, -0.02, 1.2]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[8.6, 5.0]} />
+        <meshStandardMaterial
+          color={'#251F22'}
+          roughness={0.4}
+          metalness={0.25}
+        />
+      </mesh>
+
+      {/* Parisian Balcony Limestone Curb Edge */}
+      <mesh position={[0, 0.04, -0.7]}>
+        <boxGeometry args={[8.6, 0.12, 0.22]} />
+        <meshStandardMaterial color={'#524640'} roughness={0.7} />
+      </mesh>
+
+      {/* Right Building Corner Haussmann Stone Facade */}
+      <mesh position={[4.1, 2.2, 0.5]}>
+        <boxGeometry args={[0.7, 4.6, 3.8]} />
+        <meshStandardMaterial color={'#544740'} roughness={0.8} />
+      </mesh>
+      {/* French Balcony Door Frame on right */}
+      <mesh position={[3.72, 1.6, 0.8]}>
+        <boxGeometry args={[0.08, 2.8, 1.4]} />
+        <meshStandardMaterial color={'#1A1614'} roughness={0.6} />
+      </mesh>
+
+      {/* Haussmann Wrought-Iron Balcony Railing */}
+      <group position={[0, 0, -0.7]}>
+        {/* Top Heavy Cast-Iron Rail */}
+        <mesh position={[0, 1.1, 0]}>
+          <boxGeometry args={[7.8, 0.04, 0.06]} />
+          <meshStandardMaterial color={'#151920'} roughness={0.5} metalness={0.5} />
+        </mesh>
+        {/* Polished Brass Top Handrail Cap */}
+        <mesh position={[0, 1.125, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.024, 0.024, 7.8, 12]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.9} roughness={0.2} />
+        </mesh>
+
+        {/* Bottom Support Rail */}
+        <mesh position={[0, 0.14, 0]}>
+          <boxGeometry args={[7.8, 0.03, 0.04]} />
+          <meshStandardMaterial color={'#151920'} roughness={0.5} metalness={0.5} />
+        </mesh>
+
+        {/* Decorative Balusters */}
+        {balusterPositions.map((x, i) => (
+          <group key={i} position={[x, 0.62, 0]}>
+            <mesh>
+              <cylinderGeometry args={[0.009, 0.009, 0.94, 8]} />
+              <meshStandardMaterial color={'#1C212B'} roughness={0.5} metalness={0.4} />
+            </mesh>
+            {/* Ornamental brass ring on alternating balusters */}
+            {i % 2 === 0 && (
+              <mesh position={[0, 0.12, 0]}>
+                <torusGeometry args={[0.035, 0.006, 6, 16]} />
+                <meshStandardMaterial color={PALETTE.gold} metalness={0.8} roughness={0.25} />
+              </mesh>
+            )}
+          </group>
+        ))}
+
+        {/* Fairy String Lights along the Railing */}
+        {fairyLights.map((pt, i) => (
+          <group key={i} position={[pt.x, pt.y, 0]}>
+            <mesh>
+              <sphereGeometry args={[0.02, 10, 10]} />
+              <meshBasicMaterial color={'#FFE399'} />
+            </mesh>
+          </group>
+        ))}
+      </group>
+    </group>
+  );
+}
 
 // Instanced glistening rain backlit by sunset
 function InstancedRain({ restStage }: { restStage: number }) {
-  const count = 1200;
+  const count = 900;
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -16,11 +118,11 @@ function InstancedRain({ restStage }: { restStage: number }) {
     const arr = [];
     for (let i = 0; i < count; i++) {
       arr.push({
-        x: (Math.random() - 0.5) * 16,
-        y: Math.random() * 9 + 0.5,
-        z: Math.random() * 12 - 5,
-        speed: 4.8 + Math.random() * 3.0,
-        scaleY: 0.15 + Math.random() * 0.15,
+        x: (Math.random() - 0.5) * 14,
+        y: Math.random() * 8 + 0.5,
+        z: Math.random() * 8 - 3,
+        speed: 4.5 + Math.random() * 2.8,
+        scaleY: 0.14 + Math.random() * 0.14,
       });
     }
     return arr;
@@ -35,13 +137,13 @@ function InstancedRain({ restStage }: { restStage: number }) {
       const drop = drops[i];
       if (i < activeLimit) {
         drop.y -= drop.speed * speedMult * delta;
-        drop.x += 0.3 * delta;
+        drop.x += 0.25 * delta;
         if (drop.y < 0) {
-          drop.y = 9;
-          drop.x = (Math.random() - 0.5) * 16;
+          drop.y = 8;
+          drop.x = (Math.random() - 0.5) * 14;
         }
         dummy.position.set(drop.x, drop.y, drop.z);
-        dummy.scale.set(0.009, drop.scaleY, 0.009);
+        dummy.scale.set(0.008, drop.scaleY, 0.008);
       } else {
         dummy.position.set(0, -999, 0);
       }
@@ -57,335 +159,75 @@ function InstancedRain({ restStage }: { restStage: number }) {
       <meshBasicMaterial
         color={'#FFE6A3'}
         transparent
-        opacity={0.65}
+        opacity={0.45}
         depthWrite={false}
       />
     </instancedMesh>
   );
 }
 
-// Gorgeous Radiant Sunset Sky Backdrop
-function SunsetSkyDome() {
-  return (
-    <group position={[0, 0, -22]}>
-      {/* Radiant Golden-Peach Sunset Sky Plane */}
-      <mesh position={[0, 5, 0]}>
-        <planeGeometry args={[65, 28]} />
-        <meshBasicMaterial color={'#FF8B4D'} />
-      </mesh>
-      {/* Upper twilight gradient overlay */}
-      <mesh position={[0, 11, 0.1]}>
-        <planeGeometry args={[65, 16]} />
-        <meshBasicMaterial color={'#453257'} transparent opacity={0.88} />
-      </mesh>
-      {/* Glowing Horizon Sun Disc behind the skyline */}
-      <mesh position={[-1.2, 4.2, 0.2]}>
-        <circleGeometry args={[4.2, 32]} />
-        <meshBasicMaterial color={'#FFF1BE'} />
-      </mesh>
-      {/* Soft atmospheric sunset haze */}
-      <mesh position={[0, 3.2, 0.3]}>
-        <planeGeometry args={[65, 9]} />
-        <meshBasicMaterial color={'#FFA86B'} transparent opacity={0.65} />
-      </mesh>
-    </group>
-  );
-}
-
-// Majestic Eiffel Tower on the Sunset Horizon
-function EiffelTower() {
-  const setHovered = useWorldStore((s) => s.setHovered);
-  const beaconRef = useRef<THREE.PointLight>(null);
-
-  useFrame((state) => {
-    if (beaconRef.current) {
-      beaconRef.current.intensity = 2.8 + Math.sin(state.clock.elapsedTime * 2.8) * 1.6;
-    }
-  });
-
-  return (
-    <group
-      position={[-1.2, 0.6, -17]}
-      scale={[1.22, 1.32, 1.22]}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered('eiffel');
-      }}
-      onPointerOut={(e) => {
-        e.stopPropagation();
-        setHovered(null);
-      }}
-    >
-      <mesh position={[0, 4.5, 0]}>
-        <cylinderGeometry args={[2.5, 4.0, 9.5, 8]} />
-        <meshBasicMaterial visible={false} />
-      </mesh>
-
-      {/* Base Archway */}
-      <mesh position={[0, 1.1, 0]}>
-        <torusGeometry args={[1.5, 0.2, 6, 16, Math.PI]} />
-        <meshStandardMaterial color={'#1D2333'} roughness={0.7} />
-      </mesh>
-
-      {/* 4 Tapered Lattice Pylons */}
-      <mesh position={[-1.7, 1.1, 0.4]} rotation={[0.08, 0, -0.26]}>
-        <cylinderGeometry args={[0.22, 0.52, 2.6, 4]} />
-        <meshStandardMaterial color={'#1D2333'} roughness={0.75} />
-      </mesh>
-      <mesh position={[1.7, 1.1, 0.4]} rotation={[0.08, 0, 0.26]}>
-        <cylinderGeometry args={[0.22, 0.52, 2.6, 4]} />
-        <meshStandardMaterial color={'#1D2333'} roughness={0.75} />
-      </mesh>
-      <mesh position={[-1.7, 1.1, -0.4]} rotation={[-0.08, 0, -0.26]}>
-        <cylinderGeometry args={[0.22, 0.52, 2.6, 4]} />
-        <meshStandardMaterial color={'#1D2333'} roughness={0.75} />
-      </mesh>
-      <mesh position={[1.7, 1.1, -0.4]} rotation={[-0.08, 0, 0.26]}>
-        <cylinderGeometry args={[0.22, 0.52, 2.6, 4]} />
-        <meshStandardMaterial color={'#1D2333'} roughness={0.75} />
-      </mesh>
-
-      {/* First Platform */}
-      <mesh position={[0, 2.3, 0]}>
-        <boxGeometry args={[3.2, 0.22, 1.2]} />
-        <meshStandardMaterial color={'#161B29'} roughness={0.6} />
-      </mesh>
-      <mesh position={[0, 2.44, 0]}>
-        <boxGeometry args={[3.0, 0.08, 1.0]} />
-        <meshBasicMaterial color={PALETTE.gold} />
-      </mesh>
-
-      {/* Second Tier Legs */}
-      <mesh position={[-0.8, 3.7, 0]} rotation={[0, 0, -0.16]}>
-        <cylinderGeometry args={[0.18, 0.28, 2.6, 4]} />
-        <meshStandardMaterial color={'#1D2333'} roughness={0.75} />
-      </mesh>
-      <mesh position={[0.8, 3.7, 0]} rotation={[0, 0, 0.16]}>
-        <cylinderGeometry args={[0.18, 0.28, 2.6, 4]} />
-        <meshStandardMaterial color={'#1D2333'} roughness={0.75} />
-      </mesh>
-
-      {/* Second Platform */}
-      <mesh position={[0, 4.9, 0]}>
-        <boxGeometry args={[1.8, 0.18, 0.8]} />
-        <meshStandardMaterial color={'#161B29'} roughness={0.6} />
-      </mesh>
-
-      {/* Spire Tower Body */}
-      <mesh position={[0, 6.8, 0]}>
-        <cylinderGeometry args={[0.12, 0.45, 3.5, 4]} />
-        <meshStandardMaterial color={'#1D2333'} roughness={0.7} />
-      </mesh>
-
-      {/* Lantern & Golden Beacon */}
-      <mesh position={[0, 8.6, 0]}>
-        <sphereGeometry args={[0.26, 8, 8]} />
-        <meshBasicMaterial color={'#FFE894'} />
-      </mesh>
-      <mesh position={[0, 9.4, 0]}>
-        <cylinderGeometry args={[0.02, 0.05, 1.5, 4]} />
-        <meshBasicMaterial color={'#FFF6DE'} />
-      </mesh>
-
-      <pointLight
-        ref={beaconRef}
-        position={[0, 8.8, 0]}
-        color={'#FFD269'}
-        intensity={3.5}
-        distance={30}
-        decay={1.8}
-      />
-    </group>
-  );
-}
-
-// Lush Foliage Potted Plants
-function BalconyPlants() {
+// Lush 3D Balcony Potted Plants & Vines
+function ForegroundBalconyPlants() {
   return (
     <group>
-      {/* Plant 1: Large Terracotta Planter with Palm / Monstera Leaves (Left corner) */}
-      <group position={[-2.4, 0, -0.6]}>
-        {/* Terracotta pot */}
-        <mesh position={[0, 0.35, 0]}>
-          <cylinderGeometry args={[0.38, 0.28, 0.7, 16]} />
-          <meshStandardMaterial color={'#B25938'} roughness={0.7} />
+      {/* Terracotta Planter with Tropical Monstera (Left Foreground) */}
+      <group position={[-1.75, 0, 0.35]}>
+        <mesh position={[0, 0.28, 0]}>
+          <cylinderGeometry args={[0.32, 0.24, 0.56, 16]} />
+          <meshStandardMaterial color={'#8C3F24'} roughness={0.7} />
         </mesh>
-        <mesh position={[0, 0.7, 0]}>
-          <cylinderGeometry args={[0.4, 0.38, 0.08, 16]} />
-          <meshStandardMaterial color={'#A04B2C'} roughness={0.7} />
+        <mesh position={[0, 0.56, 0]}>
+          <cylinderGeometry args={[0.3, 0.3, 0.04, 12]} />
+          <meshStandardMaterial color={'#1F1713'} roughness={0.9} />
         </mesh>
-        {/* Pot soil */}
-        <mesh position={[0, 0.68, 0]}>
-          <cylinderGeometry args={[0.36, 0.36, 0.04, 12]} />
-          <meshStandardMaterial color={'#241A15'} roughness={0.9} />
-        </mesh>
-
-        {/* Big Broad Tropical Leaves */}
-        {[-0.5, -0.2, 0.15, 0.4, 0.7].map((angle, i) => (
-          <group key={i} position={[0, 0.7, 0]} rotation={[0.3, angle * Math.PI, -0.35 + i * 0.15]}>
-            <mesh position={[0, 0.45, 0]}>
-              <boxGeometry args={[0.02, 0.9, 0.02]} />
-              <meshStandardMaterial color={'#2A4A28'} />
+        {/* Broad Green Leaves */}
+        {[-0.4, -0.15, 0.15, 0.45].map((angle, i) => (
+          <group key={i} position={[0, 0.56, 0]} rotation={[0.3, angle * Math.PI, -0.3 + i * 0.18]}>
+            <mesh position={[0, 0.35, 0]}>
+              <boxGeometry args={[0.02, 0.7, 0.02]} />
+              <meshStandardMaterial color={'#1F3A1D'} />
             </mesh>
-            <mesh position={[0, 0.75, 0]} rotation={[0.4, 0, 0]}>
-              <coneGeometry args={[0.26, 0.65, 3]} />
-              <meshStandardMaterial color={'#3C6A37'} roughness={0.5} />
+            <mesh position={[0, 0.65, 0]} rotation={[0.35, 0, 0]}>
+              <coneGeometry args={[0.22, 0.55, 3]} />
+              <meshStandardMaterial color={'#2D5229'} roughness={0.5} />
             </mesh>
           </group>
         ))}
       </group>
 
-      {/* Plant 2: Trailing Ivy on Left Railing */}
-      <group position={[-1.5, 0.95, -1.6]}>
-        {/* Planter box hooked on railing */}
-        <mesh position={[0, -0.08, 0]}>
-          <boxGeometry args={[0.7, 0.2, 0.22]} />
-          <meshStandardMaterial color={'#8C4328'} roughness={0.8} />
+      {/* Railing Hanging Planter Box with Red Geraniums (Left Railing) */}
+      <group position={[-1.4, 0.85, -0.68]}>
+        <mesh position={[0, 0.1, 0]}>
+          <boxGeometry args={[0.9, 0.22, 0.24]} />
+          <meshStandardMaterial color={'#202630'} roughness={0.6} />
         </mesh>
-        {/* Overflowing trailing green clusters */}
-        {[-0.25, -0.08, 0.1, 0.25].map((x, i) => (
-          <mesh key={i} position={[x, -0.18 - (i % 2) * 0.12, 0.08]} rotation={[0.2, 0, (i - 1.5) * 0.2]}>
-            <sphereGeometry args={[0.13, 7, 7]} />
-            <meshStandardMaterial color={'#48753E'} roughness={0.6} />
-          </mesh>
-        ))}
-      </group>
-
-      {/* Plant 3: Blooming Lavender / Flowers in Terracotta Pot (Right foreground) */}
-      <group position={[2.1, 0, 0.2]}>
         <mesh position={[0, 0.25, 0]}>
-          <cylinderGeometry args={[0.26, 0.18, 0.5, 16]} />
-          <meshStandardMaterial color={'#B86242'} roughness={0.7} />
+          <sphereGeometry args={[0.28, 8, 8]} />
+          <meshStandardMaterial color={'#284422'} roughness={0.6} />
         </mesh>
-        {/* Foliage bush */}
-        <mesh position={[0, 0.55, 0]}>
-          <sphereGeometry args={[0.32, 10, 8]} />
-          <meshStandardMaterial color={'#3F6335'} roughness={0.6} />
-        </mesh>
-        {/* Blooming lilac / gold flower spikes */}
-        {[-0.12, 0, 0.14].map((x, i) =>
-          [-0.1, 0.08].map((z, j) => (
-            <mesh key={`${i}-${j}`} position={[x, 0.78, z]}>
-              <cylinderGeometry args={[0.03, 0.04, 0.24, 6]} />
-              <meshStandardMaterial color={'#C784A6'} />
-            </mesh>
-          ))
-        )}
-      </group>
-
-      {/* Plant 4: Trailing Ivy on Right Railing */}
-      <group position={[1.8, 0.95, -1.6]}>
-        <mesh position={[0, -0.08, 0]}>
-          <boxGeometry args={[0.8, 0.2, 0.22]} />
-          <meshStandardMaterial color={'#8C4328'} roughness={0.8} />
-        </mesh>
-        {[-0.28, -0.08, 0.12, 0.28].map((x, i) => (
-          <mesh key={i} position={[x, -0.2 - (i % 2) * 0.14, 0.08]}>
-            <sphereGeometry args={[0.14, 7, 7]} />
-            <meshStandardMaterial color={'#48753E'} roughness={0.6} />
+        {[-0.3, -0.1, 0.1, 0.3].map((x, i) => (
+          <mesh key={i} position={[x, 0.38, (i % 2 === 0 ? 0.06 : -0.06)]}>
+            <sphereGeometry args={[0.045, 6, 6]} />
+            <meshStandardMaterial color={'#C93844'} roughness={0.4} />
           </mesh>
         ))}
       </group>
 
-      {/* Plant 5: Slender Olive / Citrus Tree (Right background corner) */}
-      <group position={[2.6, 0, -1.2]}>
-        <mesh position={[0, 0.45, 0]}>
-          <cylinderGeometry args={[0.34, 0.25, 0.9, 16]} />
-          <meshStandardMaterial color={'#9C4C30'} roughness={0.7} />
+      {/* Terracotta Pot with Blooming Geraniums & Ivy (Right Railing) */}
+      <group position={[1.85, 0, 0.25]}>
+        <mesh position={[0, 0.24, 0]}>
+          <cylinderGeometry args={[0.28, 0.2, 0.48, 16]} />
+          <meshStandardMaterial color={'#8C3F24'} roughness={0.7} />
         </mesh>
-        {/* Trunk */}
-        <mesh position={[0, 1.2, 0]} rotation={[0.05, 0, -0.04]}>
-          <cylinderGeometry args={[0.04, 0.06, 1.3, 8]} />
-          <meshStandardMaterial color={'#42342A'} roughness={0.8} />
+        <mesh position={[0, 0.48, 0]}>
+          <sphereGeometry args={[0.3, 8, 8]} />
+          <meshStandardMaterial color={'#2C4A24'} roughness={0.6} />
         </mesh>
-        {/* Foliage canopy */}
-        <mesh position={[0, 1.85, 0]}>
-          <sphereGeometry args={[0.55, 10, 8]} />
-          <meshStandardMaterial color={'#4C6E3E'} roughness={0.6} />
-        </mesh>
-        <mesh position={[-0.15, 2.2, 0.05]}>
-          <sphereGeometry args={[0.42, 8, 8]} />
-          <meshStandardMaterial color={'#5A804A'} roughness={0.6} />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
-// Decorative String Lights & Lanterns
-function BalconyDecorations() {
-  return (
-    <group>
-      {/* Warm Fairy String Lights draped along the handrail */}
-      {[-3.2, -2.4, -1.6, -0.8, 0, 0.8, 1.6, 2.4, 3.2].map((x, i) => (
-        <group key={i} position={[x, 0.94 - Math.sin((i / 8) * Math.PI) * 0.08, -1.55]}>
-          {/* Glowing bulb */}
-          <mesh>
-            <sphereGeometry args={[0.032, 8, 8]} />
-            <meshBasicMaterial color={'#FFE89E'} />
-          </mesh>
-          <pointLight color={'#FFB852'} intensity={0.4} distance={1.6} />
-        </group>
-      ))}
-
-      {/* Moroccan / Parisian Glass Lantern on terrace floor (Left side) */}
-      <group position={[-1.55, 0, -0.2]}>
-        <mesh position={[0, 0.22, 0]}>
-          <cylinderGeometry args={[0.12, 0.14, 0.44, 6]} />
-          <meshStandardMaterial color={'#1D2333'} metalness={0.8} roughness={0.3} />
-        </mesh>
-        {/* Glass panel */}
-        <mesh position={[0, 0.22, 0]}>
-          <cylinderGeometry args={[0.11, 0.13, 0.38, 6]} />
-          <meshStandardMaterial color={'#FFF1BE'} transparent opacity={0.65} />
-        </mesh>
-        {/* Candle light inside */}
-        <mesh position={[0, 0.18, 0]}>
-          <sphereGeometry args={[0.035, 8, 8]} />
-          <meshBasicMaterial color={'#FFA834'} />
-        </mesh>
-        <pointLight position={[0, 0.22, 0]} color={'#FFB042'} intensity={1.8} distance={3.5} />
-      </group>
-
-      {/* Parisian Bistro Chairs */}
-      {/* Chair 1 (Left of table) */}
-      <group position={[-0.65, 0, 0.75]} rotation={[0, 0.6, 0]}>
-        {/* Round seat */}
-        <mesh position={[0, 0.52, 0]}>
-          <cylinderGeometry args={[0.22, 0.22, 0.03, 16]} />
-          <meshStandardMaterial color={'#8C4B2E'} roughness={0.6} />
-        </mesh>
-        {/* Curved backrest */}
-        <mesh position={[-0.18, 0.85, 0]} rotation={[0, 0, -0.15]}>
-          <torusGeometry args={[0.2, 0.018, 6, 16, Math.PI]} />
-          <meshStandardMaterial color={'#1D2333'} metalness={0.7} />
-        </mesh>
-        {/* 4 legs */}
-        {[-0.14, 0.14].map((x) =>
-          [-0.14, 0.14].map((z) => (
-            <mesh key={`${x}-${z}`} position={[x, 0.26, z]}>
-              <cylinderGeometry args={[0.015, 0.015, 0.52, 6]} />
-              <meshStandardMaterial color={'#1D2333'} />
-            </mesh>
-          ))
-        )}
-      </group>
-
-      {/* Chair 2 (Right of table) */}
-      <group position={[0.95, 0, 0.75]} rotation={[0, -0.6, 0]}>
-        <mesh position={[0, 0.52, 0]}>
-          <cylinderGeometry args={[0.22, 0.22, 0.03, 16]} />
-          <meshStandardMaterial color={'#8C4B2E'} roughness={0.6} />
-        </mesh>
-        <mesh position={[0.18, 0.85, 0]} rotation={[0, 0, 0.15]}>
-          <torusGeometry args={[0.2, 0.018, 6, 16, Math.PI]} />
-          <meshStandardMaterial color={'#1D2333'} metalness={0.7} />
-        </mesh>
-        {[-0.14, 0.14].map((x) =>
-          [-0.14, 0.14].map((z) => (
-            <mesh key={`${x}-${z}`} position={[x, 0.26, z]}>
-              <cylinderGeometry args={[0.015, 0.015, 0.52, 6]} />
-              <meshStandardMaterial color={'#1D2333'} />
+        {[-0.1, 0, 0.12].map((x, i) =>
+          [-0.08, 0.08].map((z, j) => (
+            <mesh key={`${i}-${j}`} position={[x, 0.68, z]}>
+              <sphereGeometry args={[0.042, 6, 6]} />
+              <meshStandardMaterial color={'#D64E3A'} />
             </mesh>
           ))
         )}
@@ -394,101 +236,14 @@ function BalconyDecorations() {
   );
 }
 
-// Parisian Haussmannian Balcony Balustrade and Rooftop Horizon
-function ParisBalconyAndSkyline() {
-  return (
-    <group>
-      {/* Terracotta Floor Tiles with Polished Warm Sunset Reflections */}
-      <mesh position={[0, -0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[12, 10]} />
-        <meshStandardMaterial
-          color={'#5A3B30'}
-          roughness={0.22}
-          metalness={0.18}
-        />
-      </mesh>
-
-      {/* Balcony Stone Plinth (Edge of terrace) */}
-      <mesh position={[0, 0.12, -1.6]}>
-        <boxGeometry args={[9.0, 0.24, 0.22]} />
-        <meshStandardMaterial color={'#242D3D'} roughness={0.6} />
-      </mesh>
-
-      {/* Wrought-Iron Handrail */}
-      <mesh position={[0, 0.96, -1.6]}>
-        <boxGeometry args={[9.0, 0.06, 0.08]} />
-        <meshStandardMaterial color={'#161B29'} metalness={0.6} roughness={0.3} />
-      </mesh>
-      <mesh position={[0, 0.55, -1.6]}>
-        <boxGeometry args={[9.0, 0.03, 0.04]} />
-        <meshStandardMaterial color={'#161B29'} roughness={0.5} />
-      </mesh>
-
-      {/* Balusters with decorative bronze rosettes */}
-      {[-4.0, -3.2, -2.4, -1.6, -0.8, 0, 0.8, 1.6, 2.4, 3.2, 4.0].map((x) => (
-        <group key={x} position={[x, 0.55, -1.6]}>
-          <mesh>
-            <cylinderGeometry args={[0.018, 0.018, 0.78, 6]} />
-            <meshStandardMaterial color={'#161B29'} roughness={0.4} />
-          </mesh>
-          <mesh position={[0, 0.14, 0]} rotation={[0, 0, Math.PI / 4]}>
-            <ringGeometry args={[0.05, 0.075, 4]} />
-            <meshStandardMaterial color={PALETTE.gold} metalness={0.8} roughness={0.25} />
-          </mesh>
-          <mesh position={[0, -0.14, 0]} rotation={[0, 0, Math.PI / 4]}>
-            <ringGeometry args={[0.05, 0.075, 4]} />
-            <meshStandardMaterial color={PALETTE.gold} metalness={0.8} roughness={0.25} />
-          </mesh>
-        </group>
-      ))}
-
-      {/* Parisian Mansard Roofs in Midground */}
-      <mesh position={[-5.2, 0.6, -7]} rotation={[0, 0.35, 0]}>
-        <boxGeometry args={[6, 2.6, 5]} />
-        <meshStandardMaterial color={'#232F42'} roughness={0.7} />
-      </mesh>
-      <mesh position={[-5.2, 2.2, -7]} rotation={[0, 0.35, 0]}>
-        <coneGeometry args={[3.8, 2.0, 4]} />
-        <meshStandardMaterial color={'#34445C'} roughness={0.5} />
-      </mesh>
-
-      <mesh position={[5.4, 0.5, -8]} rotation={[0, -0.25, 0]}>
-        <boxGeometry args={[6.5, 2.8, 5]} />
-        <meshStandardMaterial color={'#232F42'} roughness={0.7} />
-      </mesh>
-
-      {/* Glowing attic dormer windows */}
-      {[-4.5, -3.2, 4.2, 5.8].map((x, idx) => (
-        <group key={idx} position={[x, 1.6, -6.0]}>
-          <mesh>
-            <boxGeometry args={[0.42, 0.65, 0.2]} />
-            <meshStandardMaterial color={'#161B29'} />
-          </mesh>
-          <mesh position={[0, 0, 0.11]}>
-            <planeGeometry args={[0.32, 0.5]} />
-            <meshBasicMaterial color={'#FFC56E'} />
-          </mesh>
-        </group>
-      ))}
-
-      {/* Chimney Stacks */}
-      {[-4.8, -3.8, 4.6, 6.0].map((x, idx) => (
-        <mesh key={idx} position={[x, 2.6, -7.5]}>
-          <cylinderGeometry args={[0.09, 0.11, 0.9, 6]} />
-          <meshStandardMaterial color={'#A04332'} roughness={0.8} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-// Paris Terrace Bistro Table with Udbhav's Hero Portfolio Props
+// Paris Terrace Carrara Marble Bistro Table with Real Project Items
 function TerraceTable() {
   const hovered = useWorldStore((s) => s.hovered);
   const setHovered = useWorldStore((s) => s.setHovered);
   const phase = useWorldStore((s) => s.phase);
   const setPhase = useWorldStore((s) => s.setPhase);
   const setActivePanel = useWorldStore((s) => s.setActivePanel);
+  const setActiveProjectIndex = useWorldStore((s) => s.setActiveProjectIndex);
 
   const portalRef = useRef<any>(null);
   const screenPos = useMemo(() => new THREE.Vector3(0.15, 1.05, 0.58), []);
@@ -507,36 +262,43 @@ function TerraceTable() {
     }
   });
 
+  const openProject = (idx: number) => {
+    setActiveProjectIndex(idx);
+    setActivePanel('receipt');
+  };
+
   return (
     <group position={[0.15, 0, 0.75]}>
-      {/* Parisian Bistro Round Table Top */}
+      {/* Parisian Bistro Carrara Marble Table Top */}
       <mesh position={[0, 0.92, 0]}>
-        <cylinderGeometry args={[0.78, 0.78, 0.04, 32]} />
+        <cylinderGeometry args={[0.82, 0.82, 0.038, 48]} />
         <meshStandardMaterial
-          color={'#263345'}
+          color={'#DFDDD8'}
           roughness={0.25}
-          metalness={0.25}
+          metalness={0.1}
         />
       </mesh>
-      {/* Polished Brass Table Rim */}
+      {/* Polished French Brass Table Rim */}
       <mesh position={[0, 0.92, 0]}>
-        <cylinderGeometry args={[0.795, 0.795, 0.038, 32]} />
-        <meshStandardMaterial color={PALETTE.gold} metalness={0.85} roughness={0.2} />
+        <cylinderGeometry args={[0.835, 0.835, 0.036, 48]} />
+        <meshStandardMaterial color={PALETTE.gold} metalness={0.9} roughness={0.2} />
       </mesh>
-      {/* Cast-iron Table Leg */}
+      {/* Parisian Cast-Iron Tripod Pedestal Base */}
       <mesh position={[0, 0.46, 0]}>
-        <cylinderGeometry args={[0.06, 0.12, 0.92, 16]} />
-        <meshStandardMaterial color={'#161B29'} roughness={0.7} />
+        <cylinderGeometry args={[0.06, 0.14, 0.92, 16]} />
+        <meshStandardMaterial color={'#12161E'} roughness={0.6} metalness={0.4} />
       </mesh>
-      <mesh position={[0, 0.02, 0]}>
-        <cylinderGeometry args={[0.36, 0.36, 0.04, 16]} />
-        <meshStandardMaterial color={'#161B29'} roughness={0.7} />
+      <mesh position={[0, 0.03, 0]}>
+        <cylinderGeometry args={[0.4, 0.42, 0.06, 16]} />
+        <meshStandardMaterial color={'#12161E'} roughness={0.6} metalness={0.4} />
       </mesh>
 
-      {/* Hero Prop 1: Laptop (Dive Portal to Workshop) */}
-      <group position={[0, 0.94, -0.08]}>
+      {/* ========================================================================= */}
+      {/* Project Item 1: Laptop — KAWACH (Emergency Mesh & Portal to Workshop) */}
+      {/* ========================================================================= */}
+      <group position={[0, 0.94, -0.06]}>
         <mesh
-          position={[0, 0.12, 0]}
+          position={[0, 0.14, 0]}
           onPointerOver={(e) => {
             e.stopPropagation();
             document.body.style.cursor = 'pointer';
@@ -558,22 +320,34 @@ function TerraceTable() {
           <meshBasicMaterial visible={false} />
         </mesh>
 
+        {/* Aluminium Unibody Base with Keyboard */}
         <mesh position={[0, 0.01, 0]}>
-          <boxGeometry args={[0.38, 0.015, 0.26]} />
+          <boxGeometry args={[0.42, 0.015, 0.28]} />
           <meshStandardMaterial
-            color={hovered === 'laptop' ? PALETTE.gold : '#161B29'}
-            metalness={0.65}
-            roughness={0.3}
+            color={hovered === 'laptop' ? PALETTE.gold : '#1E242E'}
+            metalness={0.7}
+            roughness={0.25}
           />
         </mesh>
+        {/* Trackpad */}
+        <mesh position={[0, 0.018, 0.08]}>
+          <boxGeometry args={[0.12, 0.002, 0.08]} />
+          <meshStandardMaterial color={'#141820'} roughness={0.3} />
+        </mesh>
+        {/* Keyboard recess */}
+        <mesh position={[0, 0.018, -0.03]}>
+          <boxGeometry args={[0.34, 0.002, 0.12]} />
+          <meshStandardMaterial color={'#0E1117'} roughness={0.4} />
+        </mesh>
 
-        <group position={[0, 0.02, -0.12]} rotation={[-0.32, 0, 0]}>
-          <mesh position={[0, 0.12, 0]}>
-            <boxGeometry args={[0.38, 0.24, 0.012]} />
-            <meshStandardMaterial color={'#161B29'} roughness={0.4} />
+        {/* Laptop Display Lid */}
+        <group position={[0, 0.02, -0.13]} rotation={[-0.32, 0, 0]}>
+          <mesh position={[0, 0.13, 0]}>
+            <boxGeometry args={[0.42, 0.26, 0.012]} />
+            <meshStandardMaterial color={'#1E242E'} roughness={0.3} metalness={0.7} />
           </mesh>
-          <mesh position={[0, 0.12, 0.007]}>
-            <planeGeometry args={[0.35, 0.21]} />
+          <mesh position={[0, 0.13, 0.007]}>
+            <planeGeometry args={[0.39, 0.23]} />
             <MeshPortalMaterial ref={portalRef} blend={0}>
               <WorkshopScene insidePortal={true} />
             </MeshPortalMaterial>
@@ -581,10 +355,225 @@ function TerraceTable() {
         </group>
       </group>
 
-      {/* Hero Prop 2: Udbhav's Portfolio & Resume Dossier Notebook */}
+      {/* ========================================================================= */}
+      {/* Project Item 2: LUME — Topographic Land Survey Lens */}
+      {/* ========================================================================= */}
       <group
-        position={[-0.36, 0.945, 0.12]}
-        rotation={[0, 0.35, 0]}
+        position={[-0.32, 0.945, -0.22]}
+        rotation={[0, 0.4, 0]}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'pointer';
+          setHovered('item-lume');
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'default';
+          setHovered(null);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          openProject(1); // 01 LUME
+        }}
+      >
+        <mesh position={[0, 0.06, 0]}>
+          <boxGeometry args={[0.18, 0.14, 0.18]} />
+          <meshBasicMaterial visible={false} />
+        </mesh>
+        <mesh position={[0, 0.015, 0]}>
+          <cylinderGeometry args={[0.09, 0.1, 0.03, 16]} />
+          <meshStandardMaterial
+            color={hovered === 'item-lume' ? PALETTE.gold : '#1A212E'}
+            metalness={0.6}
+            roughness={0.3}
+          />
+        </mesh>
+        <mesh position={[0, 0.05, 0]} rotation={[0, 0.5, 0]}>
+          <octahedronGeometry args={[0.045]} />
+          <meshStandardMaterial
+            color={'#6EE7B7'}
+            transparent
+            opacity={0.88}
+            roughness={0.1}
+            metalness={0.2}
+          />
+        </mesh>
+        <mesh position={[0, 0.032, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.08, 0.086, 24]} />
+          <meshBasicMaterial color={hovered === 'item-lume' ? PALETTE.gold : '#10B981'} />
+        </mesh>
+      </group>
+
+      {/* ========================================================================= */}
+      {/* Project Item 3: SANCHAY — Handcrafted Leather Ledger & Currency Seal */}
+      {/* ========================================================================= */}
+      <group
+        position={[-0.42, 0.945, 0.12]}
+        rotation={[0, 0.25, 0]}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'pointer';
+          setHovered('item-sanchay');
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'default';
+          setHovered(null);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          openProject(3); // 03 Sanchay
+        }}
+      >
+        <mesh position={[0, 0.04, 0]}>
+          <boxGeometry args={[0.22, 0.08, 0.18]} />
+          <meshBasicMaterial visible={false} />
+        </mesh>
+        <mesh position={[0, 0.015, 0]}>
+          <boxGeometry args={[0.18, 0.03, 0.14]} />
+          <meshStandardMaterial
+            color={hovered === 'item-sanchay' ? PALETTE.gold : '#4E2F1F'}
+            roughness={0.65}
+          />
+        </mesh>
+        <mesh position={[0, 0.015, 0.005]}>
+          <boxGeometry args={[0.17, 0.024, 0.13]} />
+          <meshStandardMaterial color={PALETTE.paper} roughness={0.85} />
+        </mesh>
+        <mesh position={[0.03, 0.033, 0]}>
+          <cylinderGeometry args={[0.024, 0.024, 0.006, 16]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.9} roughness={0.2} />
+        </mesh>
+      </group>
+
+      {/* ========================================================================= */}
+      {/* Project Item 4: NAYANA — Gaze Tracking Optical Sensor Bar */}
+      {/* ========================================================================= */}
+      <group
+        position={[0.34, 0.945, -0.26]}
+        rotation={[0, -0.35, 0]}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'pointer';
+          setHovered('item-nayana');
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'default';
+          setHovered(null);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          openProject(2); // 02 NAYANA
+        }}
+      >
+        <mesh position={[0, 0.04, 0]}>
+          <boxGeometry args={[0.22, 0.1, 0.12]} />
+          <meshBasicMaterial visible={false} />
+        </mesh>
+        <mesh position={[0, 0.018, 0]}>
+          <boxGeometry args={[0.16, 0.024, 0.04]} />
+          <meshStandardMaterial
+            color={hovered === 'item-nayana' ? PALETTE.gold : '#181E29'}
+            metalness={0.8}
+            roughness={0.2}
+          />
+        </mesh>
+        {[-0.045, 0.045].map((lx, i) => (
+          <mesh key={i} position={[lx, 0.018, 0.021]}>
+            <sphereGeometry args={[0.009, 8, 8]} />
+            <meshBasicMaterial color={'#38BDF8'} />
+          </mesh>
+        ))}
+      </group>
+
+      {/* ========================================================================= */}
+      {/* Project Item 5: SAATHI — Multilingual Voice Companion Capsule */}
+      {/* ========================================================================= */}
+      <group
+        position={[-0.18, 0.945, 0.38]}
+        rotation={[0, 0.15, 0]}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'pointer';
+          setHovered('item-saathi');
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'default';
+          setHovered(null);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          openProject(4); // 04 SAATHI
+        }}
+      >
+        <mesh position={[0, 0.04, 0]}>
+          <boxGeometry args={[0.15, 0.1, 0.15]} />
+          <meshBasicMaterial visible={false} />
+        </mesh>
+        <mesh position={[0, 0.022, 0]}>
+          <capsuleGeometry args={[0.025, 0.05, 4, 12]} />
+          <meshStandardMaterial
+            color={hovered === 'item-saathi' ? PALETTE.gold : '#E5E4E0'}
+            roughness={0.25}
+          />
+        </mesh>
+        <mesh position={[0, 0.022, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.028, 0.004, 6, 16]} />
+          <meshBasicMaterial color={'#10B981'} />
+        </mesh>
+      </group>
+
+      {/* ========================================================================= */}
+      {/* Project Item 6: MedÆther — Emergency Dispatch Transceiver */}
+      {/* ========================================================================= */}
+      <group
+        position={[0.42, 0.945, -0.04]}
+        rotation={[0, -0.4, 0]}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'pointer';
+          setHovered('item-medaether');
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'default';
+          setHovered(null);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          openProject(5); // 05 MedAether
+        }}
+      >
+        <mesh position={[0, 0.04, 0]}>
+          <boxGeometry args={[0.16, 0.1, 0.16]} />
+          <meshBasicMaterial visible={false} />
+        </mesh>
+        <mesh position={[0, 0.02, 0]}>
+          <boxGeometry args={[0.1, 0.035, 0.13]} />
+          <meshStandardMaterial
+            color={hovered === 'item-medaether' ? PALETTE.gold : '#181E29'}
+            roughness={0.4}
+            metalness={0.5}
+          />
+        </mesh>
+        <mesh position={[0.025, 0.04, -0.03]}>
+          <sphereGeometry args={[0.012, 6, 6]} />
+          <meshBasicMaterial color={'#EF4444'} />
+        </mesh>
+        <mesh position={[-0.035, 0.055, -0.04]}>
+          <cylinderGeometry args={[0.003, 0.003, 0.05, 6]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.8} />
+        </mesh>
+      </group>
+
+      {/* ========================================================================= */}
+      {/* Master Portfolio Dossier (Red Leather Notebook) */}
+      {/* ========================================================================= */}
+      <group
+        position={[0.08, 0.945, 0.35]}
+        rotation={[0, 0.08, 0]}
         onPointerOver={(e) => {
           e.stopPropagation();
           document.body.style.cursor = 'pointer';
@@ -601,29 +590,29 @@ function TerraceTable() {
         }}
       >
         <mesh position={[0, 0.04, 0]}>
-          <boxGeometry args={[0.32, 0.08, 0.24]} />
+          <boxGeometry args={[0.26, 0.08, 0.22]} />
           <meshBasicMaterial visible={false} />
         </mesh>
         <mesh position={[0, 0.012, 0]}>
-          <boxGeometry args={[0.28, 0.024, 0.2]} />
+          <boxGeometry args={[0.23, 0.024, 0.17]} />
           <meshStandardMaterial
             color={hovered === 'dossier' ? PALETTE.gold : PALETTE.cherry}
             roughness={0.4}
           />
         </mesh>
         <mesh position={[0, 0.012, 0.002]}>
-          <boxGeometry args={[0.265, 0.02, 0.185]} />
+          <boxGeometry args={[0.22, 0.02, 0.16]} />
           <meshStandardMaterial color={PALETTE.paper} roughness={0.8} />
         </mesh>
-        <mesh position={[0.08, 0.026, 0.06]} rotation={[0, 0.2, 0]}>
-          <boxGeometry args={[0.02, 0.002, 0.12]} />
+        <mesh position={[0.06, 0.026, 0.05]} rotation={[0, 0.2, 0]}>
+          <boxGeometry args={[0.016, 0.002, 0.1]} />
           <meshBasicMaterial color={PALETTE.gold} />
         </mesh>
       </group>
 
-      {/* Hero Prop 3: Espresso with Saucer */}
+      {/* Parisian Porcelain Espresso with Golden Crema */}
       <group
-        position={[0.34, 0.94, 0.15]}
+        position={[0.38, 0.94, 0.22]}
         onPointerOver={(e) => {
           e.stopPropagation();
           document.body.style.cursor = 'pointer';
@@ -636,48 +625,20 @@ function TerraceTable() {
         }}
       >
         <mesh position={[0, 0.06, 0]}>
-          <cylinderGeometry args={[0.12, 0.12, 0.14, 12]} />
+          <cylinderGeometry args={[0.11, 0.11, 0.14, 12]} />
           <meshBasicMaterial visible={false} />
         </mesh>
         <mesh position={[0, 0.008, 0]}>
-          <cylinderGeometry args={[0.1, 0.08, 0.015, 20]} />
+          <cylinderGeometry args={[0.09, 0.07, 0.014, 16]} />
           <meshStandardMaterial color={PALETTE.ivory} roughness={0.3} />
         </mesh>
-        <mesh position={[0, 0.06, 0]}>
-          <cylinderGeometry args={[0.055, 0.045, 0.09, 20]} />
+        <mesh position={[0, 0.055, 0]}>
+          <cylinderGeometry args={[0.05, 0.04, 0.08, 16]} />
           <meshStandardMaterial color={PALETTE.ivory} roughness={0.25} />
         </mesh>
-        <mesh position={[0, 0.095, 0]}>
-          <cylinderGeometry args={[0.05, 0.05, 0.01, 16]} />
+        <mesh position={[0, 0.088, 0]}>
+          <cylinderGeometry args={[0.045, 0.045, 0.01, 14]} />
           <meshStandardMaterial color={'#1A1009'} roughness={0.15} />
-        </mesh>
-      </group>
-
-      {/* Hero Prop 4: Folded Rail Map */}
-      <group
-        position={[-0.05, 0.94, 0.32]}
-        rotation={[0, -0.15, 0]}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'pointer';
-          setHovered('map');
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'default';
-          setHovered(null);
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          setActivePanel('receipt');
-        }}
-      >
-        <mesh position={[0, 0.01, 0]}>
-          <boxGeometry args={[0.26, 0.018, 0.16]} />
-          <meshStandardMaterial
-            color={hovered === 'map' ? PALETTE.gold : PALETTE.paper}
-            roughness={0.9}
-          />
         </mesh>
       </group>
     </group>
@@ -689,42 +650,55 @@ export function TerraceScene() {
 
   return (
     <>
-      {/* Rich Golden Twilight Sunset Atmosphere */}
-      <color attach="background" args={['#2B243B']} />
-      <fog attach="fog" args={['#664654', 12, 38]} />
+      {/* Parisian Dusk Twilight Sky Color */}
+      <color attach="background" args={['#231628']} />
 
-      {/* Radiant Warm Twilight Ambient Fill */}
-      <ambientLight color={'#FFDEC2'} intensity={1.1} />
+      {/* Atmospheric Realistic Linear Fog softening the distant cityscape */}
+      <fog attach="fog" args={['#231426', 8, 42]} />
 
-      {/* Directional Sunset Golden Hour Key Light illuminating balcony & rain */}
+      {/* Warm Golden Twilight Ambient Light */}
+      <ambientLight color={'#FFD4B2'} intensity={1.25} />
+
+      {/* Golden Sunset Directional Key Light illuminating Eiffel Tower & City */}
       <directionalLight
-        position={[-4, 5, -16]}
-        color={'#FFAC52'}
-        intensity={3.4}
+        position={[-7.0, 7.0, 3.0]}
+        color={'#FFA142'}
+        intensity={2.8}
       />
 
-      {/* Sky Warm Coral Fill */}
+      {/* Backlight Sunset Horizon Sun Key */}
       <directionalLight
-        position={[5, 8, 4]}
-        color={'#FFAE80'}
+        position={[-2.0, 3.5, -16]}
+        color={'#FF8822'}
+        intensity={2.4}
+      />
+
+      {/* Cool Sky Rim Fill Light from opposite side */}
+      <directionalLight
+        position={[4.0, 5.0, 2.0]}
+        color={PALETTE.sky}
         intensity={1.2}
       />
 
-      {/* Sunset Horizon and Sky Dome */}
-      <SunsetSkyDome />
+      {/* 3D Atmospheric Paris Sky Dome */}
+      <ParisSkyDome />
 
-      {/* Balcony, Haussmannian Railing, Plants & Decorations */}
-      <ParisBalconyAndSkyline />
-      <BalconyPlants />
-      <BalconyDecorations />
+      {/* 3D Architectural Eiffel Tower */}
+      <EiffelTower3D position={[0, -0.4, -18]} scale={1.15} />
 
-      {/* Eiffel Tower Silhouette with Golden Beacon */}
-      <EiffelTower />
+      {/* 3D Layered Haussmann Rooftops, Windows, Chimneys & Seine Bridge */}
+      <ParisianRooftops3D />
 
-      {/* Bistro Table with Udbhav's Laptop & Portfolio */}
+      {/* 3D Real Balcony Floor & Haussmann Wrought-Iron Railing */}
+      <BalconyArchitecture />
+
+      {/* Foreground 3D Balcony Potted Plants & Vines */}
+      <ForegroundBalconyPlants />
+
+      {/* Carrara Marble Bistro Table with Interactive Project Items */}
       <TerraceTable />
 
-      {/* Glistening Backlit Rain */}
+      {/* Backlit Instanced Rain */}
       <InstancedRain restStage={restStage} />
     </>
   );

@@ -10,140 +10,170 @@ export type Project = {
   caseStudy: string;
   featured: boolean;
   award?: string;
+  itemOnTable: string;
 };
 
 export const PROJECTS: Project[] = [
   {
     id: 'kawach',
-    name: 'KAWACH — Disaster Emergency Mesh',
-    oneLine: 'Offline-first emergency response system over phone-to-phone BLE mesh networking with Gemini AI triage.',
+    name: 'KAWACH — Personal Safety & Emergency Mesh',
+    oneLine: 'Always-ready women & personal safety system blending real-time SOS, proactive risk prediction, and offline-first BLE mesh resilience.',
     building: 'The Resilient Citadel',
-    role: 'Full Stack & Systems Developer — BLE mesh relay, geospatial clustering, Gemini AI summarization',
-    stack: ['BLE Mesh', 'Python', 'Geospatial Analytics', 'Google Gemini AI', 'Cloud Sync'],
+    role: 'Lead Architect & Mobile Engineer — Flutter app, BLE peer-to-peer relay, geospatial clustering, Gemini AI context triage',
+    stack: ['Flutter', 'Dart', 'BLE Mesh', 'Python', 'Google Gemini AI', 'Geospatial Analytics'],
     year: 2026,
     award: 'Best Startup Award — AAKRITHI / AETHERION',
+    itemOnTable: 'The Laptop (Portal to Workshop)',
     links: [
-      { label: 'GitHub', href: 'https://github.com/udbhavnc7/kawach' },
-      { label: 'New Version', href: 'https://github.com/sharonjoseph12/Kawach_new' },
+      { label: 'Live App', href: 'https://kawach-safety.netlify.app' },
+      { label: 'GitHub', href: 'https://github.com/udbhavnc7/KAWACH' },
     ],
     caseStudy: `### The Problem
-During catastrophic natural disasters, cellular towers and power grids collapse within minutes. Stranded victims cannot dispatch SOS distress signals, and first responders operate blind without location telemetry or triage data.
+Traditional SOS apps fail when cell towers collapse or in dead zones with zero cellular connectivity. Women and emergency victims need an instantaneous, lock-screen trigger that works without internet.
 
 ### The Architectural Move
-Engineered an offline-first decentralized relay network over Bluetooth Low Energy (BLE). Distress packets hop peer-to-peer across phones in the disaster zone until encountering any device with connectivity. 
-
-### Core Systems
-- Automated multi-hop packet propagation with packet deduplication and TTL bounding
-- Geospatial clustering algorithms mapping SOS clusters to optimal dispatch coordinates
-- Gemini AI context summarizer generating structured medical triage summaries for rescue teams
-- Real-time safety heatmaps and lock-screen SOS triggers (power button tap / phone shake)`,
+KAWACH turns an everyday smartphone into an always-ready guardian:
+- Triggers discreet SOS alerts via triple power-button taps, shake gestures, or voice keywords directly from the lock screen.
+- Employs device-to-device Bluetooth Low Energy (BLE) multi-hop mesh relays, hopping distress packets across nearby devices until reaching a connected node.
+- Real-time geospatial clustering routes incidents to the nearest registered volunteer or responder.
+- Google Gemini AI analyzes distress audio/text to generate structured medical triage summaries for dispatchers.`,
     featured: true,
   },
   {
-    id: 'vortex',
-    name: 'VORTEX — Algorand Smart Contract Escrow',
-    oneLine: 'Decentralized freelancing escrow with automated Docker sandbox verification and AI jury auditing.',
-    building: 'The Cryptographic Vault',
-    role: 'Smart Contract & Systems Developer — Algorand ARC-4 contract logic, Docker verification node',
-    stack: ['Algorand', 'Python / PyTeal', 'Smart Contracts', 'Docker', 'Oracle Consensus'],
-    year: 2025,
-    award: 'Winners ($350 Cash Prize) — REVA RIFT HACK.ALGO',
+    id: 'lume',
+    name: 'LUME — Land Acquisition Predictive Intelligence',
+    oneLine: 'Predictive intelligence layer analyzing project records to forecast land acquisition milestone delays with transparent evidence reasoning.',
+    building: 'The Geospatial Observatory',
+    role: 'Full Stack & Predictive Systems Developer — Delay risk forecasting, comparative project analytics, evidence audit UI',
+    stack: ['TypeScript', 'React', 'Node.js', 'PostgreSQL', 'Predictive Modeling', 'Render'],
+    year: 2026,
+    itemOnTable: 'Survey Crystal Prism',
     links: [
-      { label: 'GitHub', href: 'https://github.com/sharonjoseph12/vortex_reva' },
+      { label: 'Live Platform', href: 'https://lume-1ubt.onrender.com/' },
+      { label: 'GitHub', href: 'https://github.com/udbhavnc7/LUME' },
     ],
     caseStudy: `### The Problem
-Traditional freelancing and peer-to-peer bounty platforms extract heavy 20% mediator fees while suffering from subjective dispute resolution and payment delays.
+Government infrastructure systems only record what has already happened, leaving administrative officers blind to bottleneck risks until projects are already months behind schedule.
 
 ### The Architectural Move
-VORTEX moves trust into transparent on-chain logic:
-1. Buyer locks bounty funds into an immutable Algorand ARC-4 escrow smart contract.
-2. Solver submits code artifacts executed inside ephemeral Docker sandboxes running automated unit tests.
-3. A Gemini Flash AI jury audits code quality and compliance with adversarial prompt filtering.
-4. Smart contract auto-releases payments upon verified cryptographic consensus without human gatekeepers.`,
+LUME is an proactive intelligence layer that transforms raw acquisition data into actionable foresight:
+- Forecasts the statistical likelihood of upcoming milestone delays across compensation, survey, and title clearances.
+- Explains the exact historical evidence, land-parcel friction, and administrative backlog driving each risk score.
+- Discovers comparable historical infrastructure projects to benchmark velocity and suggest proactive intervention paths.`,
     featured: true,
   },
   {
     id: 'nayana',
     name: 'NAYANA — Eye-Gaze Communication Platform',
-    oneLine: 'Gaze-tracking AI communication tool translating eye movements into live speech and caregiver telemetry.',
+    oneLine: 'Accessible clinical gaze-tracking AI transforming eye fixations into real-time speech and remote caregiver telemetry.',
     building: 'The Optical Sanctuary',
-    role: 'Computer Vision & Full Stack Developer — Real-time eye gaze estimation, WebRTC telemetry dashboard',
+    role: 'Computer Vision & Full Stack Developer — Gaze estimation algorithms, virtual communication keyboard, WebRTC telemetry stream',
     stack: ['Computer Vision', 'Gaze Tracking AI', 'WebRTC', 'React', 'Next.js', 'Vercel'],
     year: 2025,
+    itemOnTable: 'Optical Gaze Sensor',
     links: [
       { label: 'Live App', href: 'https://nayana-nine.vercel.app' },
+      { label: 'GitHub', href: 'https://github.com/udbhavnc7/Nayana' },
     ],
     caseStudy: `### The Problem
-Patients suffering from ALS, locked-in syndrome, or severe motor impairments lose the ability to speak or gesture, while proprietary eye-tracking hardware costs upwards of $10,000.
+Patients suffering from ALS, locked-in syndrome, or acute paralysis lose motor speech while commercial hardware trackers cost upwards of $10,000, creating an insurmountable accessibility barrier.
 
 ### The Architectural Move
-Built an accessible, web-native gaze-tracking interface that operates on any standard webcam:
-- Deep convolutional facial landmark tracking estimating pupil gaze vector in real-time
-- Intuitive dwell-selection communication keyboard translating gaze fixations into synthesized speech
-- Real-time low-latency WebRTC data channel streaming patient status and telemetry to a remote caregiver dashboard`,
+NAYANA provides high-fidelity gaze communication through standard browser webcams:
+- Convolutional eye-landmark tracking estimating gaze coordinates with zero calibration lag.
+- Dwell-time selection matrix enabling patients to compose sentences, trigger alerts, and express pain levels.
+- Low-latency WebRTC data channels streaming real-time patient status and telemetry to clinicians and remote caregivers.`,
     featured: true,
+  },
+  {
+    id: 'sanchay',
+    name: 'Sanchay — Personal Finance Engine',
+    oneLine: 'Open-source Android personal finance engine for intuitive, customizable expense tracking, budgets, and financial goals.',
+    building: 'The Minted Ledger',
+    role: 'Android Engineer — Kotlin architecture, Room SQLite database, custom budget tracking, visual analytics',
+    stack: ['Kotlin', 'Android SDK', 'Jetpack Compose', 'Room DB', 'Material 3'],
+    year: 2026,
+    itemOnTable: 'Vintage Leather Ledger',
+    links: [
+      { label: 'GitHub', href: 'https://github.com/udbhavnc7/Sanchay' },
+    ],
+    caseStudy: `### The Problem
+Most personal finance applications require intrusive cloud subscriptions, upload sensitive banking data to third-party servers, and clutter simple budgeting with bloated crypto integrations.
+
+### The Architectural Move
+Sanchay is built on complete privacy and local-first autonomy:
+- 100% offline local database architecture with encrypted SQLite storage.
+- Flexible multi-account tracking supporting split transactions, recurring scheduled bills, and custom category hierarchies.
+- Real-time visual spending velocity curves and predictive budget burn-down indicators.`,
+    featured: false,
+  },
+  {
+    id: 'saathi',
+    name: 'SAATHI — Multilingual Health Companion',
+    oneLine: 'Adaptive, voice-first, multilingual personal health companion managing prescriptions, appointments, and everyday medical care.',
+    building: 'The Healing Pavilion',
+    role: 'Full Stack & Voice AI Developer — Speech recognition, multilingual medical NLP, medication schedules',
+    stack: ['TypeScript', 'React', 'Web Speech API', 'Node.js', 'Express', 'Railway'],
+    year: 2026,
+    itemOnTable: 'Voice Companion Capsule',
+    links: [
+      { label: 'Live Platform', href: 'https://saathi-production-7faa.up.railway.app' },
+      { label: 'GitHub', href: 'https://github.com/udbhavnc7/SAATHI' },
+    ],
+    caseStudy: `### The Problem
+Healthcare management is disjointed outside hospitals. Elderly patients and regional language speakers struggle to parse complex prescription dosages, discharge instructions, and follow-up schedules.
+
+### The Architectural Move
+SAATHI acts as a 24/7 personal health guardian:
+- Conversational voice-first interface fluent in multiple Indian regional languages.
+- Smart OCR and transcription turning physical prescriptions into scheduled medication alarms and refill notices.
+- Plain-language explanations of medical contraindications and post-operative recovery instructions.`,
+    featured: false,
   },
   {
     id: 'medaether',
     name: 'MedÆther — Hospital Coordination Intelligence',
-    oneLine: 'Resilient hospital emergency intelligence layer synchronizing ICU bed availability, transfer workflows, and blood banks.',
-    building: 'The Lifeline Matrix',
-    role: 'Systems Architect — Distributed data integration, legacy health system adapters, audit pipeline',
+    oneLine: 'Secure hospital coordination intelligence layer synchronizing fragmented ICU bed data, transfer workflows, and rare blood requests.',
+    building: 'The Lifeline Network',
+    role: 'Systems Architect — Distributed data integration, legacy healthcare adapters, secure audit logging',
     stack: ['TypeScript', 'React', 'Node.js', 'PostgreSQL', 'Supabase', 'REST / FHIR'],
     year: 2025,
+    itemOnTable: 'Emergency Dispatch Transceiver',
     links: [
       { label: 'GitHub', href: 'https://github.com/udbhavnc7/MedAether' },
     ],
     caseStudy: `### The Problem
-Hospital systems across regional healthcare networks run siloed, decades-old software. Bed availability, emergency transfers, and rare blood requests are coordinated via frantic phone calls and paper logs.
+Hospitals operate in silos using mismatched, legacy proprietary software. Urgent ICU transfers and blood requests require frantic phone calls and unrecorded manual paperwork.
 
 ### The Architectural Move
-MedÆther deploys a zero-disruption integration layer that sits atop legacy infrastructure:
-- Real-time predictive ICU and ventilator capacity modeling
-- Automated multi-hospital patient transfer routing with medical audit trails
-- Emergency blood request broadcasting with automated compatibility verification and cold-chain tracking`,
+MedÆther sits seamlessly on top of legacy infrastructure without requiring system replacements:
+- Real-time predictive ICU bed and ventilator availability tracker with automated failover routing.
+- Auditable patient transfer coordination pipeline with clinical sign-off workflows.
+- Emergency blood bank dispatch network matching rare donor groups with cold-chain transit tracking.`,
     featured: false,
   },
   {
-    id: 'prism',
-    name: 'PRISM — Contactless Health Screening AI',
-    oneLine: '100% contactless preventative health screening in under 30s using smartphone camera & microphone for ASHA workers.',
-    building: 'The Spectrum Diagnostic',
-    role: 'Mobile & AI Developer — Photoplethysmography (rPPG), acoustic respiratory analysis',
-    stack: ['Flutter', 'Python', 'Computer Vision', 'Acoustic Signal Processing', 'ABDM Standards'],
+    id: 'vortex',
+    name: 'VORTEX — Algorand Smart Contract Escrow',
+    oneLine: 'Decentralized freelancing escrow with automated Docker sandbox verification and Gemini AI jury auditing.',
+    building: 'The Cryptographic Vault',
+    role: 'Smart Contract & Systems Developer — Algorand ARC-4 contract logic, Docker verification node',
+    stack: ['Algorand', 'Python / PyTeal', 'Smart Contracts', 'Docker', 'Oracle Consensus'],
     year: 2025,
-    award: 'Designed for rural India & Ayushman Bharat Digital Mission (ABDM)',
+    award: 'Winners ($350 Cash Prize) — REVA RIFT HACK.ALGO',
+    itemOnTable: 'Cryptographic Token Coin',
     links: [
-      { label: 'GitHub', href: 'https://github.com/sharonjoseph12/Vaidya' },
+      { label: 'GitHub', href: 'https://github.com/sharonjoseph12/vortex_reva' },
     ],
     caseStudy: `### The Problem
-Primary healthcare in rural India lacks expensive medical diagnostic equipment. Community ASHA workers need rapid, non-invasive tools to triage dozens of patients daily.
+Centralized freelancing platforms take up to 20% mediator cuts while suffering from biased human disputes and delayed payment releases.
 
 ### The Architectural Move
-PRISM requires zero external hardware:
-- Remote photoplethysmography (rPPG) measuring heart rate and oxygenation through facial micro-capillary pulse waves
-- Acoustic vocal and cough spectrogram analysis screening for early respiratory distress
-- Screens 50+ villagers per day in under 30 seconds, exporting structured FHIR records directly to ABDM health accounts`,
-    featured: false,
-  },
-  {
-    id: 'tattva',
-    name: 'TATTVA — Autonomous Exam Notes Intelligence',
-    oneLine: 'Incremental syllabus compiler syncing Google Drive/Classroom into living exam notes with page traceability.',
-    building: 'The Living Scriptorium',
-    role: 'Full Stack Engineer — Document parsing pipeline, automated indexing, markdown generation',
-    stack: ['Next.js', 'TypeScript', 'Google Drive API', 'PDF Processing', 'TailwindCSS'],
-    year: 2025,
-    links: [
-      { label: 'GitHub', href: 'https://github.com/udbhavnc7/TATTVA' },
-    ],
-    caseStudy: `### The Problem
-University coursework materials are scattered across dozens of unorganized Google Drive folders and Classroom announcements, making exam prep chaotic and disconnected.
-
-### The Architectural Move
-TATTVA watches course repositories and instantly processes newly uploaded lecture slides and reference books:
-- Incremental text and diagram extraction with semantic topic hierarchy
-- Generates clean, exam-structured revision guides where every formula and claim is directly clickable back to the exact source PDF page`,
+VORTEX moves trust into transparent on-chain logic:
+- Buyer locks bounty funds into an immutable Algorand ARC-4 escrow smart contract.
+- Solver submissions run inside Docker sandboxes against automated unit test suites.
+- Gemini Flash AI jury audits code compliance with prompt-injection defense firewalls.
+- Smart contract auto-releases payments upon verified cryptographic consensus without human gatekeepers.`,
     featured: false,
   },
 ];
