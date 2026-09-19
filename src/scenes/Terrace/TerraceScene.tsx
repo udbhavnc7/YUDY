@@ -487,93 +487,14 @@ function TerraceTable() {
         ))}
       </group>
 
-      {/* ========================================================================= */}
-      {/* Project Item 5: SAATHI — Multilingual Voice Companion Capsule */}
-      {/* ========================================================================= */}
-      <group
-        position={[-0.18, 0.945, 0.38]}
-        rotation={[0, 0.15, 0]}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'pointer';
-          setHovered('item-saathi');
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'default';
-          setHovered(null);
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          openProject(4); // 04 SAATHI
-        }}
-      >
-        <mesh position={[0, 0.04, 0]}>
-          <boxGeometry args={[0.15, 0.1, 0.15]} />
-          <meshBasicMaterial visible={false} />
-        </mesh>
-        <mesh position={[0, 0.022, 0]}>
-          <capsuleGeometry args={[0.025, 0.05, 4, 12]} />
-          <meshStandardMaterial
-            color={hovered === 'item-saathi' ? PALETTE.gold : '#E5E4E0'}
-            roughness={0.25}
-          />
-        </mesh>
-        <mesh position={[0, 0.022, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.028, 0.004, 6, 16]} />
-          <meshBasicMaterial color={'#10B981'} />
-        </mesh>
-      </group>
 
-      {/* ========================================================================= */}
-      {/* Project Item 6: MedÆther — Emergency Dispatch Transceiver */}
-      {/* ========================================================================= */}
-      <group
-        position={[0.42, 0.945, -0.04]}
-        rotation={[0, -0.4, 0]}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'pointer';
-          setHovered('item-medaether');
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          document.body.style.cursor = 'default';
-          setHovered(null);
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          openProject(5); // 05 MedAether
-        }}
-      >
-        <mesh position={[0, 0.04, 0]}>
-          <boxGeometry args={[0.16, 0.1, 0.16]} />
-          <meshBasicMaterial visible={false} />
-        </mesh>
-        <mesh position={[0, 0.02, 0]}>
-          <boxGeometry args={[0.1, 0.035, 0.13]} />
-          <meshStandardMaterial
-            color={hovered === 'item-medaether' ? PALETTE.gold : '#181E29'}
-            roughness={0.4}
-            metalness={0.5}
-          />
-        </mesh>
-        <mesh position={[0.025, 0.04, -0.03]}>
-          <sphereGeometry args={[0.012, 6, 6]} />
-          <meshBasicMaterial color={'#EF4444'} />
-        </mesh>
-        <mesh position={[-0.035, 0.055, -0.04]}>
-          <cylinderGeometry args={[0.003, 0.003, 0.05, 6]} />
-          <meshStandardMaterial color={PALETTE.gold} metalness={0.8} />
-        </mesh>
-      </group>
 
       {/* ========================================================================= */}
       {/* Master Portfolio Dossier (Red Leather Notebook) */}
       {/* ========================================================================= */}
       <group
-        position={[0.08, 0.945, 0.35]}
-        rotation={[0, 0.08, 0]}
+        position={[0.0, 0.945, 0.36]}
+        rotation={[0, 0, 0]}
         onPointerOver={(e) => {
           e.stopPropagation();
           document.body.style.cursor = 'pointer';

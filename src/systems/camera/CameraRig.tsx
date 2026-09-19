@@ -133,8 +133,8 @@ export function CameraRig() {
         setRailNode('terrace');
         setActiveMoment('terrace');
         setPhase('dwelling');
-        currentPos.current.set(0, 1.6, 2.8);
-        currentLookAt.current.set(0, 1.35, -5.0);
+        currentPos.current.set(0, 1.85, 3.8);
+        currentLookAt.current.set(0, 1.25, -6.0);
       }
       return;
     }
