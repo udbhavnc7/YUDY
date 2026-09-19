@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+.vercel/
+
+# personal content — never commit plaintext
+content/private/
+*.plain.json
+
+# env
+.env
+.env.*
+!.env.example
+
+# os / editor
+.DS_Store
+*.log

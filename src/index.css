@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #0E1726;
+  --navy: #16233A;
+  --slate: #2C3A51;
+  --paper: #F3EAD8;
+  --ivory: #FBF6EC;
+  --gold: #E3B25C;
+  --cherry: #C9424B;
+  --blush: #EBA9B4;
+  --sky: #8FB8D8;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--ink);
+  color: var(--ivory);
+  overflow: hidden;
+}
+
+/* Subtle cinematic vignette */
+.vignette-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 45%, rgba(14, 23, 38, 0.45) 90%, rgba(14, 23, 38, 0.75) 100%);
+  z-index: 10;
+}
+
+/* Paper grain texture */
+.paper-grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0.035;
+  background-image: radial-gradient(#FBF6EC 1px, transparent 1px);
+  background-size: 4px 4px;
+  z-index: 15;
+}
+
+/* Visible keyboard focus rings */
+*:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
