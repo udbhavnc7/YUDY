@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useWorldStore } from '../../app/worldStore';
-import { PROJECTS } from '../../data/projects';
+import { PROJECTS, Project } from '../../data/projects';
 
 export function ReceiptPanel({ onContinue }: { onContinue: () => void }) {
   const activePanel = useWorldStore((s) => s.activePanel);
   const setActivePanel = useWorldStore((s) => s.setActivePanel);
-  const project = PROJECTS[0];
+  const [selectedIdx, setSelectedIdx] = useState(0);
+
+  const project: Project = PROJECTS[selectedIdx] || PROJECTS[0];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -20,47 +22,67 @@ export function ReceiptPanel({ onContinue }: { onContinue: () => void }) {
   if (activePanel !== 'receipt') return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-sm transition-all duration-500">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/75 backdrop-blur-md transition-all duration-500">
       {/* Thermal Paper Receipt Card */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Project Case Study Receipt"
-        className="relative w-full max-w-md bg-paper text-ink shadow-2xl p-6 sm:p-8 font-mono border-t-8 border-b-8 border-dashed border-ink/20 transform transition-all animate-in fade-in zoom-in-95 duration-300 max-h-[85vh] overflow-y-auto"
+        className="relative w-full max-w-xl bg-paper text-ink shadow-2xl p-6 sm:p-8 font-mono border-t-8 border-b-8 border-dashed border-ink/25 transform transition-all animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto"
       >
         {/* Receipt Header */}
         <div className="text-center border-b border-dashed border-ink/30 pb-4 mb-4">
-          <p className="text-[10px] uppercase tracking-widest text-ink/60">
-            YUDY · ARCHITECTURAL RECORD
-          </p>
-          <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-ink mt-1">
+          <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-ink/60 mb-2">
+            <span>UDBHAV N CHANDRAGIRI</span>
+            <span>PARIS RECORD · 2026</span>
+          </div>
+
+          <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
             {project.name}
           </h2>
-          <p className="text-xs text-cherry font-semibold mt-0.5">
-            Metaphor: {project.building}
+          <p className="text-xs text-cherry font-semibold mt-1">
+            Building Metaphor: {project.building}
           </p>
-          <div className="text-[10px] text-ink/50 mt-2 flex justify-between">
+
+          <div className="text-[11px] text-ink/60 mt-2 flex justify-between">
             <span>YEAR: {project.year}</span>
-            <span>ROLE: LEAD ARCHITECT</span>
+            <span>ROLE: {project.role.split('—')[0]}</span>
+          </div>
+
+          {/* Project Selector Tabs */}
+          <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-dashed border-ink/20">
+            {PROJECTS.map((p, idx) => (
+              <button
+                key={p.id}
+                onClick={() => setSelectedIdx(idx)}
+                className={`text-[10px] px-2.5 py-1 rounded border font-mono transition-all ${
+                  idx === selectedIdx
+                    ? 'bg-ink text-paper border-ink font-bold shadow'
+                    : 'bg-transparent text-ink/70 border-ink/20 hover:border-ink/50'
+                }`}
+              >
+                0{idx + 1} {p.name.split(' ')[0]}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Project Meta Details */}
         <div className="space-y-3 text-xs border-b border-dashed border-ink/30 pb-4 mb-4">
           <div>
-            <span className="text-[10px] uppercase text-ink/50 block">Thesis / One-Line</span>
+            <span className="text-[10px] uppercase text-ink/50 block font-bold">Thesis / One-Line</span>
             <p className="text-xs font-sans text-ink/90 italic mt-0.5">
               "{project.oneLine}"
             </p>
           </div>
 
           <div>
-            <span className="text-[10px] uppercase text-ink/50 block">Author Contribution</span>
+            <span className="text-[10px] uppercase text-ink/50 block font-bold">Author Contribution</span>
             <p className="text-xs text-ink/80 mt-0.5">{project.role}</p>
           </div>
 
           <div>
-            <span className="text-[10px] uppercase text-ink/50 block mb-1">Stack Execution</span>
+            <span className="text-[10px] uppercase text-ink/50 block font-bold mb-1">Execution Stack</span>
             <div className="flex flex-wrap gap-1.5">
               {project.stack.map((item) => (
                 <span
@@ -76,15 +98,12 @@ export function ReceiptPanel({ onContinue }: { onContinue: () => void }) {
 
         {/* Case Study Content */}
         <div className="space-y-3 text-xs text-ink/80 border-b border-dashed border-ink/30 pb-5 mb-5 font-sans leading-relaxed">
-          <div className="font-mono text-[11px] font-bold text-ink uppercase tracking-wider">
-            § Technical Case Study
+          <div className="font-mono text-[11px] font-bold text-ink uppercase tracking-wider mb-2">
+            § Technical Breakdown & Architecture
           </div>
-          <p>
-            Traditional 3D experiences use free orbit or jarring page transitions. YUDY proves that an authored forward rail with continuous depth of field eliminates spatial disorientation while reducing GPU texture pressure to a single active scene node.
-          </p>
-          <p className="text-xs text-ink/70">
-            Memory lifecycle is deterministic: assets preload along the rail tangent and dispose immediately on departure.
-          </p>
+          <div className="space-y-2 whitespace-pre-line text-xs text-ink/85">
+            {project.caseStudy}
+          </div>
         </div>
 
         {/* Receipt Actions: Forward Only per Law 1 */}
@@ -93,7 +112,7 @@ export function ReceiptPanel({ onContinue }: { onContinue: () => void }) {
             onClick={() => setActivePanel(null)}
             className="w-full sm:w-auto px-4 py-2 border border-ink/30 text-ink text-xs font-mono rounded hover:bg-ink/5 transition-colors focus:outline-none focus:ring-2 focus:ring-gold"
           >
-            [Close Panel Esc]
+            [Close Dossier Esc]
           </button>
 
           <button
@@ -120,7 +139,7 @@ export function ReceiptPanel({ onContinue }: { onContinue: () => void }) {
             ))}
           </div>
           <span className="text-[9px] text-ink/40 tracking-widest mt-1">
-            YUDY-TRACE-001 · ONE DIRECTION
+            UDBHAV N CHANDRAGIRI · PORTFOLIO · LAW 1
           </span>
         </div>
       </div>

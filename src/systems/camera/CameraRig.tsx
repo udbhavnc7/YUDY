@@ -93,11 +93,11 @@ export function CameraRig() {
         return;
       }
 
-      // Dolly straight through laptop screen
-      targetPos.current.set(0, 1.03, -0.155);
-      targetLookAt.current.set(0, 1.03, -0.6);
+      // Dolly straight through laptop screen at [0.15, 1.06, 0.58]
+      targetPos.current.set(0.15, 1.06, 0.58);
+      targetLookAt.current.set(0.15, 1.06, 0.0);
 
-      const diveFactor = Math.min(delta * 2.2, 1);
+      const diveFactor = Math.min(delta * 2.4, 1);
       currentPos.current.lerp(targetPos.current, diveFactor);
       currentLookAt.current.lerp(targetLookAt.current, diveFactor);
 
@@ -105,7 +105,7 @@ export function CameraRig() {
       camera.lookAt(currentLookAt.current);
 
       const screenDist = currentPos.current.distanceTo(targetPos.current);
-      if (screenDist < 0.075) {
+      if (screenDist < 0.08) {
         // Complete dive into Workshop
         setPhase('inside');
         setRailNode('workshop');
@@ -133,8 +133,8 @@ export function CameraRig() {
         setRailNode('terrace');
         setActiveMoment('terrace');
         setPhase('dwelling');
-        currentPos.current.set(0, 2.0, 3.5);
-        currentLookAt.current.set(0, 1.0, 0);
+        currentPos.current.set(0, 1.6, 2.8);
+        currentLookAt.current.set(0, 1.35, -5.0);
       }
       return;
     }
@@ -147,12 +147,17 @@ export function CameraRig() {
     // Rack focus shift on hover
     if (railNode === 'terrace') {
       if (hovered === 'laptop') {
-        targetPos.current.add(new THREE.Vector3(0, -0.15, -0.45));
-        targetLookAt.current.set(0, 0.98, -0.05);
+        targetPos.current.add(new THREE.Vector3(0.06, -0.18, -0.65));
+        targetLookAt.current.set(0.15, 1.05, 0.55);
+      } else if (hovered === 'dossier') {
+        targetPos.current.add(new THREE.Vector3(-0.16, -0.18, -0.55));
+        targetLookAt.current.set(-0.21, 0.95, 0.87);
       } else if (hovered === 'coffee') {
-        targetLookAt.current.set(0.35, 0.95, 0.25);
+        targetLookAt.current.set(0.49, 0.96, 0.9);
       } else if (hovered === 'map') {
-        targetLookAt.current.set(-0.35, 0.92, 0.35);
+        targetLookAt.current.set(0.1, 0.94, 1.07);
+      } else if (hovered === 'eiffel') {
+        targetLookAt.current.set(-0.8, 3.2, -16.0);
       }
     } else if (railNode === 'workshop') {
       if (hovered === 'project-observatory') {

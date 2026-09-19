@@ -10,6 +10,7 @@ export function OverlayUI() {
 
   const railNode = useWorldStore((s) => s.railNode);
   const setPhase = useWorldStore((s) => s.setPhase);
+  const setActivePanel = useWorldStore((s) => s.setActivePanel);
 
   const handleSoundToggle = () => {
     const next = !soundOn;
@@ -30,8 +31,16 @@ export function OverlayUI() {
           </span>
         </div>
 
-        {/* Global Controls: Skip to work, Sound, and Forward on Rail */}
-        <div className="flex items-center space-x-5">
+        {/* Global Controls: Portfolio, Skip to work, Sound, and Forward on Rail */}
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => setActivePanel('receipt')}
+            className="font-mono text-xs tracking-wider text-gold hover:text-ivory px-3 py-1 bg-gold/10 hover:bg-gold/20 border border-gold/40 rounded-full transition-all flex items-center space-x-1.5 focus:outline-none focus:ring-1 focus:ring-gold"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></span>
+            <span>Portfolio & Works (4)</span>
+          </button>
+
           {railNode === 'workshop' && (
             <button
               onClick={() => setPhase('surfacing')}
@@ -44,9 +53,9 @@ export function OverlayUI() {
 
           <a
             href="#work"
-            className="font-mono text-xs tracking-wider text-ivory/60 hover:text-gold transition-colors underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-gold"
+            className="font-mono text-xs tracking-wider text-ivory/60 hover:text-gold transition-colors underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-gold hidden sm:inline"
           >
-            Skip to work
+            Index
           </a>
 
           <button
@@ -62,11 +71,13 @@ export function OverlayUI() {
       {/* Hover Object Label / Interaction Feedback */}
       <div className="flex justify-center items-center h-12">
         {hovered && (
-          <div className="bg-ink/80 backdrop-blur border border-ivory/10 px-4 py-1.5 rounded-full text-xs font-sans tracking-widest uppercase text-gold animate-fade-in pointer-events-none">
-            {hovered === 'laptop' && 'Workshop · Click to dive'}
-            {hovered === 'coffee' && 'Espresso · Golden Hour'}
+          <div className="bg-ink/85 backdrop-blur border border-gold/30 px-5 py-2 rounded-full text-xs font-sans tracking-widest uppercase text-gold animate-fade-in pointer-events-none shadow-lg">
+            {hovered === 'laptop' && 'The Workshop · Click to dive through screen'}
+            {hovered === 'dossier' && 'Selected Works Dossier · Click to inspect 4 projects'}
+            {hovered === 'coffee' && 'Espresso · Parisian Sunset Evening'}
             {hovered === 'map' && 'Folded Rail Map · Forward Path'}
-            {hovered === 'project-observatory' && 'The Cantilevered Observatory · Click to inspect receipt'}
+            {hovered === 'eiffel' && 'Eiffel Tower · Paris Sunset Vista'}
+            {hovered === 'project-observatory' && 'The Cantilevered Observatory · Click to inspect dossier'}
           </div>
         )}
       </div>
