@@ -106,7 +106,8 @@ export function CameraRig() {
     const desiredY = targetPos.current.y + pointerOffset.current.y + breathOffset;
     const desiredZ = targetPos.current.z;
 
-    const dampFactor = Math.min(delta * 2.5, 1);
+    // Slow glide: the camera is an operator, not a scrollbar.
+    const dampFactor = Math.min(delta * 1.6, 1);
     tempVec.current.set(desiredX, desiredY, desiredZ);
     currentPos.current.lerp(tempVec.current, dampFactor);
     currentLookAt.current.lerp(targetLookAt.current, dampFactor);

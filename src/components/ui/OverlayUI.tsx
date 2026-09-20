@@ -3,6 +3,10 @@ import { useWorldStore } from '../../app/worldStore';
 import { ambientAudio } from '../../systems/audio/ambientAudio';
 import { useScrollStore } from '../../systems/scroll/ScrollStore';
 import { PROFILE } from '../../data/profile';
+import { ACHIEVEMENTS } from '../../data/achievements';
+import { PROJECTS } from '../../data/projects';
+import { EDUCATION } from '../../data/education';
+import { HOBBIES } from '../../data/hobbies';
 
 export function OverlayUI() {
   const soundOn = useWorldStore((s) => s.soundOn);
@@ -207,10 +211,14 @@ export function OverlayUI() {
 
 function getHoverLabel(id: string): string {
   if (id === 'lamp') return 'Intro';
-  if (id === 'chair') return 'Chair';
-  if (id === 'sofa') return 'Sofa';
+  if (id === 'chair') return 'Identity';
+  if (id === 'sofa') return 'Education';
   if (id === 'poster-wall') return 'Achievements';
   if (id === 'plant-showcase') return 'Hobbies';
+  if (id.startsWith('poster:')) return 'Achievement';
+  if (id.startsWith('book:')) return 'Project';
+  if (id.startsWith('pillow:')) return 'Education';
+  if (id.startsWith('plant:')) return 'Hobby';
   if (id.startsWith('bookshelf-')) return 'Projects';
   return 'Object';
 }
@@ -225,5 +233,22 @@ function getHoverTitle(id: string): string {
     'bookshelf--3.2': 'Projects — Solo & Group',
     'bookshelf-3.2': 'Projects — Solo & Group',
   };
-  return titles[id] || id;
+  if (titles[id]) return titles[id];
+  if (id.startsWith('poster:')) {
+    const a = ACHIEVEMENTS.find((x) => x.id === id.slice(7));
+    return a ? `${a.title} — ${a.event} (${a.year})` : id;
+  }
+  if (id.startsWith('book:')) {
+    const p = PROJECTS.find((x) => x.id === id.slice(5));
+    return p ? `${p.title} — by ${p.author}` : id;
+  }
+  if (id.startsWith('pillow:')) {
+    const e = EDUCATION.find((x) => x.id === id.slice(7));
+    return e ? e.institution : id;
+  }
+  if (id.startsWith('plant:')) {
+    const h = HOBBIES.find((x) => x.id === id.slice(6));
+    return h ? h.title : id;
+  }
+  return id;
 }

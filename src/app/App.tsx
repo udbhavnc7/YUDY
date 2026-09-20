@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useWorldStore } from './worldStore';
 import { useRestSystem } from '../systems/rest/useRestSystem';
+import { useScrollCamera } from '../systems/scroll/useScrollCamera';
 import { WorldCanvas } from '../components/world/WorldCanvas';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { OverlayUI } from '../components/ui/OverlayUI';
@@ -12,6 +13,7 @@ export function App() {
   const [transitioning, setTransitioning] = useState(false);
 
   useRestSystem();
+  useScrollCamera();
 
   const handleBegin = () => {
     setTransitioning(true);

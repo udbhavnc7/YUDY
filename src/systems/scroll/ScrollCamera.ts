@@ -193,7 +193,10 @@ export function interpolateWaypoints(zone: Zone, localProgress: number): Waypoin
   const segmentCount = waypoints.length - 1;
   const segmentProgress = localProgress * segmentCount;
   const segmentIndex = Math.floor(segmentProgress);
-  const t = segmentProgress - segmentIndex;
+  // Smoothstep the segment interpolation so the camera eases between
+  // authored poses instead of sliding linearly (the "robotic elevator").
+  const rawT = segmentProgress - segmentIndex;
+  const t = rawT * rawT * (3 - 2 * rawT);
 
   const wp1 = waypoints[segmentIndex];
   const wp2 = waypoints[Math.min(segmentIndex + 1, waypoints.length - 1)];

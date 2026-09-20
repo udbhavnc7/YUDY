@@ -93,8 +93,10 @@ export function useScrollCamera() {
 
       if (Math.abs(targetProgressRef.current - currentProgressRef.current) > 0.0001) {
         setScrollProgress(currentProgressRef.current);
-        rafRef.current = requestAnimationFrame(animate);
       }
+      // Persistent loop: wheel/touch events only move the target,
+      // so the loop must stay alive to keep easing toward it.
+      rafRef.current = requestAnimationFrame(animate);
     };
     rafRef.current = requestAnimationFrame(animate);
 
