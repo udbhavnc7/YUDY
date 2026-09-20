@@ -33,14 +33,14 @@ export function WorldCanvas() {
         onCreated={({ gl }) => {
           gl.outputColorSpace = THREE.SRGBColorSpace;
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.15;
+          gl.toneMappingExposure = 1.2;
           gl.shadowMap.type = THREE.PCFSoftShadowMap;
           gl.shadowMap.autoUpdate = true;
         }}
         onPointerMissed={() => useWorldStore.getState().setSelected(null)}
       >
-        <color attach="background" args={['#050505']} />
-        <fog attach="fog" args={['#050505', 2, 20]} />
+        <color attach="background" args={['#0a0805']} />
+        <fog attach="fog" args={['#0a0805', 2, 20]} />
 
         <Suspense fallback={null}>
           <CameraRig />

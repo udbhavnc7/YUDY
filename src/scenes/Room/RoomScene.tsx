@@ -357,8 +357,8 @@ function RoomFloor() {
 }
 
 function Rug() {
-  // Carpet pile under the sitting area: color + deep normal for the tufts.
-  const mat = usePBRSet('carpet/Carpet001_1K-JPG', 2, 2, 1.2);
+  // Jute/natural fiber rug — warm den vibe.
+  const mat = usePBRSet('carpet/Carpet001_1K-JPG', 2, 2, 1.2, '#c4a265');
   return (
     <mesh position={[0.5, 0.006, -0.4]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <planeGeometry args={[3.4, 3.6]} />
@@ -398,32 +398,204 @@ function RoomTrim({ mat }: { mat: THREE.Material }) {
   );
 }
 
-/** Gold picture-molding rectangles on the maroon walls: instant royalty. */
-function GoldTrim() {
-  const goldMat = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: '#C9A227', roughness: 0.32, metalness: 1.0 }),
+/** String lights draped across the back wall — cozy retro vibes. */
+function StringLights() {
+  const wireMat = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#2a2a2a', roughness: 0.6, metalness: 0.4 }),
     []
   );
-  const Rect = ({ position, rotation }: { position: [number, number, number]; rotation: [number, number, number] }) => (
-    <group position={position} rotation={rotation}>
-      <mesh position={[0, 0.85, 0]}><boxGeometry args={[2.2, 0.055, 0.03]} /><primitive object={goldMat} attach="material" /></mesh>
-      <mesh position={[0, -0.85, 0]}><boxGeometry args={[2.2, 0.055, 0.03]} /><primitive object={goldMat} attach="material" /></mesh>
-      <mesh position={[-1.1, 0, 0]}><boxGeometry args={[0.055, 1.75, 0.03]} /><primitive object={goldMat} attach="material" /></mesh>
-      <mesh position={[1.1, 0, 0]}><boxGeometry args={[0.055, 1.75, 0.03]} /><primitive object={goldMat} attach="material" /></mesh>
-    </group>
-  );
+  const bulbCount = 18;
+  const bulbs = useMemo(() => {
+    const pts: { x: number; y: number; z: number; color: string }[] = [];
+    const palette = ['#ffcc66', '#ff9944', '#ffaa55', '#ffdd88', '#ffbb33', '#ff8833'];
+    for (let i = 0; i < bulbCount; i++) {
+      const t = i / (bulbCount - 1);
+      const x = -3.5 + t * 7;
+      const sag = Math.sin(t * Math.PI) * 0.3;
+      const y = 2.85 - sag;
+      pts.push({ x, y, z: -3.88, color: palette[i % palette.length] });
+    }
+    return pts;
+  }, []);
+
   return (
     <group>
-      <Rect position={[-3.94, 1.7, -1.5]} rotation={[0, Math.PI / 2, 0]} />
-      <Rect position={[-3.94, 1.7, 1.5]} rotation={[0, Math.PI / 2, 0]} />
-      <Rect position={[3.94, 1.7, -1.5]} rotation={[0, -Math.PI / 2, 0]} />
-      <Rect position={[3.94, 1.7, 1.5]} rotation={[0, -Math.PI / 2, 0]} />
+      {/* Wire catenary */}
+      {bulbs.slice(0, -1).map((b, i) => {
+        const next = bulbs[i + 1];
+        const mx = (b.x + next.x) / 2;
+        const my = (b.y + next.y) / 2;
+        const dx = next.x - b.x;
+        const dy = next.y - b.y;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx);
+        return (
+          <mesh key={`w${i}`} position={[mx, my, b.z]} rotation={[0, 0, angle]}>
+            <cylinderGeometry args={[0.004, 0.004, len, 4]} />
+            <primitive object={wireMat} attach="material" />
+          </mesh>
+        );
+      })}
+      {/* Bulbs — warm emissive spheres */}
+      {bulbs.map((b, i) => (
+        <group key={`b${i}`} position={[b.x, b.y - 0.04, b.z]}>
+          <mesh>
+            <sphereGeometry args={[0.025, 8, 8]} />
+            <meshStandardMaterial
+              color={b.color}
+              emissive={new THREE.Color(b.color)}
+              emissiveIntensity={1.8}
+              roughness={0.3}
+              transparent
+              opacity={0.9}
+            />
+          </mesh>
+          {i % 3 === 0 && (
+            <pointLight color={b.color} intensity={0.3} distance={2.5} decay={2} />
+          )}
+        </group>
+      ))}
+    </group>
+  );
+}
+
+/** Moon lamp on a shelf — glowing sphere, warm orange emissive. */
+function MoonLamp() {
+  const moonMat = useMemo(
+    () => new THREE.MeshStandardMaterial({
+      color: '#fff4e0',
+      emissive: new THREE.Color('#ffaa44'),
+      emissiveIntensity: 1.5,
+      roughness: 0.85,
+    }),
+    []
+  );
+  return (
+    <group position={[3.2, 1.65, -1.2]}>
+      <mesh>
+        <sphereGeometry args={[0.12, 20, 20]} />
+        <primitive object={moonMat} attach="material" />
+      </mesh>
+      {/* tiny stand */}
+      <mesh position={[0, -0.13, 0]}>
+        <cylinderGeometry args={[0.06, 0.06, 0.02, 12]} />
+        <meshStandardMaterial color="#3a3a3a" roughness={0.5} metalness={0.3} />
+      </mesh>
+      <pointLight color="#ffaa44" intensity={0.8} distance={3} decay={2} />
+    </group>
+  );
+}
+
+/** Rattan/woven floor lamp next to the chair — tall cylinder shade. */
+function FloorLamp() {
+  const ratMat = useMemo(
+    () => new THREE.MeshStandardMaterial({
+      color: '#b89060',
+      roughness: 0.7,
+      metalness: 0.0,
+      side: THREE.DoubleSide,
+    }),
+    []
+  );
+  const glowMat = useMemo(
+    () => new THREE.MeshStandardMaterial({
+      color: '#4a3820',
+      emissive: new THREE.Color('#ffc470'),
+      emissiveIntensity: 1.2,
+      roughness: 0.5,
+      side: THREE.DoubleSide,
+    }),
+    []
+  );
+  return (
+    <group position={[2.2, 0, 1.5]}>
+      {/* Base plate */}
+      <mesh position={[0, 0.02, 0]}>
+        <cylinderGeometry args={[0.15, 0.18, 0.04, 16]} />
+        <meshStandardMaterial color="#3a3a3a" roughness={0.4} metalness={0.5} />
+      </mesh>
+      {/* Pole */}
+      <mesh position={[0, 0.65, 0]}>
+        <cylinderGeometry args={[0.015, 0.02, 1.26, 8]} />
+        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.6} />
+      </mesh>
+      {/* Woven shade — outer */}
+      <mesh position={[0, 1.45, 0]}>
+        <cylinderGeometry args={[0.12, 0.18, 0.5, 16, 1, true]} />
+        <primitive object={ratMat} attach="material" />
+      </mesh>
+      {/* Inner glow */}
+      <mesh position={[0, 1.45, 0]}>
+        <cylinderGeometry args={[0.115, 0.175, 0.48, 16, 1, true]} />
+        <primitive object={glowMat} attach="material" />
+      </mesh>
+      <pointLight position={[0, 1.45, 0]} color="#ffc470" intensity={1.5} distance={5} decay={2} />
+    </group>
+  );
+}
+
+/** Simple hanging trailing plant — sphere of green with dangling vines. */
+function HangingPlant({ position }: { position: [number, number, number] }) {
+  const leafMat = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#3a6b35', roughness: 0.7, metalness: 0.0 }),
+    []
+  );
+  const vineMat = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#2d5a28', roughness: 0.7, metalness: 0.0 }),
+    []
+  );
+  const potMat = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#b48c5a', roughness: 0.6, metalness: 0.0 }),
+    []
+  );
+  // Random vine lengths for organic feel
+  const vines = useMemo(() => [
+    { angle: 0, len: 0.6, offset: 0.04 },
+    { angle: Math.PI * 0.4, len: 0.8, offset: 0.05 },
+    { angle: Math.PI * 0.8, len: 0.5, offset: 0.03 },
+    { angle: Math.PI * 1.2, len: 0.7, offset: 0.06 },
+    { angle: Math.PI * 1.6, len: 0.55, offset: 0.04 },
+  ], []);
+  return (
+    <group position={position}>
+      {/* Pot */}
+      <mesh position={[0, 0, 0]}>
+        <cylinderGeometry args={[0.08, 0.06, 0.12, 12]} />
+        <primitive object={potMat} attach="material" />
+      </mesh>
+      {/* Foliage ball */}
+      <mesh position={[0, 0.06, 0]}>
+        <sphereGeometry args={[0.12, 10, 10]} />
+        <primitive object={leafMat} attach="material" />
+      </mesh>
+      {/* Trailing vines */}
+      {vines.map((v, i) => (
+        <mesh key={i} position={[
+          Math.cos(v.angle) * v.offset,
+          -v.len / 2 + 0.02,
+          Math.sin(v.angle) * v.offset,
+        ]} rotation={[Math.cos(v.angle) * 0.15, 0, Math.sin(v.angle) * 0.15]}>
+          <cylinderGeometry args={[0.006, 0.004, v.len, 4]} />
+          <primitive object={vineMat} attach="material" />
+        </mesh>
+      ))}
+      {/* Leaf clusters along vines */}
+      {vines.map((v, i) => (
+        <mesh key={`l${i}`} position={[
+          Math.cos(v.angle) * (v.offset + 0.02),
+          -v.len * 0.6,
+          Math.sin(v.angle) * (v.offset + 0.02),
+        ]}>
+          <sphereGeometry args={[0.03, 6, 6]} />
+          <primitive object={leafMat} attach="material" />
+        </mesh>
+      ))}
     </group>
   );
 }
 
 function Ceiling() {
-  const mat = usePBRSet('plaster/Plaster001_1K-JPG', 4, 4, 0.4, '#6a5a48');
+  const mat = usePBRSet('plaster/Plaster001_1K-JPG', 4, 4, 0.4, '#e8ddd0');
   return (
     <mesh position={[0, 3.2, 0]} rotation={[Math.PI / 2, 0, 0]}>
       <planeGeometry args={[8, 8]} />
@@ -432,174 +604,51 @@ function Ceiling() {
   );
 }
 
-/** Mughal-arch night art for inside the gold frames: indigo dusk, gold arch, moon. */
-function makeTrimArtTexture(moonX: number): THREE.CanvasTexture {
-  const c = document.createElement('canvas');
-  c.width = 512;
-  c.height = 384;
-  const g = c.getContext('2d')!;
-  const sky = g.createLinearGradient(0, 0, 0, 384);
-  sky.addColorStop(0, '#101a33');
-  sky.addColorStop(0.6, '#1d2b4d');
-  sky.addColorStop(1, '#3a2b3f');
-  g.fillStyle = sky;
-  g.fillRect(0, 0, 512, 384);
-  // Moon + halo.
-  const halo = g.createRadialGradient(moonX, 84, 4, moonX, 84, 70);
-  halo.addColorStop(0, 'rgba(243,234,216,0.9)');
-  halo.addColorStop(0.25, 'rgba(243,234,216,0.28)');
-  halo.addColorStop(1, 'rgba(243,234,216,0)');
-  g.fillStyle = halo;
-  g.fillRect(0, 0, 512, 384);
-  g.fillStyle = '#F3EAD8';
-  g.beginPath();
-  g.arc(moonX, 84, 22, 0, Math.PI * 2);
-  g.fill();
-  // Gold cusped arch silhouette.
-  g.strokeStyle = '#C9A227';
-  g.lineWidth = 7;
-  g.beginPath();
-  g.moveTo(156, 384);
-  g.lineTo(156, 200);
-  g.quadraticCurveTo(156, 130, 216, 118);
-  g.quadraticCurveTo(236, 114, 256, 84);
-  g.quadraticCurveTo(276, 114, 296, 118);
-  g.quadraticCurveTo(356, 130, 356, 200);
-  g.lineTo(356, 384);
-  g.stroke();
-  // Ground line + stars.
-  g.lineWidth = 4;
-  g.beginPath();
-  g.moveTo(60, 340);
-  g.lineTo(452, 340);
-  g.stroke();
-  g.fillStyle = 'rgba(243,234,216,0.8)';
-  const stars: [number, number][] = [[80, 60], [150, 140], [330, 60], [420, 150], [250, 200], [420, 260], [100, 260]];
-  for (const [sx, sy] of stars) {
-    g.beginPath();
-    g.arc(sx, sy, 2.5, 0, Math.PI * 2);
-    g.fill();
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 4;
-  return tex;
-}
+/* (TrimArt and makeTrimArtTexture removed — replaced by StringLights and retro decor) */
 
-/** Framed night-art inside each gold rectangle, so the trim means something. */
-function TrimArt() {
-  const artA = useMemo(() => makeTrimArtTexture(150), []);
-  const artB = useMemo(() => makeTrimArtTexture(360), []);
-  const matA = useMemo(() => new THREE.MeshStandardMaterial({ map: artA, roughness: 0.85 }), [artA]);
-  const matB = useMemo(() => new THREE.MeshStandardMaterial({ map: artB, roughness: 0.85 }), [artB]);
-  const spots: { pos: [number, number, number]; rot: [number, number, number]; mat: THREE.Material }[] = [
-    { pos: [-3.92, 1.7, -1.5], rot: [0, Math.PI / 2, 0], mat: matA },
-    { pos: [-3.92, 1.7, 1.5], rot: [0, Math.PI / 2, 0], mat: matB },
-    { pos: [3.92, 1.7, -1.5], rot: [0, -Math.PI / 2, 0], mat: matB },
-    { pos: [3.92, 1.7, 1.5], rot: [0, -Math.PI / 2, 0], mat: matA },
-  ];
-  return (
-    <group>
-      {spots.map((s, i) => (
-        <mesh key={i} position={s.pos} rotation={s.rot}>
-          <planeGeometry args={[2.0, 1.5]} />
-          <primitive object={s.mat} attach="material" />
-        </mesh>
-      ))}
-    </group>
-  );
-}
+/* (WallSconce removed — replaced by StringLights) */
 
-/** Brass wall sconce with a live amber flame: walls that give light. */
-function WallSconce({ position, rotation }: { position: [number, number, number]; rotation: [number, number, number] }) {
-  const brassMat = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: '#8a6a1f', roughness: 0.35, metalness: 1.0 }),
-    []
-  );
-  const flameMat = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: '#3a2410', emissive: new THREE.Color('#ffb84d'), emissiveIntensity: 2.2, roughness: 0.6 }),
-    []
-  );
-  const lightRef = useRef<THREE.PointLight>(null);
-  useFrame((state) => {
-    if (lightRef.current) {
-      lightRef.current.intensity =
-        0.7 + Math.sin(state.clock.elapsedTime * 9.3 + position[2]) * 0.07 + Math.sin(state.clock.elapsedTime * 23.7) * 0.04;
-    }
-  });
-  return (
-    <group position={position} rotation={rotation}>
-      <mesh position={[0, 0, 0]} castShadow><boxGeometry args={[0.1, 0.22, 0.07]} /><primitive object={brassMat} attach="material" /></mesh>
-      <mesh position={[0, 0.02, 0.09]} castShadow><cylinderGeometry args={[0.055, 0.035, 0.07, 12]} /><primitive object={brassMat} attach="material" /></mesh>
-      <mesh position={[0, 0.09, 0.09]}>
-        <sphereGeometry args={[0.035, 12, 10]} />
-        <primitive object={flameMat} attach="material" />
-      </mesh>
-      <pointLight ref={lightRef} position={[0, 0.12, 0.15]} color="#ff9a3c" intensity={0.7} distance={4.5} decay={2} />
-    </group>
-  );
-}
-
-/** Side table with a book stack and a live diya: the room's lived-in corner. */
+/** Coffee table with a book stack — the room's lived-in corner. */
 function SideTable() {
-  const trimWood = usePBRSet('darkwood/darkwood', 1, 1, 0.6);
-  const brassMat = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: '#8a6a1f', roughness: 0.35, metalness: 1.0 }),
-    []
-  );
-  const flameMat = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: '#3a2410', emissive: new THREE.Color('#ffc25e'), emissiveIntensity: 2.4, roughness: 0.6 }),
-    []
-  );
+  const trimWood = usePBRSet('darkwood/darkwood', 1, 1, 0.6, '#8a7560');
   const bookA = useMemo(() => new THREE.MeshStandardMaterial({ color: '#5B3A8E', roughness: 0.55 }), []);
-  const bookB = useMemo(() => new THREE.MeshStandardMaterial({ color: '#A6493B', roughness: 0.55 }), []);
-  const diyaRef = useRef<THREE.PointLight>(null);
-  useFrame((state) => {
-    if (diyaRef.current) {
-      diyaRef.current.intensity =
-        0.85 + Math.sin(state.clock.elapsedTime * 10.7) * 0.1 + Math.sin(state.clock.elapsedTime * 27.3) * 0.06;
-    }
-  });
+  const bookB = useMemo(() => new THREE.MeshStandardMaterial({ color: '#e06520', roughness: 0.55 }), []);
+  const bookC = useMemo(() => new THREE.MeshStandardMaterial({ color: '#c49b2f', roughness: 0.55 }), []);
   return (
     <group position={[-1.7, 0, -2.2]}>
-      <mesh position={[0, 0.52, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.34, 0.34, 0.05, 20]} />
+      <mesh position={[0, 0.35, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.7, 0.04, 0.5]} />
         <primitive object={trimWood} attach="material" />
       </mesh>
-      {[-0.22, 0.22, 0].map((x, i) => (
-        <mesh key={i} position={[x, 0.26, i === 2 ? 0.18 : -0.12]} castShadow>
-          <cylinderGeometry args={[0.025, 0.03, 0.52, 10]} />
-          <primitive object={trimWood} attach="material" />
+      {/* Hairpin legs */}
+      {[[-0.28, 0.175, -0.2], [0.28, 0.175, -0.2], [-0.28, 0.175, 0.2], [0.28, 0.175, 0.2]].map((pos, i) => (
+        <mesh key={i} position={pos as [number, number, number]} castShadow>
+          <cylinderGeometry args={[0.01, 0.01, 0.35, 6]} />
+          <meshStandardMaterial color="#2a2a2a" roughness={0.3} metalness={0.7} />
         </mesh>
       ))}
       {/* book stack */}
-      <mesh position={[-0.1, 0.575, 0.05]} castShadow rotation={[0, 0.3, 0]}>
-        <boxGeometry args={[0.3, 0.045, 0.22]} />
+      <mesh position={[-0.1, 0.39, 0.05]} castShadow rotation={[0, 0.3, 0]}>
+        <boxGeometry args={[0.22, 0.035, 0.16]} />
         <primitive object={bookA} attach="material" />
       </mesh>
-      <mesh position={[-0.08, 0.62, 0.04]} castShadow rotation={[0, -0.15, 0]}>
-        <boxGeometry args={[0.26, 0.04, 0.2]} />
+      <mesh position={[-0.08, 0.425, 0.04]} castShadow rotation={[0, -0.15, 0]}>
+        <boxGeometry args={[0.2, 0.03, 0.15]} />
         <primitive object={bookB} attach="material" />
       </mesh>
-      {/* diya */}
-      <mesh position={[0.14, 0.565, -0.08]} castShadow>
-        <cylinderGeometry args={[0.07, 0.045, 0.05, 14]} />
-        <primitive object={brassMat} attach="material" />
+      <mesh position={[-0.12, 0.455, 0.06]} castShadow rotation={[0, 0.5, 0]}>
+        <boxGeometry args={[0.18, 0.025, 0.14]} />
+        <primitive object={bookC} attach="material" />
       </mesh>
-      <mesh position={[0.14, 0.62, -0.08]}>
-        <sphereGeometry args={[0.022, 10, 8]} />
-        <primitive object={flameMat} attach="material" />
-      </mesh>
-      <pointLight ref={diyaRef} position={[0.14, 0.7, -0.08]} color="#ffa63e" intensity={0.85} distance={3.5} decay={2} />
     </group>
   );
 }
 
-/** Brass pendant over the rug, swaying almost imperceptibly. Pools warm light. */
+/** Edison-bulb pendant over the rug, swaying gently. */
 function Pendant() {
   const groupRef = useRef<THREE.Group>(null);
-  const brassMat = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: '#6a5218', roughness: 0.4, metalness: 1.0, side: THREE.DoubleSide }),
+  const wireMat = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#2a2a2a', roughness: 0.4, metalness: 0.6 }),
     []
   );
   const bulbMat = useMemo(
@@ -615,23 +664,20 @@ function Pendant() {
   return (
     <group ref={groupRef} position={[0.5, 3.2, -0.3]}>
       <mesh position={[0, -0.5, 0]}>
-        <cylinderGeometry args={[0.008, 0.008, 1.0, 8]} />
-        <primitive object={brassMat} attach="material" />
+        <cylinderGeometry args={[0.005, 0.005, 1.0, 6]} />
+        <primitive object={wireMat} attach="material" />
       </mesh>
+      {/* Edison bulb — elongated */}
       <mesh position={[0, -1.06, 0]} castShadow>
-        <cylinderGeometry args={[0.05, 0.22, 0.24, 20, 1, true]} />
-        <primitive object={brassMat} attach="material" />
-      </mesh>
-      <mesh position={[0, -1.12, 0]}>
-        <sphereGeometry args={[0.045, 14, 12]} />
+        <capsuleGeometry args={[0.03, 0.08, 6, 12]} />
         <primitive object={bulbMat} attach="material" />
       </mesh>
-      <pointLight position={[0, -1.2, 0]} color="#ffbe62" intensity={2.2} distance={7} decay={2} />
+      <pointLight position={[0, -1.1, 0]} color="#ffbe62" intensity={2.2} distance={7} decay={2} />
     </group>
   );
 }
 
-/** Dark ceiling beams: architecture overhead, not a void. */
+/** Warm wood ceiling beams. */
 function CeilingBeams({ mat }: { mat: THREE.Material }) {
   return (
     <group>
@@ -641,17 +687,6 @@ function CeilingBeams({ mat }: { mat: THREE.Material }) {
           <primitive object={mat} attach="material" />
         </mesh>
       ))}
-    </group>
-  );
-}
-
-function Sconces() {
-  return (
-    <group>
-      <WallSconce position={[-3.9, 1.95, 0]} rotation={[0, Math.PI / 2, 0]} />
-      <WallSconce position={[3.9, 1.95, 0]} rotation={[0, -Math.PI / 2, 0]} />
-      <WallSconce position={[-1.5, 2.0, -3.92]} rotation={[0, 0, 0]} />
-      <WallSconce position={[1.5, 2.0, -3.92]} rotation={[0, 0, 0]} />
     </group>
   );
 }
@@ -688,8 +723,8 @@ function Chair() {
     }
   });
 
-  // Maroon cushion so the wooden chair sits in the royal palette.
-  const cushionMat = usePBRSet('fabric/Fabric025_1K-JPG', 1, 1, 0.8, '#7a2a2e');
+  // Retro orange cushion — mid-century vibes.
+  const cushionMat = usePBRSet('fabric/Fabric025_1K-JPG', 1, 1, 0.8, '#e06520');
 
   const active = inRange(scrollProgress, 0.10, 0.22);
   const isHot = hovered === 'chair' || selected === 'chair';
@@ -717,7 +752,7 @@ function Chair() {
 
 /* ------------------------------- sofa + pillows ----------------------------- */
 
-const PILLOW_COLORS: Record<string, string> = { school: '#8E2F32', college: '#2F4A7A' };
+const PILLOW_COLORS: Record<string, string> = { school: '#d4543a', college: '#c49b2f' };
 
 function Sofa() {
   const scrollProgress = useScrollStore((s) => s.scrollProgress);
@@ -727,12 +762,18 @@ function Sofa() {
   const selected = useWorldStore((s) => s.selected);
 
   // Real scanned mesh: Poly Haven sofa_03 (CC0), 1k PBR.
+  // Tinted olive/mustard to match reference.
   const { scene } = useGLTF('/models/sofa_03/sofa_03.gltf');
   useEffect(() => {
     scene.traverse((o) => {
       if ((o as THREE.Mesh).isMesh) {
         o.castShadow = true;
         o.receiveShadow = true;
+        // Override color to olive/mustard per reference images
+        const mat = (o as THREE.Mesh).material as THREE.MeshStandardMaterial;
+        if (mat && mat.isMeshStandardMaterial) {
+          mat.color.set('#7a8040');
+        }
       }
     });
   }, [scene]);
@@ -935,21 +976,29 @@ function Poster({ ach, position }: { ach: Achievement; position: [number, number
   );
 }
 
+/** Dense salon-hang gallery wall — all achievements in varied positions. */
 function PosterWall() {
   const scrollProgress = useScrollStore((s) => s.scrollProgress);
   const visible = inRange(scrollProgress, 0.32, 0.47);
   if (!visible) return null;
 
-  const achievements = ACHIEVEMENTS.slice(0, 4);
+  // Use ALL achievements for a dense gallery wall
+  const achievements = ACHIEVEMENTS;
+
+  // Salon-hang layout: staggered heights, varied spacing
+  const positions: [number, number, number][] = [
+    [-3.0, 0.6, 0],    // top-left
+    [-1.4, 0.1, 0],    // bottom center-left
+    [0.2, 0.7, 0],     // top center
+    [1.7, 0.0, 0],     // bottom center-right
+    [-2.2, -0.3, 0],   // bottom-left (low)
+    [3.0, 0.5, 0],     // top-right
+  ];
 
   return (
     <group position={[0, 1.5, -4]}>
-      <mesh position={[0, 0, -0.02]} receiveShadow>
-        <planeGeometry args={[8, 3]} />
-        <primitive object={new THREE.MeshStandardMaterial({ color: '#241d16', roughness: 0.95 })} attach="material" />
-      </mesh>
       {achievements.map((ach, i) => (
-        <Poster key={ach.id} ach={ach} position={[-2.7 + i * 1.8, 0.3, 0]} />
+        <Poster key={ach.id} ach={ach} position={positions[i] || [(-2 + i * 1.2), 0.3, 0]} />
       ))}
     </group>
   );
@@ -1019,14 +1068,19 @@ function PlantShowcase() {
 function RoomLights() {
   return (
     <>
-      <ambientLight color="#2a3350" intensity={0.55} />
-      <hemisphereLight args={['#4a5a80', '#241a12', 0.5]} />
-      <pointLight position={[0, 3.5, 0]} color="#ffecd2" intensity={0.6} distance={12} decay={2} />
-      <directionalLight position={[0, 2, -3]} color="#ffd47a" intensity={0.35} castShadow={false} />
-      <pointLight position={[-3, 2, 1]} color="#5B8BD0" intensity={0.35} distance={9} decay={2} />
-      <pointLight position={[3, 1.5, 1]} color="#E3B25C" intensity={0.25} distance={8} decay={2} />
-      {/* cool moonlight fill for warm/cool contrast */}
-      <directionalLight position={[4, 3, 3]} color="#7a9cc6" intensity={0.22} castShadow={false} />
+      {/* Warm ambient — retro den baseline */}
+      <ambientLight color="#3a2a18" intensity={0.7} />
+      <hemisphereLight args={['#ffecd2', '#3a2a18', 0.5]} />
+      {/* Central warm overhead */}
+      <pointLight position={[0, 3.5, 0]} color="#ffecd2" intensity={0.8} distance={12} decay={2} />
+      {/* Back wall wash — catches posters */}
+      <directionalLight position={[0, 2, -3]} color="#ffd47a" intensity={0.4} castShadow={false} />
+      {/* Warm fill left (near shelves) */}
+      <pointLight position={[-3, 2, 1]} color="#ffb366" intensity={0.3} distance={9} decay={2} />
+      {/* Warm fill right */}
+      <pointLight position={[3, 1.5, 1]} color="#E3B25C" intensity={0.35} distance={8} decay={2} />
+      {/* Subtle cool fill for depth — very low */}
+      <directionalLight position={[4, 3, 3]} color="#8a9ab0" intensity={0.1} castShadow={false} />
     </>
   );
 }
@@ -1041,10 +1095,10 @@ export function RoomScene() {
   const [introComplete, setIntroComplete] = useState(false);
   const handleIntroComplete = useCallback(() => setIntroComplete(true), []);
 
-  // Royal palette: deep maroon plaster sides, gold damask accent behind posters.
-  const maroonPlaster = usePBRSet('plaster/Plaster001_1K-JPG', 3, 2, 0.5, '#7a4030');
-  const damaskWall = usePBRSet('wallpaper/Wallpaper001B_1K-JPG', 4, 2, 0.7, '#d8b98a');
-  const trimWood = usePBRSet('darkwood/darkwood', 2, 1, 0.5);
+  // Warm cream walls — clean retro den. Light enough for posters to pop.
+  const creamWall = usePBRSet('plaster/Plaster001_1K-JPG', 3, 2, 0.5, '#f0e6d3');
+  const accentWall = usePBRSet('plaster/Plaster001_1K-JPG', 3, 2, 0.5, '#ece0cc');
+  const trimWood = usePBRSet('darkwood/darkwood', 2, 1, 0.5, '#8a7560');
 
   return (
     <>
@@ -1052,13 +1106,12 @@ export function RoomScene() {
       <group>
         <RoomFloor />
         <Rug />
-        <RoomWall mat={damaskWall} position={[0, 1.5, -4]} rotation={[0, 0, 0]} />
-        <RoomWall mat={maroonPlaster} position={[-4, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} />
-        <RoomWall mat={maroonPlaster} position={[4, 1.5, 0]} rotation={[0, -Math.PI / 2, 0]} />
+        {/* Warm cream walls — clean backdrop for dense decor */}
+        <RoomWall mat={accentWall} position={[0, 1.5, -4]} rotation={[0, 0, 0]} />
+        <RoomWall mat={creamWall} position={[-4, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} />
+        <RoomWall mat={creamWall} position={[4, 1.5, 0]} rotation={[0, -Math.PI / 2, 0]} />
         <RoomTrim mat={trimWood} />
-        <GoldTrim />
-        <TrimArt />
-        <Sconces />
+        <StringLights />
         <Ceiling />
         <CeilingBeams mat={trimWood} />
       </group>
@@ -1071,6 +1124,12 @@ export function RoomScene() {
       <Bookshelf position={[3.2, 0, 1.2]} scale={1.3} isGroup={true} projectIds={['smartcart', 'chatguard', 'cardioscan']} zone={[0.62, 0.74]} />
       <PosterWall />
       <PlantShowcase />
+      <MoonLamp />
+      <FloorLamp />
+      {/* Hanging plants for trailing greenery */}
+      <HangingPlant position={[-2.5, 2.8, -3.5]} />
+      <HangingPlant position={[2.8, 2.7, -2.0]} />
+      <HangingPlant position={[-1.0, 2.9, 2.5]} />
       <Lamp onIntroComplete={handleIntroComplete} />
       <IntroText visible={introComplete} />
     </>
