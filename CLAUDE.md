@@ -1,20 +1,22 @@
 # YUDY
 
-All instructions for AI coding agents live in [`AGENTS.md`](./AGENTS.md). Read
-it, then `docs/VISION.md` and `docs/SYSTEMS.md`, before writing code.
+All instructions for AI coding agents live in [`AGENTS.md`](./AGENTS.md).
+Read it, then `docs/VISION.md` and `docs/VISUAL-QUALITY.md`, before writing
+any code.
 
-Short version, the nine laws:
+This is a reset. If the repo has anything from an earlier YUDY direction
+(a rooftop terrace, object portals, a compass, a rail) — delete it, don't
+patch it.
 
-1. One take, one direction, one loop. No cuts, no fades, no reversing, no back
-   button. Navigation is forward along the rail plus a forward-jumping map.
-2. Ordinary becomes miracle. Portals begin humble and end vast.
-3. Painted versus sketched. "Not yet" is a designed state, never an error.
-4. Legible to everyone, meaningful to one. No personal data about any real
-   person in the public bundle, source, comments, or commit messages.
-5. Black outside, red inside. Restrained exteriors, vivid interiors.
-6. No audience. No analytics, telemetry, counters, or third-party scripts, ever.
-7. Stillness is content. Idling is rewarded, never punished or interrupted.
-8. The world keeps real time. Paris clock, real weather, real moon, real season.
-9. You leave with a trace, not a copy.
+Short version:
 
-Build only the current milestone in `AGENTS.md`. Ask before adding dependencies.
+- One room. Scroll moves the camera through it. Furniture is the content.
+  No navbar, no cards, no pages.
+- Coding agents can't generate photoreal assets from nothing. Source real
+  models/textures/HDRIs (`VISUAL-QUALITY.md`) and configure the renderer
+  correctly (color space, ACES tone mapping, HDRI environment) before
+  judging whether anything "looks real."
+- Prove one object (the lamp) in isolation before building the room. Current
+  milestone is Phase 0 in `AGENTS.md` — build only that.
+- Real portfolio data only. No invented achievements, projects, or links.
+- Ask before adding a dependency not already listed in `AGENTS.md`.

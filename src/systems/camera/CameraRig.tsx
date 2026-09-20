@@ -2,184 +2,92 @@ import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useWorldStore } from '../../app/worldStore';
-import { RAIL_NODES } from '../../data/rail';
+import { useScrollStore } from '../../systems/scroll/ScrollStore';
+import { getCurrentWaypoint } from '../../systems/scroll/useScrollCamera';
 
 export function CameraRig() {
   const { camera } = useThree();
-  const railNode = useWorldStore((s) => s.railNode);
-  const phase = useWorldStore((s) => s.phase);
-  const setPhase = useWorldStore((s) => s.setPhase);
-  const setRailNode = useWorldStore((s) => s.setRailNode);
-  const setActiveMoment = useWorldStore((s) => s.setActiveMoment);
-  const hovered = useWorldStore((s) => s.hovered);
+  const scrollProgress = useScrollStore((s) => s.scrollProgress);
   const restStage = useWorldStore((s) => s.restStage);
   const reducedMotion = useWorldStore((s) => s.reducedMotion);
+  const hovered = useWorldStore((s) => s.hovered);
 
-  // Motion targets
   const currentPos = useRef(new THREE.Vector3());
   const currentLookAt = useRef(new THREE.Vector3());
   const targetPos = useRef(new THREE.Vector3());
   const targetLookAt = useRef(new THREE.Vector3());
   const pointerOffset = useRef({ x: 0, y: 0 });
+  const tempVec = useRef(new THREE.Vector3());
 
-  // Pose logging (dev-only on 'K' key)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'k' || e.key === 'K') {
-        const p = camera.position;
-        const dir = new THREE.Vector3();
-        camera.getWorldDirection(dir);
-        const lookTarget = p.clone().add(dir.multiplyScalar(2));
-        const perspCam = camera as THREE.PerspectiveCamera;
-
-        const shotData = {
-          position: [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)],
-          target: [+lookTarget.x.toFixed(2), +lookTarget.y.toFixed(2), +lookTarget.z.toFixed(2)],
-          fov: Math.round(perspCam.fov || 45),
-          timestamp: new Date().toISOString(),
-          railNode,
-          phase,
-          restStage,
-        };
-
-        console.info('[YUDY Rail Shot Recorder]', JSON.stringify(shotData, null, 2));
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [camera, railNode, phase, restStage]);
-
-  // Pointer parallax tracking
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
-      if (reducedMotion || phase === 'diving' || phase === 'surfacing') {
+      if (reducedMotion) {
         pointerOffset.current = { x: 0, y: 0 };
         return;
       }
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
       const ny = -(e.clientY / window.innerHeight) * 2 + 1;
       pointerOffset.current = {
-        x: nx * 0.12,
-        y: ny * 0.08,
+        x: nx * 0.08,
+        y: ny * 0.05,
       };
     };
 
     window.addEventListener('pointermove', handlePointerMove);
     return () => window.removeEventListener('pointermove', handlePointerMove);
-  }, [reducedMotion, phase]);
+  }, [reducedMotion]);
 
-  // Initial positioning
   useEffect(() => {
-    const node = RAIL_NODES[railNode] || RAIL_NODES.terrace;
-    const shot = phase === 'dwelling' || phase === 'inside' ? node.rest : node.enter;
-    camera.position.set(...shot.position);
-    currentPos.current.set(...shot.position);
-    currentLookAt.current.set(...shot.target);
-    camera.lookAt(...shot.target);
-  }, [railNode]); // eslint-disable-line react-hooks/exhaustive-deps
+    const waypoint = getCurrentWaypoint(0);
+    if (waypoint) {
+      camera.position.set(...waypoint.position);
+      currentPos.current.set(...waypoint.position);
+      currentLookAt.current.set(...waypoint.target);
+      camera.lookAt(...waypoint.target);
+      if (waypoint.fov) {
+        (camera as THREE.PerspectiveCamera).fov = waypoint.fov;
+        (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
+      }
+    }
+  }, []);
 
   useFrame((state, delta) => {
-    const node = RAIL_NODES[railNode] || RAIL_NODES.terrace;
+    const waypoint = getCurrentWaypoint(scrollProgress);
+    if (!waypoint) return;
 
-    // Handle Dive Transition
-    if (phase === 'diving') {
-      if (reducedMotion) {
-        setPhase('inside');
-        setRailNode('workshop');
-        setActiveMoment('workshop');
-        currentPos.current.set(0, 1.2, 1.8);
-        currentLookAt.current.set(0, 0.85, 0);
-        return;
-      }
+    targetPos.current.set(...waypoint.position);
+    targetLookAt.current.set(...waypoint.target);
 
-      // Dolly straight through laptop screen at [0.15, 1.06, 0.58]
-      targetPos.current.set(0.15, 1.06, 0.58);
-      targetLookAt.current.set(0.15, 1.06, 0.0);
-
-      const diveFactor = Math.min(delta * 2.4, 1);
-      currentPos.current.lerp(targetPos.current, diveFactor);
-      currentLookAt.current.lerp(targetLookAt.current, diveFactor);
-
-      camera.position.copy(currentPos.current);
-      camera.lookAt(currentLookAt.current);
-
-      const screenDist = currentPos.current.distanceTo(targetPos.current);
-      if (screenDist < 0.08) {
-        // Complete dive into Workshop
-        setPhase('inside');
-        setRailNode('workshop');
-        setActiveMoment('workshop');
-        currentPos.current.set(0, 1.25, 2.1);
-        currentLookAt.current.set(0, 0.95, 0);
-      }
-      return;
+    if (waypoint.fov) {
+      const cam = camera as THREE.PerspectiveCamera;
+      cam.fov += (waypoint.fov - cam.fov) * Math.min(delta * 3, 1);
+      cam.updateProjectionMatrix();
     }
 
-    // Handle Surfacing / Rail Forward Travel from Workshop
-    if (phase === 'surfacing') {
-      targetPos.current.set(0, 1.3, -2.6);
-      targetLookAt.current.set(0, 1.1, -6.0);
-
-      const surfFactor = Math.min(delta * 2.4, 1);
-      currentPos.current.lerp(targetPos.current, surfFactor);
-      currentLookAt.current.lerp(targetLookAt.current, surfFactor);
-
-      camera.position.copy(currentPos.current);
-      camera.lookAt(currentLookAt.current);
-
-      if (currentPos.current.z <= -2.4) {
-        // Loop back to Terrace
-        setRailNode('terrace');
-        setActiveMoment('terrace');
-        setPhase('dwelling');
-        currentPos.current.set(0, 1.85, 3.8);
-        currentLookAt.current.set(0, 1.25, -6.0);
-      }
-      return;
-    }
-
-    // Baseline dwelling / inside state
-    const shot = phase === 'inside' || phase === 'dwelling' ? node.rest : node.enter;
-    targetPos.current.set(...shot.position);
-    targetLookAt.current.set(...shot.target);
-
-    // Rack focus shift on hover
-    if (railNode === 'terrace') {
-      if (hovered === 'laptop') {
-        targetPos.current.add(new THREE.Vector3(0.06, -0.18, -0.65));
-        targetLookAt.current.set(0.15, 1.05, 0.55);
-      } else if (hovered === 'dossier') {
-        targetPos.current.add(new THREE.Vector3(-0.16, -0.18, -0.55));
-        targetLookAt.current.set(-0.21, 0.95, 0.87);
-      } else if (hovered === 'coffee') {
-        targetLookAt.current.set(0.49, 0.96, 0.9);
-      } else if (hovered === 'map') {
-        targetLookAt.current.set(0.1, 0.94, 1.07);
-      } else if (hovered === 'eiffel') {
-        targetLookAt.current.set(-0.8, 3.2, -16.0);
-      }
-    } else if (railNode === 'workshop') {
-      if (hovered === 'project-kawach') {
-        targetPos.current.set(0, 1.08, 1.45);
-        targetLookAt.current.set(0.12, 1.02, 0);
+    if (hovered) {
+      const hoverOffsets: Record<string, { pos: THREE.Vector3; target: THREE.Vector3 }> = {
+        lamp: { pos: new THREE.Vector3(0, 0.1, 0.3), target: new THREE.Vector3(0, 1.0, 0) },
+      };
+      const offset = hoverOffsets[hovered];
+      if (offset) {
+        targetPos.current.add(offset.pos);
+        targetLookAt.current.copy(offset.target);
       }
     }
 
-    // Breathing float: amplitude 2cm, halved in Rest stage >= 1
-    let breathAmp = 0.02;
-    if (restStage >= 1) breathAmp = 0.01;
-    if (reducedMotion) breathAmp = 0.0;
+    let breathAmp = 0.015;
+    if (restStage >= 1) breathAmp = 0.007;
+    if (reducedMotion) breathAmp = 0;
 
-    const breathOffset = Math.sin(state.clock.elapsedTime * 1.2) * breathAmp;
+    const breathOffset = Math.sin(state.clock.elapsedTime * 1.0) * breathAmp;
 
-    // Smooth camera motion
     const desiredX = targetPos.current.x + pointerOffset.current.x;
     const desiredY = targetPos.current.y + pointerOffset.current.y + breathOffset;
     const desiredZ = targetPos.current.z;
 
-    const dampFactor = Math.min(delta * 2.8, 1);
-    currentPos.current.lerp(new THREE.Vector3(desiredX, desiredY, desiredZ), dampFactor);
+    const dampFactor = Math.min(delta * 2.5, 1);
+    tempVec.current.set(desiredX, desiredY, desiredZ);
+    currentPos.current.lerp(tempVec.current, dampFactor);
     currentLookAt.current.lerp(targetLookAt.current, dampFactor);
 
     camera.position.copy(currentPos.current);

@@ -3,7 +3,6 @@ import { useWorldStore } from '../../app/worldStore';
 
 export function useRestSystem() {
   const phase = useWorldStore((s) => s.phase);
-  const activePanel = useWorldStore((s) => s.activePanel);
   const restStage = useWorldStore((s) => s.restStage);
   const setRestStage = useWorldStore((s) => s.setRestStage);
 
@@ -11,8 +10,8 @@ export function useRestSystem() {
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Rest is suspended during loading, dives, or inside panels
-    const isSuspended = phase === 'loading' || phase === 'diving' || phase === 'inside' || activePanel !== null;
+    // Rest is suspended during loading
+    const isSuspended = phase === 'loading';
 
     const handleActivity = () => {
       lastActivityRef.current = Date.now();

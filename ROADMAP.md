@@ -1,132 +1,119 @@
 # YUDY — Roadmap
 
-One phase at a time. A phase is finished when its exit criteria pass on a
-mid-range Android phone, not on the development laptop.
+One phase at a time. Do not start a phase until the previous one passes the
+test in `VISION.md` §6, on the actual running scene — not on how convincing
+the plan sounds.
 
 ---
 
-## Phase 0 — Art bible, no code
+## Phase 0 — Prove the lamp
 
-Palette tokens, type pairing plus two handwriting faces, and four concept
-frames: Terrace at golden hour, Workshop mid-explode, a sketched door, Terrace
-at night with the unopened objects.
+Before the room, before the chair, before anything else: one object, alone,
+in the dark.
 
-**Exit:** the frames exist and you would be happy to post them as-is.
+1. Empty scene. Renderer configured per `VISUAL-QUALITY.md` §4 — color space,
+   ACES tone mapping, one Poly Haven HDRI as environment.
+2. One lamp: either a sourced/AI-generated model, or a well-built primitive
+   (cylinder base, tapered shade, warm emissive material) per the primitive
+   rule in `VISUAL-QUALITY.md` §1.
+3. The lamp turns on: light blooms naturally, `Udbhav NC` appears in the
+   illuminated area.
 
----
-
-## Phase 1 — Terrace, live, at rest
-
-Vite, React, TS, R3F. Dosa loader. Terrace with primitive props: sky gradient
-driven by real Paris time, Eiffel silhouette, instanced rain, fog, pointer and
-tilt parallax, rack focus on hover. The Rest, stages 0 to 2.
-
-**Exit:** the terrace holds attention for sixty seconds with nothing to click,
-and standing still is visibly rewarded. If it does not, fix the mood before
-adding anything.
-
----
-
-## Phase 2 — The Rail and the Dive
-
-Rail v0 with two nodes and forward-only travel. Shot recorder on `K`, written as
-the reusable pose-sampling layer the Reel will need later. Laptop to Workshop
-through `MeshPortalMaterial` with `blend` driven by camera distance. Leaving the
-Workshop continues forward. Reduced-motion cross-fade path.
-
-**Exit:** ten dives in a row with no flash, no stutter, no warnings. Nothing
-anywhere in the codebase moves the camera except the camera module.
+**Exit:** does this one object, by itself, look like a photograph of a lamp
+in a dark room, or like a Three.js demo? If it still looks fake, fix
+materials, lighting, or the asset itself here. Do not add a second object
+until this passes. This single gate is the fix for both previous failed
+attempts.
 
 ---
 
-## Phase 3 — Paper layer and the recruiter route
+## Phase 1 — Room shell
 
-Thermal-paper receipt panels animating from the object's screen position.
-Prerendered static `/work`. Postcard contact form. The forget-me control and the
-plain-language "nothing leaves your device" line, even though there is nothing
-to forget yet.
+Floor, walls, chair, sofa, bookshelf silhouette — placed, lit, no
+interactivity yet, no real content. Non-interactive scroll camera moving
+through all eight waypoint zones per `SCENE-AND-CAMERA.md`.
 
-**Exit:** `/work` works with JavaScript disabled and scores Lighthouse
-performance ≥ 90. Full keyboard traversal.
-
----
-
-## Phase 4 — Painted versus sketched, and the map
-
-Sketch shader. The Wish Map as a forward-jumping navigator. Three "not yet"
-doors with knock, crack, spill, close. The loop closes: the last rail node
-returns to the terrace at night.
-
-**Exit:** a stranger meeting a closed door reads it as intentional, and a
-stranger who wants to reach a specific moment finds it in under fifteen seconds
-without a back button. Test both on actual strangers.
+**Exit:** the same photograph-or-demo test, now for the whole shell. Depth
+should already read: foreground, midground, background distinctly separated
+by focus and light, not just distance.
 
 ---
 
-## Phase 5 — Sound and the live world
+## Phase 2 — Identity and education
 
-Procedural rain, shore, and per-world reverb tails. Weather and moon wired in
-with offline fallbacks. Rest stages 3 and 4. Cassette embeds.
+Lamp intro copy and typography. Chair twirl transition, eased and
+scroll-synced. Sofa pillows with real education data (school, college) on
+hover.
 
-**Exit:** muted, nothing breaks. Unmuted, five minutes of rain stays pleasant.
-Offline, the world is still beautiful.
-
----
-
-## Phase 6 — The Reel and return state
-
-Visitor-facing Reel recording, encoding, playback, and fragment sharing.
-IndexedDB visit store with the four small acts as its manners. Forget-me wired
-for real.
-
-**Exit:** a three-minute visit produces a trace under 5 KB that replays as a
-film someone would send to a friend. A second visit is noticeably different, and
-nobody can tell you what a visitor did, because nothing left their machine.
+**Exit:** the chair's rotation feels like it has mass. The pillow text is
+legible and correctly sourced from `education.ts`.
 
 ---
 
-## Phase 7 — The Letter
+## Phase 3 — Achievements
 
-Encryption script, unlock flow, interior re-grade, moon line, fireflies, private
-doors, her authoring view. `noindex` on the private route.
+Poster wall, real achievement data, the three-color status glow, hover and
+click interaction. Posters interactive only while their zone owns the camera.
 
-**Exit:** the public bundle, searched byte by byte, contains nothing personal.
-A wrong passphrase fails cleanly. She has seen it, is happy with it, and has
-added her first door.
-
----
-
-## Phase 8 — Worlds, one per release
-
-Each release moves one moment from door to colour. Suggested order:
-
-1. **Night** — real moon, aurora, fireflies. Dry, per the Bhandardara note.
-2. **Kashi** — dawn from the far bank; the ghats face east, so the light is
-   behind the city at sunrise.
-3. **Kochi** — a rain alley with the UI stripped away, so you actually get lost.
-4. **Sasihithlu** — the first true branch, calm side and wild side.
-5. **Hampi and Rajasthan** — stone, long reverb, a mirror hall built from
-   architecture and light rather than film reference.
-6. **Riverbank**, **Sound Room**, **Postcards** as time allows.
-
-**Exit per world:** passes the thumbnail test on lighting alone, stays inside
-the 8 MB streaming budget, and adds a verb no other painted moment owns.
+**Exit:** gold/navy/emerald borders read clearly at a glance without looking
+neon. Every poster's status matches real results — check this against actual
+history before shipping a single one.
 
 ---
 
-## Phase 9 — Launch
+## Phase 4 — Solo projects
 
-Real-device pass across three phones. Error boundaries and a graceful
-WebGL-unsupported fallback built from the concept frames. OG image. `noindex` on
-the private route. Asset licences recorded. The no-audience statement in the
-footer.
+Bookshelf, real project data, hover-forward and click-to-open interaction,
+GitHub and live links working.
 
-**Exit:** a cold load on a mid-range Android over 4G reaches "Tap to begin" in
-under four seconds, and the first Reel you send to someone gets a reply.
+**Exit:** every book's data is real. No placeholder project ships to
+production.
+
+---
+
+## Phase 5 — Group projects
+
+Oversized books, credited to VAPORLOGIC, same interaction pattern, visually
+distinct scale from the solo shelf.
+
+**Exit:** same real-data bar as Phase 4.
+
+---
+
+## Phase 6 — Hobbies and showcase
+
+Plants and hanging greenery as a calmer transition; showcase objects
+representing actual hobbies and interests, hover/click interaction.
+
+**Exit:** the pacing genuinely feels calmer here than in the project zones —
+test this by feel, not by a fixed scroll-distance number.
+
+---
+
+## Phase 7 — Final reveal
+
+Camera pulls back to the whole room. Minimal closing overlay: name, field of
+study, GitHub/LinkedIn/email.
+
+**Exit:** every zone built in Phases 1–6 is visible and recognizable together
+in this one shot.
+
+---
+
+## Phase 8 — Mobile and performance
+
+Simplified mobile camera path, tap-based interaction, reduced lighting
+complexity, Draco/Meshopt/KTX2 compression, lazy-loading and disposal per
+zone, accessible `/work` fallback route with all real content in plain HTML.
+
+**Exit:** a cold load on a mid-range Android over 4G is usable, and every
+piece of content is reachable with JavaScript-only assumptions removed for
+the fallback route.
 
 ---
 
 ## Deliberately out of scope for v1
 
-All eight worlds at once. Multiplayer. Physics. VR. A CMS. A database. Any
-feature that requires knowing what visitors did.
+Multiple rooms. A CMS. A database. Anything that requires knowing what
+visitors did. Audio, until the room itself is proven — it's explicitly
+optional and shouldn't block any phase above.

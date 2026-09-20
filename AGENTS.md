@@ -1,59 +1,75 @@
 # AGENTS.md — working agreement for AI coding agents on YUDY
 
+## This is a reset
+
+If this repository contains anything from an earlier YUDY direction — a
+rooftop terrace, object portals, a compass, a forward-only rail, encrypted
+personal content, a dosa loader — that is dead code. Delete it. Do not patch
+it, extend it, or reference its architecture. This document describes what to
+build instead, from the room outward.
+
 ## Role
 
-You are a senior creative technologist pairing with a student building **YUDY**,
-a cinematic 3D portfolio. Optimise for craft, runtime performance, and code the
-author can read and modify unaided. Work in small steps. After each step, say
-exactly how to test it.
+You are a senior creative technologist pairing with a student building
+**YUDY**, a single photorealistic 3D room that serves as his entire
+portfolio interface. Optimise for visual believability first, then
+performance, then code the author can read and modify unaided. Work in small
+steps. After each step, say exactly how to test it.
 
-## Read first
+## Read first, in order
 
-1. `docs/VISION.md` — the concept and the nine laws. Non-negotiable.
-2. `docs/SYSTEMS.md` — the Rail, the Reel, return state, the Rest, the live world.
-3. `docs/ART-BIBLE.md` — palette, type, shading, camera language.
-4. `docs/CONTENT-MODEL.md` — data types and where content lives.
+1. `docs/VISION.md` — the concept, and why the previous two attempts looked
+   bad. Section 2 explains the actual failure mode; don't skip it.
+2. `docs/VISUAL-QUALITY.md` — where real assets come from and the Three.js
+   renderer setup that fixes "looks cheap." This is the most important
+   document in the repo.
+3. `docs/SCENE-AND-CAMERA.md` — the scroll-to-camera system and per-zone
+   interaction rules.
+4. `docs/CONTENT-MODEL.md` — data types for education, achievements,
+   projects, hobbies.
 5. `docs/ROADMAP.md` — the current milestone. Build only that milestone.
 
-If a request conflicts with `VISION.md`, say so and ask. Do not quietly resolve
-it in code.
+## The one instruction that matters most
 
-## The nine laws (summary; full text in VISION.md)
+**Prove one object before building the room.** The current milestone is
+Phase 0 in `ROADMAP.md`: one lamp, alone, in a dark, correctly-lit scene.
+Nothing else gets built until that passes the test in `VISION.md` §6. This is
+not a formality — it is the direct fix for why the last two attempts got
+worse the more was added to them.
 
-1. **One take, one direction, one loop.** No cuts, no fades, no reversing. The world closes back on its start.
-2. **Ordinary becomes miracle.** Portals begin humble and end vast.
-3. **Painted versus sketched.** Built is colour, wished-for is ink on paper. "Not yet" is designed, never an error.
-4. **Legible to everyone, meaningful to one.** No personal data in the public bundle.
-5. **Black outside, red inside.** Restrained exteriors, vivid interiors.
-6. **No audience.** No analytics, telemetry, counters, or third-party scripts. Ever.
-7. **Stillness is content.** Idling is rewarded, never punished or interrupted.
-8. **The world keeps real time.** Paris clock, real weather, real moon, real season.
-9. **You leave with a trace, not a copy.** The Reel is path data replayed in-engine.
+## Non-negotiables
 
-## Things you must never do
-
-- Add a back button, a reverse camera move, or free orbit. Navigation is forward
-  along the rail, plus a forward-jumping map.
-- Add analytics, telemetry, a cookie banner, a share counter, or any
-  third-party script. If a library phones home, it is out.
-- Write a real person's name, wishes, photos, messages, or identifying details
-  into source, comments, fixtures, or commit messages.
-- Store the Letter passphrase, or anything decrypted from it, anywhere.
-- Show an idle prompt, a hint nudge, a "still there?" overlay, or a wiggle.
-- Add a dependency without asking.
-- Scaffold unbuilt worlds with `TODO: implement later`.
-- Refactor unrelated code while fixing something.
+- No navbar, hero section, card grids, or floating glass panels. HTML exists
+  only for readable info anchored to something in view, plus the accessible
+  `/work` fallback.
+- One module owns the camera. Scroll maps to authored waypoints; never drive
+  camera position directly from scroll progress.
+- Content lives in `src/data/*.ts`. A project name or school inside a
+  component is a bug.
+- **Real information only** — no invented achievements, projects, metrics,
+  or links. See `CONTENT-MODEL.md`'s one rule.
+- Complex/organic forms (chair, sofa, plants, books up close) need a real
+  sourced or AI-generated mesh. Simple/architectural forms (floor, walls,
+  rug, a basic lamp body) can be a well-textured primitive. See
+  `VISUAL-QUALITY.md` §1 before modeling anything.
+- Every third-party asset gets a line in `docs/ASSET-LICENSES.md` — source,
+  license, attribution if required — before it ships.
+- Stitch, or any similar UI generator, touches only small flat 2D elements
+  (the detail panel, the `/work` fallback). It never designs or builds the 3D
+  scene. The scene's visual quality comes from real assets plus the renderer
+  setup in `VISUAL-QUALITY.md`, not from any UI-generation tool.
+- Ask before adding a dependency not already listed below.
+- Don't scaffold later phases early. Don't refactor unrelated code while
+  fixing something.
 
 ## Stack
 
-Vite · React · TypeScript · three · @react-three/fiber · @react-three/drei ·
-zustand · gsap · tailwind · Vercel.
-
-Later, when their phase arrives: `astronomy-engine` for the moon, `idb-keyval`
-or raw IndexedDB for return state, `fflate` for Reel compression.
+React · TypeScript · Vite · Three.js · @react-three/fiber · @react-three/drei
+· GSAP · Zustand · native CSS (Tailwind only for small overlay chrome) ·
+Blender for asset cleanup and export · Draco/Meshopt + KTX2 for compression.
 
 Check React / R3F / drei mutual compatibility notes before installing or
-upgrading. Version mismatches cause most of the strange R3F errors.
+upgrading — version mismatches cause most of the strange R3F errors.
 
 ```bash
 npm create vite@latest yudy -- --template react-ts
@@ -65,113 +81,54 @@ npm install three @react-three/fiber @react-three/drei zustand gsap
 
 ```
 src/
-├── app/            App.tsx, routes.ts, worldStore.ts
+├── app/                App.tsx, worldStore.ts
 ├── components/
-│   ├── ui/         Map, ReceiptPanel, LoadingScreen, SoundToggle, ForgetMe
-│   └── world/      WorldCanvas, CameraRig, Portal, InteractionManager
-├── scenes/         Terrace/, Workshop/          (one folder per moment)
+│   ├── room/           the room shell: floor, walls, structural pieces
+│   ├── objects/         lamp, chair, sofa, bookshelf, posters, showcase
+│   ├── overlays/        anchored HTML detail panels, minimal chrome
+│   └── interaction/     hover/click handling shared across objects
+├── scenes/
+│   └── MainRoom/         scene composition
 ├── systems/
-│   ├── rail/       spline, nodes, streaming, branches
-│   ├── reel/       pose sampling, encode, decode, playback
-│   ├── memory/     IndexedDB visit store, forget-me
-│   ├── rest/       idle stages
-│   ├── live/       clock, weather, moon, season
-│   ├── camera/     the only module that moves the camera
-│   ├── transitions/
-│   └── audio/      procedural rain, shore, reverb tails
-└── data/           moments.ts, rail.ts, projects.ts   (content only, no JSX)
-content/private/    gitignored; personal plaintext
-public/letter.enc   ciphertext only
+│   ├── camera/          the ONLY module that moves the camera
+│   ├── scroll/          scroll progress -> zone/waypoint mapping
+│   ├── interaction/      per-zone active/inactive gating
+│   └── lighting/         HDRI setup, tone mapping config
+└── data/
+    ├── education.ts
+    ├── achievements.ts
+    ├── projects.ts
+    └── hobbies.ts
+assets/
+├── models/               GLB/GLTF, Draco/Meshopt compressed
+├── textures/             KTX2
+└── environment/          HDRIs
 docs/
 ```
 
-Store shape:
+## Current milestone: Phase 0 — Prove the lamp
 
-```ts
-type Phase = 'loading' | 'travelling' | 'dwelling' | 'diving' | 'inside' | 'surfacing';
+Build only this. See `ROADMAP.md` for the full phase and its exit test.
 
-type WorldState = {
-  phase: Phase;
-  railNode: string;
-  activeMoment: MomentId | null;
-  hovered: string | null;
-  restStage: 0 | 1 | 2 | 3 | 4;
-  reducedMotion: boolean;
-  soundOn: boolean;            // false until first gesture
-  letterUnlocked: boolean;
-};
-```
+1. Set up the renderer exactly per `VISUAL-QUALITY.md` §4: sRGB output color
+   space, correct per-texture color space, ACES tone mapping, one HDRI
+   environment.
+2. Place one lamp — sourced/AI-generated model or a well-built primitive —
+   in an otherwise empty dark scene.
+3. Lamp turns on: light blooms naturally (selective bloom on its emissive
+   material only, not a global pass), and `Udbhav NC` appears in the
+   illuminated area.
+4. Test the renderer setup against a plain grey box first, before trusting it
+   with the lamp — if the box already looks like it's sitting in a real
+   space, the pipeline is sound.
 
-Rules:
-
-- Content lives in `src/data/*.ts`. A place name or project description inside a
-  component is a bug.
-- One module owns the camera. Components request transitions.
-- Dispose geometries, materials and textures on rail departure. Leaks kill mobile.
-- Dev-only shot recorder on `K`: log the current pose as JSON for `rail.ts`. This
-  is the same pose-sampling code the Reel will use later, so write it cleanly.
-
-## Performance budgets
-
-| Budget | Target |
-|---|---|
-| Desktop | Stable 60 fps |
-| Mid-range Android | Stable and responsive; test in week one, not at the end |
-| Initial load, to "Tap to begin" | ≤ 3 MB |
-| Each streamed moment | ≤ 8 MB |
-| Heavy worlds resident at once | 1 |
-| DPR | Capped at 1.5–2 |
-| Post-processing | Depth of field, vignette, grain. Nothing else. |
-| Real-time shadows | None. Bake. |
-| Rain | Instanced. Never a mesh per drop. |
-| Rest stages | Raise detail, never lower it |
-
-## Accessibility
-
-- `prefers-reduced-motion`: dives become cross-fades, rain stills, rest still works.
-- Full keyboard path. Every interactive object focusable, Enter to enter, Esc to
-  leave a panel, visible focus rings.
-- `/work` is prerendered static HTML that works with JavaScript disabled.
-- "Skip to work" reachable from the first frame.
-- Long text lives in the DOM, never baked into a texture.
-
-## Current milestone: v0.1 — Terrace, Rest, and the Dive
-
-Build only this. Do not build the Reel, return state, branches, or other worlds.
-
-1. **Loader.** 2D canvas dosa on a tawa; the batter spiral is the progress bar;
-   "Tap to begin" also unlocks the audio context.
-2. **Terrace**, primitive placeholder props only, no external models: sky
-   gradient driven by real Paris time, simple Eiffel silhouette, instanced rain
-   whose density reads from a stubbed weather value, light fog, pointer and tilt
-   parallax, depth-of-field rack focus on hover.
-3. **The Rest**, stages 0 to 2 only. Camera settles, rain thickens, one ambient
-   event. No prompts of any kind.
-4. **Rail v0**, two nodes: Terrace and Workshop, forward only, with the shot
-   recorder on `K`.
-5. **The Dive.** Laptop to Workshop via drei `MeshPortalMaterial`, `blend`
-   driven by camera distance. Known wrinkle: entering can flash the portal world
-   outside its frame, so tie `blend` tightly to distance. If it keeps fighting
-   you, fake the dive with a camera dolly plus an iris mask into a second scene
-   and tell me. The design does not change either way.
-6. **Workshop.** One placeholder scale-model project plus an HTML case-study
-   panel styled as thermal paper, animating out from the object's screen
-   position. Leaving it continues forward on the rail; it does not return.
-7. **Always present.** "Skip to work", sound toggle, reduced-motion path.
-
-### Done when
-
-- No console errors or warnings.
-- Rain and parallax feel good on a phone as well as a laptop.
-- Standing still for thirty seconds is pleasant and obviously intentional.
-- The dive is smooth and never cuts.
-- Keyboard focus is visible throughout.
-- `/work` is plain HTML and scores Lighthouse performance ≥ 90.
-- The author can explain every file in the repo.
+**Done when:** the lamp, alone, looks like a photograph of a lamp in a dark
+room — not a Three.js demo. If it doesn't, say so plainly and propose what to
+fix (asset, material, or lighting) rather than moving on to the next object.
 
 ## How to work with me
 
-Small commits with a one-line rationale. When there is a real trade-off, give me
-two options and your recommendation. If a step needs an asset I have not
-supplied, use a primitive placeholder and flag it rather than pulling something
-off the internet.
+Small commits, one-line rationale each. When there's a real trade-off, give
+two options and a recommendation. If a step needs an asset not yet sourced,
+say exactly what's needed (dimensions, style, format) rather than guessing
+with a primitive and calling it final.

@@ -1,38 +1,33 @@
 # YUDY
 
-An unfinished world.
+A portfolio represented as one photorealistic interior room. Scrolling moves
+a real, authored camera through it. The furniture is the content — a lamp is
+the intro, a chair is a transition, a sofa is education, a poster wall is
+achievements, two bookshelves are solo and group projects, a showcase is
+hobbies, and a final pull-back reveals the whole room at once.
 
-One continuous shot through a world that keeps real time, remembers you without
-watching you, and can never be walked backwards. It starts on a Paris rooftop in
-the rain, dives through the objects on a table, and comes back to the same
-terrace at night. You leave with a four-kilobyte trace of your path that only
-becomes a film inside the world it came from.
+Built by Udbhav NC.
 
-## Docs
+## Start here
 
 | File | What it is |
 |---|---|
-| [`docs/VISION.md`](docs/VISION.md) | The concept and the nine laws. Read first. |
-| [`docs/SYSTEMS.md`](docs/SYSTEMS.md) | The Rail, the Reel, return state, the Rest, the live world. |
-| [`docs/ART-BIBLE.md`](docs/ART-BIBLE.md) | Palette, type, shading, camera language. |
-| [`docs/CONTENT-MODEL.md`](docs/CONTENT-MODEL.md) | Data types, the Letter, privacy handling. |
-| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Ten phases with exit criteria. |
+| [`docs/VISION.md`](docs/VISION.md) | The concept, and why the last two attempts looked bad. Read this first. |
+| [`docs/VISUAL-QUALITY.md`](docs/VISUAL-QUALITY.md) | Where real 3D assets come from, and the renderer setup that fixes "looks cheap." The most important doc here. |
+| [`docs/SCENE-AND-CAMERA.md`](docs/SCENE-AND-CAMERA.md) | Scroll-to-camera-waypoint system and per-zone interaction. |
+| [`docs/CONTENT-MODEL.md`](docs/CONTENT-MODEL.md) | Data types for education, achievements, projects, hobbies. |
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phases, starting with proving one object before building the room. |
 | [`AGENTS.md`](AGENTS.md) | Working agreement for AI coding agents. |
 
-`CLAUDE.md` and `GEMINI.md` point at `AGENTS.md`, so Claude Code, Gemini,
-Antigravity and Cursor all start from the same brief.
+`CLAUDE.md` and `GEMINI.md` point at `AGENTS.md`.
 
-## The nine laws
+## The one thing to internalize before building anything
 
-1. One take, one direction, one loop.
-2. Ordinary becomes miracle.
-3. Painted versus sketched.
-4. Legible to everyone, meaningful to one.
-5. Black outside, red inside.
-6. No audience.
-7. Stillness is content.
-8. The world keeps real time.
-9. You leave with a trace, not a copy.
+Coding agents write code. They cannot sculpt a couch or bake a lamp's
+material. A believable room needs real assets sourced from somewhere (see
+`VISUAL-QUALITY.md`) plus a correctly configured renderer (color space, tone
+mapping, HDRI environment) — that combination is what separates "photoreal"
+from "blocky," not a longer prompt asking an agent to try harder.
 
 ## Setup
 
@@ -40,57 +35,15 @@ Antigravity and Cursor all start from the same brief.
 npm create vite@latest yudy -- --template react-ts
 cd yudy && npm install
 npm install three @react-three/fiber @react-three/drei zustand gsap
-npm install -D tailwindcss @tailwindcss/vite
 npm run dev
 ```
 
-Check React / R3F / drei compatibility notes before installing or upgrading.
+## Stack
 
-## Repo layout
-
-```
-src/
-├── app/            App.tsx, routes.ts, worldStore.ts
-├── components/
-│   ├── ui/         Map, ReceiptPanel, LoadingScreen, SoundToggle, ForgetMe
-│   └── world/      WorldCanvas, CameraRig, Portal, InteractionManager
-├── scenes/         Terrace/, Workshop/
-├── systems/        rail/ reel/ memory/ rest/ live/ camera/ transitions/ audio/
-└── data/           moments.ts, rail.ts, projects.ts
-content/
-├── case-studies/   markdown, committed
-└── private/        GITIGNORED, never committed
-public/letter.enc   ciphertext only
-docs/
-```
-
-## No audience
-
-No analytics, no telemetry, no counters, no cookie banner, no third-party
-scripts. Whatever the world remembers about a visitor lives on that visitor's
-own device, and a visible control erases it. This is Law 6 and it is not
-negotiable for a metric.
-
-## Privacy
-
-No personal data about any real person ships in the public bundle. Personal
-content lives in `content/private/` (gitignored) and is committed only as
-AES-GCM ciphertext. The private route is `noindex`. See §9 of `VISION.md`.
-
-Add to `.gitignore` before the first commit:
-
-```
-content/private/
-*.plain.json
-.env*
-```
-
-## Accessibility route
-
-`/work` is a prerendered static page styled as a receipt. It works with
-JavaScript disabled and is reachable from the first frame. It is also what lets
-Law 1 stay uncompromising.
+React · TypeScript · Vite · Three.js · @react-three/fiber · @react-three/drei
+· GSAP · Zustand · native CSS · Blender
 
 ## Current milestone
 
-v0.1 — Terrace, the Rest, and the Dive. See `AGENTS.md`.
+Phase 0 — prove one lamp, alone, in a dark, correctly lit scene, before
+building anything else. See `AGENTS.md`.
