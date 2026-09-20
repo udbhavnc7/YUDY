@@ -207,12 +207,11 @@ export function OverlayUI() {
 
 function getHoverLabel(id: string): string {
   if (id === 'lamp') return 'Intro';
-  if (id.startsWith('item-')) return 'Project';
-  if (id.startsWith('chair')) return 'Chair';
-  if (id.startsWith('sofa')) return 'Sofa';
-  if (id.startsWith('poster')) return 'Achievement';
-  if (id.startsWith('book')) return 'Project';
-  if (id.startsWith('plant') || id.startsWith('showcase')) return 'Hobby';
+  if (id === 'chair') return 'Chair';
+  if (id === 'sofa') return 'Sofa';
+  if (id === 'poster-wall') return 'Achievements';
+  if (id === 'plant-showcase') return 'Hobbies';
+  if (id.startsWith('bookshelf-')) return 'Projects';
   return 'Object';
 }
 
@@ -221,12 +220,10 @@ function getHoverTitle(id: string): string {
     lamp: 'Tall Lamp — Introduction',
     chair: 'Swivel Chair — Identity',
     sofa: 'Sofa — Education',
-    'poster-kawach': 'KAWACH — Best Startup Award',
-    'poster-vortex': 'VORTEX — Winner $350',
-    'poster-build-for-bengaluru': 'Build For Bengaluru — Top 30',
-    'poster-coastal-india': 'Coastal India Hackathon — Top 30',
-    'poster-synergia': 'SYNERGIA — Top 30',
-    'poster-sambhram': 'Sambhram Line Quest — 2nd Place',
+    'poster-wall': 'Achievements — Hacks & Wins',
+    'plant-showcase': 'Plants & Hobbies',
+    'bookshelf--3.2': 'Projects — Solo & Group',
+    'bookshelf-3.2': 'Projects — Solo & Group',
   };
   return titles[id] || id;
 }

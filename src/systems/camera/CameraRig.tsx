@@ -19,6 +19,21 @@ export function CameraRig() {
   const pointerOffset = useRef({ x: 0, y: 0 });
   const tempVec = useRef(new THREE.Vector3());
 
+  const chairRotation = useRef(0);
+
+  const easeInOutSine = (x: number) => -(Math.cos(Math.PI * x) - 1) / 2;
+
+  useEffect(() => {
+    if (scrollProgress >= 0.10 && scrollProgress < 0.22) {
+      const zoneProgress = (scrollProgress - 0.10) / (0.22 - 0.10);
+      chairRotation.current = easeInOutSine(zoneProgress) * Math.PI * 2;
+    } else if (scrollProgress >= 0.22) {
+      chairRotation.current = easeInOutSine(1) * Math.PI * 2;
+    } else {
+      chairRotation.current = 0;
+    }
+  });
+
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
       if (reducedMotion) {
@@ -73,6 +88,12 @@ export function CameraRig() {
         targetPos.current.add(offset.pos);
         targetLookAt.current.copy(offset.target);
       }
+    }
+
+    if (scrollProgress >= 0.10 && scrollProgress < 0.22 && chairRotation.current > 0.01) {
+      const chairPos = new THREE.Vector3(1.2, 0.5, 1.5);
+      const chairDir = new THREE.Vector3(Math.sin(chairRotation.current), 0, -Math.cos(chairRotation.current));
+      targetLookAt.current.copy(chairPos).add(chairDir.multiplyScalar(2));
     }
 
     let breathAmp = 0.015;

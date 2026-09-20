@@ -7,8 +7,10 @@ than from-scratch geometry.
 
 | Asset | File | Source + URL | Licence | Attribution needed? | Notes |
 |---|---|---|---|---|---|
-| _example_ | `assets/models/lamp.glb` | Poly Haven | CC0 | No | — |
-| _example_ | `assets/models/chair.glb` | Sketchfab | CC-BY 4.0 | Yes — see /credits | Retopo'd in Blender |
+| Venice Sunset HDRI | `public/hdr/venice_sunset_1k.hdr` | Poly Haven (https://polyhaven.com/a/venice_sunset) | CC0 | No | 1k resolution, 1.44 MB |
+| Paris terrace background | `public/paris_terrace_bg.jpg` | Local asset | CC0 | No | Used as floor texture |
+| Paris sunset balcony | `public/paris_sunset_balcony.jpg` | Local asset | CC0 | No | Used as wall/chair/sofa texture |
+| Paris balcony sunset | `public/paris_balcony_sunset.jpg` | Local asset | CC0 | No | Used as chair/sofa fabric texture |
 
 ## Rules
 

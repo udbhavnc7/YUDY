@@ -1,4 +1,5 @@
 import { Canvas } from '@react-three/fiber';
+import { Environment } from '@react-three/drei';
 import { CameraRig } from '../../systems/camera/CameraRig';
 import { RoomScene } from '../../scenes/Room/RoomScene';
 import * as THREE from 'three';
@@ -40,6 +41,7 @@ export function WorldCanvas() {
         <fog attach="fog" args={['#050505', 2, 20]} />
 
         <CameraRig />
+        <Environment files="/hdr/venice_sunset_1k.hdr" />
         <RoomScene />
       </Canvas>
     </div>
