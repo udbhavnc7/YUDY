@@ -166,7 +166,7 @@ export const ZONES: Zone[] = [
       },
       {
         id: 'reveal-wide',
-        position: [0, 2.5, 4.5],
+        position: [0, 2.5, 3.7],
         target: [0, 0.7, -1.0],
         fov: 55,
         easing: 'power1.inOut',

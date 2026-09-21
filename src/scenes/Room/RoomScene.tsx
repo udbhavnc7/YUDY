@@ -186,8 +186,22 @@ export function Lamp({ onIntroComplete }: { onIntroComplete: () => void }) {
     () => new THREE.MeshStandardMaterial({
       color: '#6a4a28', roughness: 0.5, metalness: 0.05,
       emissive: new THREE.Color('#ffd47a'), emissiveIntensity: 0,
+      side: THREE.BackSide,
     }), []
   );
+  // Curved bell profile: straight cylinders are what read as "CG lamp".
+  const shadeProfile = useMemo(
+    () => [
+      new THREE.Vector2(0.1, -0.225),
+      new THREE.Vector2(0.13, -0.16),
+      new THREE.Vector2(0.19, -0.06),
+      new THREE.Vector2(0.27, 0.07),
+      new THREE.Vector2(0.335, 0.17),
+      new THREE.Vector2(0.355, 0.225),
+    ],
+    []
+  );
+  const shadeGeo = useMemo(() => new THREE.LatheGeometry(shadeProfile, 28), [shadeProfile]);
   const bulbMat = useMemo(
     () => new THREE.MeshBasicMaterial({ color: '#fff8e7', transparent: true, opacity: 0 }), []
   );
@@ -269,13 +283,18 @@ export function Lamp({ onIntroComplete }: { onIntroComplete: () => void }) {
         <cylinderGeometry args={[0.025, 0.03, 0.4, 12]} />
         <primitive object={baseMat} attach="material" />
       </mesh>
-      <mesh ref={shadeRef} position={[0, 1.65, 0]} receiveShadow castShadow>
-        <cylinderGeometry args={[0.12, 0.35, 0.45, 24, 1, true]} />
+      <mesh ref={shadeRef} position={[0, 1.65, 0]} scale={0.96} receiveShadow castShadow>
+        <primitive object={shadeGeo} attach="geometry" />
         <primitive object={shadeInnerMat} attach="material" />
       </mesh>
       <mesh position={[0, 1.65, 0]} receiveShadow castShadow>
-        <cylinderGeometry args={[0.125, 0.36, 0.46, 24, 1, true]} />
+        <primitive object={shadeGeo} attach="geometry" />
         <primitive object={shadeMat} attach="material" />
+      </mesh>
+      {/* brass finial crowning the shade */}
+      <mesh position={[0, 1.9, 0]}>
+        <sphereGeometry args={[0.022, 12, 10]} />
+        <primitive object={baseMat} attach="material" />
       </mesh>
       <mesh ref={bulbRef} position={[0, 1.52, 0]}>
         <sphereGeometry args={[0.045, 16, 16]} />
@@ -384,9 +403,11 @@ function RoomTrim({ mat }: { mat: THREE.Material }) {
   const crownY = 3.05;
   return (
     <group>
-      {/* back wall (z=-4) */}
+      {/* back wall (z=-4) and closing wall (z=+4) */}
       <mesh position={[0, skirtY, -3.96]}><boxGeometry args={[8, 0.12, 0.08]} /><primitive object={mat} attach="material" /></mesh>
       <mesh position={[0, crownY, -3.96]}><boxGeometry args={[8, 0.16, 0.1]} /><primitive object={mat} attach="material" /></mesh>
+      <mesh position={[0, skirtY, 3.96]}><boxGeometry args={[8, 0.12, 0.08]} /><primitive object={mat} attach="material" /></mesh>
+      <mesh position={[0, crownY, 3.96]}><boxGeometry args={[8, 0.16, 0.1]} /><primitive object={mat} attach="material" /></mesh>
       {/* side walls (x=±4) */}
       {[-3.96, 3.96].map((x) => (
         <group key={x}>
@@ -450,8 +471,8 @@ function StringLights() {
               opacity={0.9}
             />
           </mesh>
-          {i % 3 === 0 && (
-            <pointLight color={b.color} intensity={0.3} distance={2.5} decay={2} />
+          {i % 6 === 0 && (
+            <pointLight color={b.color} intensity={0.3} distance={2.2} decay={2} />
           )}
         </group>
       ))}
@@ -606,7 +627,69 @@ function Ceiling() {
 
 /* (TrimArt and makeTrimArtTexture removed — replaced by StringLights and retro decor) */
 
-/* (WallSconce removed — replaced by StringLights) */
+/** Warm retro sun-and-arch prints for the bare side walls. */
+function makeWallArtTexture(variant: number): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 384;
+  c.height = 288;
+  const g = c.getContext('2d')!;
+  const bg = g.createLinearGradient(0, 0, 0, 288);
+  bg.addColorStop(0, '#b4552d');
+  bg.addColorStop(1, '#77331f');
+  g.fillStyle = bg;
+  g.fillRect(0, 0, 384, 288);
+  // Sun.
+  const sx = variant === 0 ? 150 : 234;
+  g.fillStyle = '#F3EAD8';
+  g.beginPath();
+  g.arc(sx, 118, 52, 0, Math.PI * 2);
+  g.fill();
+  // Concentric arch lines.
+  g.strokeStyle = '#3a2118';
+  for (let i = 0; i < 3; i++) {
+    g.lineWidth = 5 - i;
+    g.beginPath();
+    g.arc(192, 288, 120 + i * 34, Math.PI, 0);
+    g.stroke();
+  }
+  // Ground band.
+  g.fillStyle = '#3a2118';
+  g.fillRect(0, 262, 384, 26);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+function WallArt() {
+  const artA = useMemo(() => makeWallArtTexture(0), []);
+  const artB = useMemo(() => makeWallArtTexture(1), []);
+  const matA = useMemo(() => new THREE.MeshStandardMaterial({ map: artA, roughness: 0.85 }), [artA]);
+  const matB = useMemo(() => new THREE.MeshStandardMaterial({ map: artB, roughness: 0.85 }), [artB]);
+  const frameMat = usePBRSet('darkwood/darkwood', 1, 1, 0.5, '#8a7560');
+  const spots: { pos: [number, number, number]; rot: [number, number, number]; mat: THREE.Material }[] = [
+    { pos: [-3.93, 1.7, -1.5], rot: [0, Math.PI / 2, 0], mat: matA },
+    { pos: [-3.93, 1.7, 1.5], rot: [0, Math.PI / 2, 0], mat: matB },
+    { pos: [3.93, 1.7, -1.5], rot: [0, -Math.PI / 2, 0], mat: matB },
+    { pos: [3.93, 1.7, 1.5], rot: [0, -Math.PI / 2, 0], mat: matA },
+  ];
+  return (
+    <group>
+      {spots.map((s, i) => (
+        <group key={i} position={s.pos} rotation={s.rot}>
+          <mesh castShadow>
+            <boxGeometry args={[1.14, 0.9, 0.045]} />
+            <primitive object={frameMat} attach="material" />
+          </mesh>
+          <mesh position={[0, 0, 0.026]}>
+            <planeGeometry args={[1.02, 0.78]} />
+            <primitive object={s.mat} attach="material" />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
 
 /** Coffee table with a book stack — the room's lived-in corner. */
 function SideTable() {
@@ -839,8 +922,8 @@ function Sofa() {
 
 /* --------------------------------- bookshelf -------------------------------- */
 
-function Book({ projectId, position, isGroup, zone, lean = 0 }: {
-  projectId: string; position: [number, number, number]; isGroup: boolean; zone: [number, number]; lean?: number;
+function Book({ projectId, position, isGroup, zone, lean = 0, seed = 0 }: {
+  projectId: string; position: [number, number, number]; isGroup: boolean; zone: [number, number]; lean?: number; seed?: number;
 }) {
   const scrollProgress = useScrollStore((s) => s.scrollProgress);
   const setHovered = useWorldStore((s) => s.setHovered);
@@ -853,17 +936,25 @@ function Book({ projectId, position, isGroup, zone, lean = 0 }: {
     () => new THREE.MeshStandardMaterial({ color: spineColor(projectId), roughness: 0.5, metalness: 0.05 }),
     [projectId]
   );
+  // Page block: the off-white top edge is what sells "book" up close.
+  const pageMat = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#e8dcc0', roughness: 0.9, metalness: 0.0 }),
+    []
+  );
 
   if (!proj) return null;
   const id = `book:${projectId}`;
   const active = inRange(scrollProgress, zone[0], zone[1]);
   const hot = hovered === id || selected === id;
-  const w = isGroup ? 0.11 : 0.08;
+  // Deterministic per-book variation: no two spines share width or slot.
+  const wob = 1 + ((((seed * 53) % 3) + 3) % 3 - 1) * 0.09;
+  const xoff = ((((seed * 37) % 5) + 5) % 5 - 2) * 0.009;
+  const w = (isGroup ? 0.11 : 0.08) * wob;
   const h = isGroup ? 0.32 : 0.25;
 
   return (
     <group
-      position={hot ? [position[0], position[1] + 0.01, position[2] + 0.07] : [position[0], position[1] + (lean !== 0 ? 0.015 : 0), position[2]]}
+      position={hot ? [position[0], position[1] + 0.01, position[2] + 0.07] : [position[0] + xoff, position[1] + (lean !== 0 ? 0.015 : 0), position[2]]}
       rotation={[0, 0, hot ? 0 : lean]}
       onPointerOver={(e) => { if (!active) return; e.stopPropagation(); document.body.style.cursor = 'pointer'; setHovered(id); }}
       onPointerOut={(e) => { if (!active) return; e.stopPropagation(); document.body.style.cursor = 'default'; setHovered(null); }}
@@ -872,6 +963,10 @@ function Book({ projectId, position, isGroup, zone, lean = 0 }: {
       <mesh castShadow>
         <boxGeometry args={[w, h, 0.2]} />
         <primitive object={mat} attach="material" />
+      </mesh>
+      <mesh position={[0, h / 2 + 0.008, -0.005]}>
+        <boxGeometry args={[w * 0.78, 0.018, 0.17]} />
+        <primitive object={pageMat} attach="material" />
       </mesh>
       {hot && <HoverTag text={`${proj.title} — ${proj.author}`} color={spineColor(projectId)} />}
       {selected === id && (
@@ -915,7 +1010,7 @@ function Bookshelf({ position, scale = 1, isGroup = false, projectIds = [], zone
       ))}
       <mesh position={[0, (shelfCount * shelfHeight) / 2, -shelfDepth / 2 + 0.01]}><planeGeometry args={[1.15, shelfCount * shelfHeight]} /><primitive object={woodMat} attach="material" /></mesh>
       {projectIds.slice(0, shelfCount).map((pid, i) => (
-        <Book key={pid} projectId={pid} position={[-0.45 + i * 0.22, (i + 0.5) * shelfHeight + 0.03, (i % 3) * 0.012]} isGroup={isGroup} zone={zone} lean={i % 5 === 4 ? -0.13 : 0} />
+        <Book key={pid} projectId={pid} position={[-0.45 + i * 0.22, (i + 0.5) * shelfHeight + 0.03, (i % 3) * 0.012]} isGroup={isGroup} zone={zone} lean={i % 5 === 4 ? -0.13 : 0} seed={i} />
       ))}
     </group>
   );
@@ -1087,6 +1182,42 @@ function RoomLights() {
 
 /* ----------------------------------- scene ---------------------------------- */
 
+/**
+ * The one shadow-casting light in the room: a warm key spot falling from the
+ * pendant. Everything else is fill. One shadow map = cheap, and grounding
+ * appears from real occlusion instead of the blob alone.
+ */
+function KeyLight() {
+  const spotRef = useRef<THREE.SpotLight>(null);
+  const target = useMemo(() => new THREE.Object3D(), []);
+  useEffect(() => {
+    if (spotRef.current) {
+      spotRef.current.target = target;
+      spotRef.current.shadow.mapSize.set(1024, 1024);
+      spotRef.current.shadow.bias = -0.0002;
+      spotRef.current.shadow.normalBias = 0.02;
+      spotRef.current.shadow.camera.near = 0.5;
+      spotRef.current.shadow.camera.far = 8;
+    }
+  }, [target]);
+  return (
+    <group>
+      <primitive object={target} position={[0.5, 0, -0.3]} />
+      <spotLight
+        ref={spotRef}
+        position={[0.5, 2.05, -0.3]}
+        color="#ffbe62"
+        intensity={25}
+        distance={9}
+        angle={0.7}
+        penumbra={0.6}
+        decay={2}
+        castShadow
+      />
+    </group>
+  );
+}
+
 useGLTF.preload('/models/sofa_03/sofa_03.gltf');
 useGLTF.preload('/models/WoodenChair_01/WoodenChair_01.gltf');
 useGLTF.preload('/models/potted_plant_04/potted_plant_04.gltf');
@@ -1110,13 +1241,21 @@ export function RoomScene() {
         <RoomWall mat={accentWall} position={[0, 1.5, -4]} rotation={[0, 0, 0]} />
         <RoomWall mat={creamWall} position={[-4, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} />
         <RoomWall mat={creamWall} position={[4, 1.5, 0]} rotation={[0, -Math.PI / 2, 0]} />
+        <RoomWall mat={creamWall} position={[0, 1.5, 4]} rotation={[0, Math.PI, 0]} />
         <RoomTrim mat={trimWood} />
+        <WallArt />
         <StringLights />
         <Ceiling />
         <CeilingBeams mat={trimWood} />
       </group>
       <SideTable />
       <Pendant />
+      <KeyLight />
+      {/* ceiling rose where the pendant cord meets the ceiling */}
+      <mesh position={[0.5, 3.18, -0.3]}>
+        <cylinderGeometry args={[0.12, 0.15, 0.04, 20]} />
+        <meshStandardMaterial color="#e8ddd0" roughness={0.8} />
+      </mesh>
       <Chair />
       <Sofa />
       <Bookshelf position={[-3.2, 0, 1.2]} projectIds={['nayana', 'medaether', 'sanchay', 'lume', 'tattva']} zone={[0.47, 0.62]} />
