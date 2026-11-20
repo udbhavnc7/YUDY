@@ -10,6 +10,7 @@ export function useSurfaceMap(name: string, repeatX: number, repeatY: number) {
   return useMemo(() => {
     texture.wrapS = texture.wrapT = RepeatWrapping;
     texture.repeat.set(repeatX, repeatY);
+    texture.mipmaps = [];
     texture.generateMipmaps = true;
     texture.minFilter = LinearMipmapLinearFilter;
     texture.magFilter = LinearFilter;
