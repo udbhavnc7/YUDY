@@ -1,27 +1,10 @@
-# Asset licences
+# Phase 0 asset licences
 
-Every third-party model, texture, or HDRI used in YUDY is recorded here
-before it is committed. No entry, no asset. This matters more than usual on
-this project — the room is built substantially from sourced assets rather
-than from-scratch geometry.
+Only files in `assets/` are copied into the production build. All meshes and the lampshade transmission pattern are authored in the scene.
 
-| Asset | File | Source + URL | Licence | Attribution needed? | Notes |
-|---|---|---|---|---|---|
-| Venice Sunset HDRI | `public/hdr/venice_sunset_1k.hdr` | Poly Haven (https://polyhaven.com/a/venice_sunset) | CC0 | No | 1k resolution, 1.44 MB |
-| Paris terrace background | `public/paris_terrace_bg.jpg` | Local asset | CC0 | No | Used as floor texture |
-| Paris sunset balcony | `public/paris_sunset_balcony.jpg` | Local asset | CC0 | No | Used as wall/chair/sofa texture |
-| Paris balcony sunset | `public/paris_balcony_sunset.jpg` | Local asset | CC0 | No | Used as chair/sofa fabric texture |
-
-## Rules
-
-- CC0 (Poly Haven, ambientCG, Kenney, Quaternius): no attribution needed, log
-  it anyway for provenance.
-- CC-BY or similar: add the required credit to a `/credits` route (doesn't
-  need to be prominent, just reachable) and note it in this table.
-- Meshy/Tripo free-tier output: CC BY 4.0 — treat like CC-BY above.
-- Anything else: read the actual license before use. When in doubt, don't
-  ship it.
-- No film stills, no scraped photographs of real interiors as textures
-  without checking their license, no copyrighted posters or album art used
-  as literal poster/book content — use your own real achievement and project
-  data instead.
+| Shipped file | Source | Licence | Attribution |
+| --- | --- | --- | --- |
+| `environment/venice_sunset_1k.hdr` | [Venice Sunset, Poly Haven](https://polyhaven.com/a/venice_sunset) | CC0 | None required |
+| `textures/plaster.ktx2`, `textures/plaster-normal.ktx2` | [Plaster 001, ambientCG](https://ambientcg.com/view?id=Plaster001) | CC0 | None required |
+| `textures/weave.ktx2` | [Fabric 025, ambientCG](https://ambientcg.com/view?id=Fabric025), cropped and recoloured | CC0 | None required |
+| `textures/wood.ktx2` | [Dark Wooden Planks, Poly Haven](https://polyhaven.com/a/dark_wooden_planks), cropped to a single board and recoloured | CC0 | None required |
