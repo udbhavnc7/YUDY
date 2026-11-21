@@ -1,5 +1,7 @@
 # Asset licences
 
+The [Phase 0 licence log](docs/ASSET-LICENSES.md) lists the files shipped by Vite. This inventory also includes source assets stored for later phases.
+
 Every third-party model, texture, or HDRI used in YUDY is recorded here
 before it is committed. No entry, no asset. This matters more than usual on
 this project — the room is built substantially from sourced assets rather
@@ -7,7 +9,7 @@ than from-scratch geometry.
 
 | Asset | File | Source + URL | Licence | Attribution needed? | Notes |
 |---|---|---|---|---|---|
-| Venice Sunset HDRI | `public/hdr/venice_sunset_1k.hdr` | Poly Haven (https://polyhaven.com/a/venice_sunset) | CC0 | No | 1k resolution, 1.44 MB |
+| Venice Sunset HDRI | `assets/environment/venice_sunset_1k.hdr` | Poly Haven (https://polyhaven.com/a/venice_sunset) | CC0 | No | 1k resolution, 1.44 MB |
 | Wood Floor 042 PBR set | `public/textures/woodfloor/` (Color, NormalGL, Roughness 1K JPG) | ambientCG (https://ambientcg.com/view?id=WoodFloor042) | CC0 | No | Floor albedo + normal + roughness |
 | Plaster 001 PBR set | `public/textures/plaster/` (Color, NormalGL, Roughness 1K JPG) | ambientCG (https://ambientcg.com/view?id=Plaster001) | CC0 | No | Wall albedo + normal + roughness |
 | Sofa 03 mesh + 1k PBR | `public/models/sofa_03/` (glTF + bin + diffuse/normal/roughness) | Poly Haven (https://polyhaven.com/a/sofa_03) | CC0 | No | Sofa hero mesh |
@@ -17,9 +19,6 @@ than from-scratch geometry.
 | Fabric 025 PBR set | `public/textures/fabric/` (Color, NormalGL, Roughness 1K JPG) | ambientCG (https://ambientcg.com/view?id=Fabric025) | CC0 | No | Pillow + lampshade weave |
 | Dark Wooden Planks 1k PBR | `public/textures/darkwood/` (diffuse, nor_gl, rough 1K JPG) | Poly Haven (https://polyhaven.com/a/dark_wooden_planks) | CC0 | No | Bookshelf carcass wood |
 | Wallpaper 001B PBR set | `public/textures/wallpaper/` (Color, NormalGL, Roughness 1K JPG) | ambientCG (https://ambientcg.com/view?id=Wallpaper001B) | CC0 | No | Damask accent wall |
-| Paris terrace background | `public/paris_terrace_bg.jpg` | Local asset | CC0 | No | Used as floor texture |
-| Paris sunset balcony | `public/paris_sunset_balcony.jpg` | Local asset | CC0 | No | Used as wall/chair/sofa texture |
-| Paris balcony sunset | `public/paris_balcony_sunset.jpg` | Local asset | CC0 | No | Used as chair/sofa fabric texture |
 
 ## Rules
 

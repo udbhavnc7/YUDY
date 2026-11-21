@@ -2,7 +2,9 @@ import { BufferGeometry, Float32BufferAttribute, MeshStandardMaterial } from 'th
 
 // A folded sheet of linen. Each pair of panels shares a raised seam.
 export function pleatedShade() {
-  const positions: number[] = [], uvs: number[] = [], transmission: number[] = [];
+  const positions: number[] = [];
+  const uvs: number[] = [];
+  const transmission: number[] = [];
   const indices: number[] = [];
   const folds = 64;
   const rings = 20;
@@ -11,13 +13,19 @@ export function pleatedShade() {
     const t = row / rings;
     for (let edge = 0; edge <= edges; edge++) {
       const ridge = edge % 2;
-      const angle = (edge / edges) * Math.PI * 2;
+      const azimuth = (edge / edges) * Math.PI * 2;
+      // Fabric has a little slack between the upper and lower rings.
+      const slack = 0.008 * Math.sin(7 * azimuth + 0.6) * Math.sin(Math.PI * t);
+      const angle = azimuth + slack + 0.004 * Math.sin(17 * azimuth);
+      const hemHeight = 0.004 * Math.sin(9 * azimuth) * (1 - t);
       const radius = 0.277 + 0.526 * (1 - t) ** 1.18 + ridge * (0.015 + 0.023 * (1 - t));
-      positions.push(Math.sin(angle) * radius, 1.02 + 0.825 * t + ridge * 0.003, Math.cos(angle) * radius);
+      positions.push(Math.sin(angle) * radius, 1.02 + 0.825 * t + ridge * 0.003 + hemHeight, Math.cos(angle) * radius);
       uvs.push(edge / edges, t);
-      // Stitching absorbs light at the hem; light peaks around the internal bulb.
+      // The stitched hem transmits less light than the fabric around the bulb.
       const hem = row === 0 || row === rings ? 0.50 : 1;
-      transmission.push(hem * (0.22 + 0.78 * Math.exp(-9 * (t - 0.43) ** 2)) * (ridge ? 1.05 : 0.40) * (0.82 + 0.18 * Math.cos(angle + 0.45)));
+      const bulbFalloff = 0.22 + 0.78 * Math.exp(-9 * (t - 0.43) ** 2);
+      const facing = 0.82 + 0.18 * Math.cos(angle + 0.45);
+      transmission.push(hem * bulbFalloff * facing * (ridge ? 1.05 : 0.40));
       if (row === rings || edge === edges) continue;
       const a = row * (edges + 1) + edge;
       const b = a + edges + 1;
