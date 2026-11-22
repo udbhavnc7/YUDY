@@ -13,3 +13,4 @@ Only files in `assets/` are copied into the production build. The lamp, joinery 
 | `textures/boards*.ktx2` | [Wood Floor 042, ambientCG](https://ambientcg.com/view?id=WoodFloor042) | CC0 | None required |
 | `textures/rug*.ktx2` | [Carpet 001, ambientCG](https://ambientcg.com/view?id=Carpet001) | CC0 | None required |
 | `textures/joinery.ktx2` | [Dark Wooden Planks, Poly Haven](https://polyhaven.com/a/dark_wooden_planks), cropped and toned | CC0 | None required |
+| `models/project-book.glb` | [Bound Three - Books, Innerscene](https://www.innerscene.com/tools/library/3d-parts/bound-three-books-b266be0c), one bound volume reoriented and Meshopt-compressed | CC0 | None required |

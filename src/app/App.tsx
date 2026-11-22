@@ -2,6 +2,7 @@ import { Component, type ReactNode, useCallback, useEffect, useState } from 'rea
 import { MainRoom } from '../scenes/MainRoom/MainRoom';
 import { AchievementPosters } from '../components/overlays/AchievementPosters';
 import { EducationPillows } from '../components/overlays/EducationPillows';
+import { SoloShelfNotes } from '../components/overlays/SoloShelfNotes';
 import { PROFILE } from '../data/profile';
 
 class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
@@ -19,6 +20,8 @@ export function App() {
   const [education, setEducation] = useState(false);
   const [gallery, setGallery] = useState(false);
   const [highlight, setHighlight] = useState<string>();
+  const [soloShelf, setSoloShelf] = useState(false);
+  const [bookHighlight, setBookHighlight] = useState<string>();
   const [ready, setReady] = useState(false);
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -34,6 +37,7 @@ export function App() {
       <SceneBoundary onFailure={onFailure}>
         <MainRoom proof={proof} isolated={isolated} onIntroChange={setIntro} onEducationChange={setEducation}
           onGalleryChange={setGallery} highlight={gallery ? highlight : undefined}
+          onSoloShelfChange={setSoloShelf} bookHighlight={soloShelf ? bookHighlight : undefined}
           on={on} onReady={onReady} onToggle={onToggle} />
       </SceneBoundary>
       <div className="vignette" aria-hidden="true" />
@@ -51,6 +55,7 @@ export function App() {
       </section>}
       {education && ready && !failed && <EducationPillows />}
       {gallery && ready && !failed && <AchievementPosters onHighlight={setHighlight} />}
+      {soloShelf && ready && !failed && <SoloShelfNotes onHighlight={setBookHighlight} />}
       {proof && failed && <p role="alert" className="label">The lighting proof couldn’t load.</p>}
     </div>
   </main>;

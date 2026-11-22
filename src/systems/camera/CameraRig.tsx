@@ -3,6 +3,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, PerspectiveCamera, Vector3 } from 'three';
 import { LAMP_POSITION, LAMP_SCALE, PILLOW_ANCHORS } from '../../components/room/layout';
 import { POSTER_WIDTH, POSTER_HEIGHT, posterPosition } from '../../components/room/galleryLayout';
+import { BOOK_FRONT, SOLO_BOOKS } from '../../components/room/soloShelfLayout';
+import { projectTarget } from './projectTarget';
 import { ACHIEVEMENTS } from '../../data/achievements';
 import { roomPath, zoneIndex, zones } from './roomPath';
 import { chairAngle } from './chairTurn';
@@ -14,9 +16,10 @@ type Props = {
   onIntroChange: (intro: boolean) => void;
   onEducationChange: (education: boolean) => void;
   onGalleryChange: (gallery: boolean) => void;
+  onSoloShelfChange: (soloShelf: boolean) => void;
 };
 
-export function CameraRig({ isolated, view, onIntroChange, onEducationChange, onGalleryChange }: Props) {
+export function CameraRig({ isolated, view, onIntroChange, onEducationChange, onGalleryChange, onSoloShelfChange }: Props) {
   const { size, gl, invalidate } = useThree();
   const aspect = size.width / size.height;
   const path = useMemo(() => roomPath(aspect, isolated), [aspect, isolated]);
@@ -24,6 +27,7 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
   const inIntro = useRef(true);
   const inEducation = useRef(false);
   const inGallery = useRef(false);
+  const inSoloShelf = useRef(false);
   const look = useMemo(() => new Vector3(), []);
   const anchor = useMemo(() => new Vector3(), []);
   const posterCenters = useMemo(() => ACHIEVEMENTS.map((_, index) => posterPosition(index)), []);
@@ -63,6 +67,11 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
     const zone = zones[zoneIndex(p)][0];
     const education = !isolated && zone === 'Sofa';
     const gallery = !isolated && zone === 'Poster wall';
+    const soloShelf = !isolated && zone === 'Solo shelf';
+    if (soloShelf !== inSoloShelf.current) {
+      inSoloShelf.current = soloShelf;
+      onSoloShelfChange(soloShelf);
+    }
     if (gallery !== inGallery.current) {
       inGallery.current = gallery;
       onGalleryChange(gallery);
@@ -90,21 +99,12 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
       }
     }
     if (gallery && host) {
-      posterCenters.forEach(([x, y, z], index) => {
-        const leftTop = anchor.set(x - POSTER_WIDTH / 2, y + POSTER_HEIGHT / 2, z).project(lens);
-        const left = (1 + leftTop.x) * 50;
-        const top = (1 - leftTop.y) * 50;
-        const rightBottom = anchor.set(x + POSTER_WIDTH / 2, y - POSTER_HEIGHT / 2, z).project(lens);
-        const right = (1 + rightBottom.x) * 50;
-        const bottom = (1 - rightBottom.y) * 50;
-        const visible = left >= 0 && right <= 100 && top >= 0 && bottom <= 100;
-        const prefix = '--poster-' + index;
-        host.style.setProperty(prefix + '-left', left + '%');
-        host.style.setProperty(prefix + '-top', top + '%');
-        host.style.setProperty(prefix + '-width', (right - left) + '%');
-        host.style.setProperty(prefix + '-height', (bottom - top) + '%');
-        host.style.setProperty(prefix + '-visibility', visible ? 'visible' : 'hidden');
-      });
+      posterCenters.forEach(([x, y, z], index) =>
+        projectTarget(host, '--poster-' + index, lens, anchor, x, y, z, POSTER_WIDTH, POSTER_HEIGHT));
+    }
+    if (soloShelf && host) {
+      SOLO_BOOKS.forEach((book, index) => projectTarget(host, '--book-' + index, lens, anchor,
+        book.x, book.floor + book.height / 2, BOOK_FRONT, book.faceOut ? book.depth : book.thickness, book.height));
     }
     if (p !== dest) invalidate();
   }, -1);
