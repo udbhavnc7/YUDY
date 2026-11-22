@@ -1,10 +1,11 @@
 import { CatmullRomCurve3, MathUtils, Vector3 } from 'three';
-import { LAMP_POSITION, LAMP_SCALE } from '../../components/room/layout';
+import { CHAIR_POSITION, LAMP_POSITION, LAMP_SCALE, SOFA_POSITION } from '../../components/room/layout';
+import { chairAngle, chairTurn, CHAIR_START, SOFA_START } from './chairTurn';
 
 type XYZ = [number, number, number];
 type Shot = { at: number; eye: XYZ; look: XYZ; fov: number };
 export const zones = [
-  ['Lamp', 0], ['Chair', 0.10], ['Sofa', 0.22], ['Poster wall', 0.32],
+  ['Lamp', 0], ['Chair', CHAIR_START], ['Sofa', SOFA_START], ['Poster wall', 0.32],
   ['Solo shelf', 0.47], ['Group shelf', 0.62], ['Showcase', 0.74], ['Room', 0.87],
 ] as const;
 
@@ -30,8 +31,8 @@ export function roomPath(aspect: number, isolated: boolean) {
   const portrait = aspect < 1.14;
   const shots: Shot[] = [
     opening,
-    { at: 0.16, eye: [-2.31, 1.30, 2.23], look: [-1.58, 0.83, 0.10], fov: 46 },
-    { at: 0.27, eye: [-0.75, 1.36, 1.74], look: [-0.22, 0.73, -1.94], fov: 40 },
+    { at: 0.151, eye: [-2.19, 1.34, 2.23], look: [-1.56, 0.88, 0.03], fov: 49 },
+    { at: 0.27, eye: [-0.37, 1.15, 0.52], look: [SOFA_POSITION[0], 0.78, SOFA_POSITION[2]], fov: 42 },
     { at: 0.395, eye: [-0.47, 1.57, 0.72], look: [-0.29, 1.64, -2.48], fov: 46 },
     { at: 0.545, eye: [1.08, 1.35, 0.29], look: [1.88, 1.10, -2.24], fov: 46 },
     { at: 0.68, eye: [2.25, 1.45, 0.22], look: [2.92, 1.28, -2.24], fov: 46 },
@@ -46,10 +47,11 @@ export function roomPath(aspect: number, isolated: boolean) {
   reveal.eye[2] = Math.max(5.37, 4.25 / horizontalTangent + reveal.look[2]);
   if (portrait) {
     for (const shot of shots.slice(1)) shot.fov = Math.max(shot.fov, 54);
-    shots[2].eye[2] = Math.max(1.74, 1.5 / (aspect * 0.51) - 1.94);
+    shots[2].eye[2] = Math.max(0.52, 1.36 / (aspect * 0.51) + SOFA_POSITION[2]);
   }
   const eyes = new CatmullRomCurve3(shots.map(s => new Vector3(...s.eye)));
   const targets = new CatmullRomCurve3(shots.map(s => new Vector3(...s.look)));
+  const facing = new Vector3();
   return (progress: number, reducedMotion: boolean, eye: Vector3, look: Vector3) => {
     let p = isolated ? 0 : progress;
     if (reducedMotion && !isolated) {
@@ -62,6 +64,16 @@ export function roomPath(aspect: number, isolated: boolean) {
     const curveTime = (i + t) / (shots.length - 1);
     eyes.getPoint(curveTime, eye);
     targets.getPoint(curveTime, look);
-    return MathUtils.lerp(shots[i].fov, shots[i + 1].fov, t);
+
+    // During the turn, the chair leads the camera's gaze toward the sofa.
+    const turn = chairTurn(p);
+    if (!reducedMotion && turn > 0 && turn < 1) {
+      const yaw = chairAngle(p, false);
+      const reach = 0.30 + 1.62 * turn;
+      facing.set(CHAIR_POSITION[0] + Math.sin(yaw) * reach, 0.86, CHAIR_POSITION[2] + Math.cos(yaw) * reach);
+      look.lerp(facing, 0.45 * Math.sin(Math.PI * turn) ** 2);
+    }
+    const fovBlend = MathUtils.smoothstep(t, 0, 1);
+    return MathUtils.lerp(shots[i].fov, shots[i + 1].fov, fovBlend);
   };
 }

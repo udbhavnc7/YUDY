@@ -1,4 +1,5 @@
-import { useLayoutEffect, useMemo } from 'react';
+import type { RoomView } from '../../systems/camera/CameraRig';
+import { useLayoutEffect, useMemo, type MutableRefObject } from 'react';
 import { extend, type ReactThreeFiber } from '@react-three/fiber';
 import { MeshStandardMaterial, Vector2 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
@@ -113,7 +114,7 @@ function Rug() {
   </group>;
 }
 
-export function RoomShell() {
+export function RoomShell({ view }: { view: MutableRefObject<RoomView> }) {
   const [plaster, plasterNormal] = useSurfaceMaps(['plaster', 'plaster-normal'], 4, 2);
   const timber = useSurfaceMap('joinery', 1, 1);
   const [boards, boardNormal, boardRoughness] = useSurfaceMaps(['boards', 'boards-normal', 'boards-roughness'], 4.4, 5.83);
@@ -157,6 +158,6 @@ export function RoomShell() {
     <FloorContact x={LAMP_POSITION[0]} z={LAMP_POSITION[2]} width={1.42} depth={0.96} strength={0.54} />
     <FloorContact x={SHELF_X} z={-2.16} width={2.38} depth={0.79} strength={0.66} />
     <Seating kind="sofa" />
-    <Seating kind="chair" />
+    <Seating kind="chair" view={view} />
   </>;
 }

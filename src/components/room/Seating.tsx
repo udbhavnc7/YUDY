@@ -1,10 +1,16 @@
-import { useLayoutEffect } from 'react';
+import type { RoomView } from '../../systems/camera/CameraRig';
+import { useLayoutEffect, useRef, type MutableRefObject } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { DoubleSide, Mesh, MeshStandardMaterial } from 'three';
+import { DoubleSide, Group, Mesh, MeshStandardMaterial } from 'three';
 import { useSurfaceMaps } from '../../systems/lighting/useSurfaceMap';
 import { CHAIR_POSITION, SOFA_POSITION } from './layout';
 
-export function Seating({ kind }: { kind: 'chair' | 'sofa' }) {
+export function Seating({ kind, view }: {
+  kind: 'chair' | 'sofa';
+  view?: MutableRefObject<RoomView>;
+}) {
+  const pivot = useRef<Group>(null);
   const { scene } = useGLTF('/models/' + kind + '.glb', false, true);
   const [map, normal, roughness] = useSurfaceMaps([kind, kind + '-normal', kind + '-roughness'], 1, 1);
   useLayoutEffect(() => {
@@ -23,6 +29,10 @@ export function Seating({ kind }: { kind: 'chair' | 'sofa' }) {
     });
   }, [scene, map, normal, roughness]);
   const chair = kind === 'chair';
-  return <primitive object={scene} position={chair ? CHAIR_POSITION : SOFA_POSITION}
-    rotation-y={chair ? 0.57 : 0} scale={chair ? 0.74 : 1} />;
+  useFrame(() => {
+    if (chair && pivot.current && view) pivot.current.rotation.y = view.current.chairYaw;
+  });
+  return <group ref={pivot} position={chair ? CHAIR_POSITION : SOFA_POSITION} scale={chair ? 0.74 : 1}>
+    <primitive object={scene} />
+  </group>;
 }
