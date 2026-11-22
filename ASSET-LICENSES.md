@@ -1,6 +1,6 @@
 # Asset licences
 
-The [Phase 0 licence log](docs/ASSET-LICENSES.md) lists the files shipped by Vite. This inventory also includes source assets stored for later phases.
+The [shipped asset licence log](docs/ASSET-LICENSES.md) lists the files shipped by Vite. This inventory also includes source assets stored for later phases.
 
 Every third-party model, texture, or HDRI used in YUDY is recorded here
 before it is committed. No entry, no asset. This matters more than usual on
