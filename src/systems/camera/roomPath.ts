@@ -1,5 +1,6 @@
 import { CatmullRomCurve3, MathUtils, Vector3 } from 'three';
 import { CHAIR_POSITION, LAMP_POSITION, LAMP_SCALE, SOFA_POSITION } from '../../components/room/layout';
+import { GALLERY_X, GALLERY_Y, POSTER_FRONT } from '../../components/room/galleryLayout';
 import { chairAngle, chairTurn, CHAIR_START, SOFA_START } from './chairTurn';
 
 type XYZ = [number, number, number];
@@ -33,7 +34,7 @@ export function roomPath(aspect: number, isolated: boolean) {
     opening,
     { at: 0.151, eye: [-2.19, 1.34, 2.23], look: [-1.56, 0.88, 0.03], fov: 49 },
     { at: 0.27, eye: [-0.37, 1.15, 0.52], look: [SOFA_POSITION[0], 0.78, SOFA_POSITION[2]], fov: 42 },
-    { at: 0.395, eye: [-0.47, 1.57, 0.72], look: [-0.29, 1.64, -2.48], fov: 46 },
+    { at: 0.395, eye: [GALLERY_X, 1.82, 0.47], look: [GALLERY_X, GALLERY_Y - 0.08, POSTER_FRONT], fov: 39 },
     { at: 0.545, eye: [1.08, 1.35, 0.29], look: [1.88, 1.10, -2.24], fov: 46 },
     { at: 0.68, eye: [2.25, 1.45, 0.22], look: [2.92, 1.28, -2.24], fov: 46 },
     { at: 0.805, eye: [1.41, 1.47, 1.18], look: [3.65, 1.50, -0.71], fov: 47 },
@@ -47,6 +48,8 @@ export function roomPath(aspect: number, isolated: boolean) {
   reveal.eye[2] = Math.max(5.37, 4.25 / horizontalTangent + reveal.look[2]);
   if (portrait) {
     for (const shot of shots.slice(1)) shot.fov = Math.max(shot.fov, 54);
+    shots[3].fov = 66;
+    shots[3].eye[2] = Math.max(0.47, 1.78 / (aspect * Math.tan(MathUtils.degToRad(33))) + POSTER_FRONT);
     shots[2].eye[2] = Math.max(0.52, 1.36 / (aspect * 0.51) + SOFA_POSITION[2]);
   }
   const eyes = new CatmullRomCurve3(shots.map(s => new Vector3(...s.eye)));

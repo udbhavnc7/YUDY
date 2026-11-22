@@ -31,11 +31,10 @@ export type Achievement = {
   id: string;
   title: string;
   event: string;
-  year: number;
+  year?: number;            // omit when the edition is unconfirmed
   status: AchievementStatus;   // drives the poster's glow color — see below
   description?: string;
   link?: string;
-  poster?: string;             // asset path once real posters exist
 };
 ```
 

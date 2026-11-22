@@ -145,11 +145,6 @@ export function RoomShell({ view }: { view: MutableRefObject<RoomView> }) {
     <Board at={[-3.79, 0.08, 3.8]} size={[0.065, 0.16, 12.74]} material={trim} />
     <Board at={[3.77, 0.08, 3.8]} size={[0.065, 0.16, 12.74]} material={trim} />
     <Board at={[0, 3.12, -2.46]} size={[7.8, 0.11, 0.09]} material={trim} />
-    {/* Shallow picture mouldings articulate the future poster wall. */}
-    {[-0.96, 0.48].map(x => <group key={x} position={[x, 0, -2.482]}>
-      {[-0.64, 0.64].map(dx => <Board key={dx} at={[dx, 1.97, 0]} size={[0.023, 1.62, 0.023]} material={trim} />)}
-      {[1.16, 2.78].map(y => <Board key={y} at={[0, y, 0]} size={[1.30, 0.023, 0.023]} material={trim} />)}
-    </group>)}
     <Rug />
     <Cabinet wood={wood} brass={brass} />
     <Shelves wood={wood} back={back} />

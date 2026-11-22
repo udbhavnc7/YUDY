@@ -5,6 +5,7 @@ import { ToneMappingMode } from 'postprocessing';
 import { ACESFilmicToneMapping, PCFSoftShadowMap, SRGBColorSpace, PointLight } from 'three';
 import { CameraRig, type RoomView } from '../../systems/camera/CameraRig';
 import { Studio } from '../../systems/lighting/Studio';
+import { AchievementWall } from '../../components/objects/AchievementWall';
 import { TableLamp } from '../../components/objects/TableLamp';
 import { RoomShell } from '../../components/room/RoomShell';
 import { LAMP_POSITION, LAMP_SCALE } from '../../components/room/layout';
@@ -15,12 +16,14 @@ type Props = {
   isolated: boolean;
   onIntroChange: (intro: boolean) => void;
   onEducationChange: (education: boolean) => void;
+  onGalleryChange: (gallery: boolean) => void;
+  highlight?: string;
   on: boolean;
   onToggle: () => void;
   onReady: () => void;
 };
 
-function Exposure({ proof, isolated, on, onToggle, onReady, view }: Props & { view: MutableRefObject<RoomView> }) {
+function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight }: Props & { view: MutableRefObject<RoomView> }) {
   const fill = useMemo(() => new PointLight(0xffe6cc, 0.45), []);
   const bloomLights = useMemo(() => [fill], [fill]);
   return <Selection>
@@ -34,6 +37,7 @@ function Exposure({ proof, isolated, on, onToggle, onReady, view }: Props & { vi
       <pointLight position={[3.44, 1.93, -0.56]} intensity={13} color="#ffedcf" />
       <directionalLight position={[-1.7, 2.7, 5.8]} intensity={0.23} color="#f0dcca" />
       <RoomShell view={view} />
+      <AchievementWall highlight={highlight} />
     </>}
     <primitive object={fill} position={[1.3, 2.2, 1.5]} />
     {proof ? <mesh position-y={0.45} rotation-y={0.38} castShadow receiveShadow>
@@ -56,7 +60,8 @@ export function MainRoom(props: Props) {
     gl={{ antialias: true, alpha: false, outputColorSpace: SRGBColorSpace, toneMapping: ACESFilmicToneMapping }}
     onCreated={({ gl }) => { gl.toneMappingExposure = 1; }}>
     <CameraRig isolated={props.isolated} view={view}
-      onIntroChange={props.onIntroChange} onEducationChange={props.onEducationChange} />
+      onIntroChange={props.onIntroChange} onEducationChange={props.onEducationChange}
+      onGalleryChange={props.onGalleryChange} />
     <Suspense fallback={null}><Exposure {...props} view={view} /></Suspense>
   </Canvas>;
 }

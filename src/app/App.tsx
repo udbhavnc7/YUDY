@@ -1,5 +1,6 @@
 import { Component, type ReactNode, useCallback, useEffect, useState } from 'react';
 import { MainRoom } from '../scenes/MainRoom/MainRoom';
+import { AchievementPosters } from '../components/overlays/AchievementPosters';
 import { EducationPillows } from '../components/overlays/EducationPillows';
 import { PROFILE } from '../data/profile';
 
@@ -16,6 +17,8 @@ export function App() {
   const isolated = proof || proofMode === 'lamp';
   const [intro, setIntro] = useState(true);
   const [education, setEducation] = useState(false);
+  const [gallery, setGallery] = useState(false);
+  const [highlight, setHighlight] = useState<string>();
   const [ready, setReady] = useState(false);
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -30,6 +33,7 @@ export function App() {
     <div className={'exhibit' + (on || failed ? ' illuminated' : '')}>
       <SceneBoundary onFailure={onFailure}>
         <MainRoom proof={proof} isolated={isolated} onIntroChange={setIntro} onEducationChange={setEducation}
+          onGalleryChange={setGallery} highlight={gallery ? highlight : undefined}
           on={on} onReady={onReady} onToggle={onToggle} />
       </SceneBoundary>
       <div className="vignette" aria-hidden="true" />
@@ -46,6 +50,7 @@ export function App() {
         {!isolated && ready && !failed && <p className="scroll-instruction">Scroll to explore the room</p>}
       </section>}
       {education && ready && !failed && <EducationPillows />}
+      {gallery && ready && !failed && <AchievementPosters onHighlight={setHighlight} />}
       {proof && failed && <p role="alert" className="label">The lighting proof couldn’t load.</p>}
     </div>
   </main>;

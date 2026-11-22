@@ -123,3 +123,74 @@ h1 em { font-weight: normal; letter-spacing: -0.065em; }
   .pillow-college { margin-top: 0.875rem; }
   .pillow-college .pillow-tag { width: 5rem; justify-content: center; white-space: normal; }
 }
+
+.achievement-posters { position: absolute; inset: 0; pointer-events: none; }
+.poster-hit {
+  position: absolute;
+  top: var(--frame-top);
+  left: var(--frame-left);
+  width: var(--frame-width);
+  height: var(--frame-height);
+  visibility: var(--frame-visibility);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: pan-y;
+}
+.poster-hit:focus-visible { outline: 2px solid #f5e6c9; outline-offset: 4px; }
+.achievement-note {
+  --note-width: min(18.5rem, 100% - 2rem);
+  position: absolute;
+  width: var(--note-width);
+  top: clamp(1rem, var(--frame-top), calc(100% - 15rem));
+  left: clamp(1rem, var(--note-left), calc(100% - var(--note-width) - 1rem));
+  visibility: var(--frame-visibility);
+  pointer-events: auto;
+}
+.achievement-note.note-right { --note-left: calc(var(--frame-left) + var(--frame-width) + 0.7rem); }
+.achievement-note.note-left { --note-left: calc(var(--frame-left) - var(--note-width) - 0.7rem); }
+.achievement-paper {
+  --achievement-ink: #705129;
+  padding: 0.65rem 1.05rem 1rem;
+  background: #eee4ce;
+  color: #30231b;
+  border-left: 4px solid var(--achievement-ink);
+  box-shadow: 0 5px 24px #160d075c;
+  animation: note-in 200ms ease-out both;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+.achievement-paper[data-status="top"] { --achievement-ink: #243b54; }
+.achievement-paper[data-status="participated"] { --achievement-ink: #235744; }
+.achievement-note-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.achievement-note-top p { color: var(--achievement-ink); font-size: 0.82rem; font-weight: 600; }
+.achievement-note-top button {
+  padding: 0 0.2rem;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: #543b2b;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.achievement-paper h2 { margin: 0; font: 400 clamp(1.5rem, 3vw, 2rem)/1.04 Georgia, serif; }
+.achievement-paper p { margin: 0.5em 0; }
+.achievement-paper .achievement-event { font-weight: 600; }
+.achievement-paper a { display: inline-block; margin-top: 0.45rem; color: var(--achievement-ink); text-underline-offset: 0.2em; }
+.achievement-paper :focus-visible { outline: 2px solid var(--achievement-ink); outline-offset: 3px; }
+@media (max-aspect-ratio: 57/50) {
+  .achievement-note {
+    --note-width: min(19rem, 100% - 2rem);
+    top: clamp(1rem, calc(var(--frame-top) + var(--frame-height) + 0.75rem), calc(100% - 16rem));
+    left: clamp(1rem, calc(var(--frame-left) + var(--frame-width) / 2 - var(--note-width) / 2), calc(100% - var(--note-width) - 1rem));
+  }
+  .achievement-note[data-row="0"] {
+    top: auto;
+    bottom: clamp(1rem, calc(100% - var(--frame-top) + 0.65rem), calc(100% - 14rem));
+  }
+}
+@media (prefers-reduced-motion: reduce) { .achievement-paper { animation: none; } }
