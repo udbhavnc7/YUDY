@@ -10,7 +10,10 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
 }
 
 export function App() {
-  const proof = new URLSearchParams(window.location.search).get('proof') === 'grey';
+  const proofMode = new URLSearchParams(window.location.search).get('proof');
+  const proof = proofMode === 'grey';
+  const isolated = proof || proofMode === 'lamp';
+  const [intro, setIntro] = useState(true);
   const [ready, setReady] = useState(false);
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -21,21 +24,24 @@ export function App() {
     if (ready) setOn(true);
   }, [ready]);
 
-  return <main className={'exhibit' + (on || failed ? ' illuminated' : '')}>
-    <SceneBoundary onFailure={onFailure}>
-      <MainRoom proof={proof} on={on} onReady={onReady} onToggle={onToggle} />
-    </SceneBoundary>
-    <div className="vignette" aria-hidden="true" />
-    {!proof && <section className="label" aria-label="Portfolio introduction">
-      <p className="imprint"><span>YUDY</span><i aria-hidden="true" />Portfolio</p>
-      <h1 aria-label={PROFILE.name}>{PROFILE.name.split(' ')[0]} <em>{PROFILE.name.split(' ').slice(1).join(' ')}</em></h1>
-      {failed ? <p className="notice">The 3D lamp couldn’t load. <button onClick={() => window.location.reload()}>Retry</button></p> :
-        <button className="power" type="button" disabled={!ready} role="switch" aria-checked={on}
-          aria-label="Lamp power" onClick={onToggle}>
-          <span className="switch-track" aria-hidden="true"><span /></span>
-          {ready ? 'Lamp ' + (on ? 'on' : 'off') : 'Preparing light…'}
-        </button>}
-    </section>}
-    {proof && failed && <p role="alert" className="label">The lighting proof couldn’t load.</p>}
+  return <main className={!isolated && !failed ? 'room-tour' : undefined}>
+    <div className={'exhibit' + (on || failed ? ' illuminated' : '')}>
+      <SceneBoundary onFailure={onFailure}>
+        <MainRoom proof={proof} isolated={isolated} onIntroChange={setIntro} on={on} onReady={onReady} onToggle={onToggle} />
+      </SceneBoundary>
+      <div className="vignette" aria-hidden="true" />
+      {!proof && <section hidden={!intro && !failed} className="label" aria-label="Portfolio introduction">
+        <p className="imprint"><span>YUDY</span><i aria-hidden="true" />Portfolio</p>
+        <h1 aria-label={PROFILE.name}>{PROFILE.name.split(' ')[0]} <em>{PROFILE.name.split(' ').slice(1).join(' ')}</em></h1>
+        {failed ? <p className="notice">The 3D lamp couldn’t load. <button onClick={() => window.location.reload()}>Retry</button></p> :
+          <button className="power" type="button" disabled={!ready} role="switch" aria-checked={on}
+            aria-label="Lamp power" onClick={onToggle}>
+            <span className="switch-track" aria-hidden="true"><span /></span>
+            {ready ? 'Lamp ' + (on ? 'on' : 'off') : 'Preparing light…'}
+          </button>}
+        {!isolated && ready && !failed && <p className="scroll-instruction">Scroll to explore the room</p>}
+      </section>}
+      {proof && failed && <p role="alert" className="label">The lighting proof couldn’t load.</p>}
+    </div>
   </main>;
 }

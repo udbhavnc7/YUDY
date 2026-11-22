@@ -23,9 +23,16 @@ const cord = new CatmullRomCurve3([
   new Vector3(1.79, 0.016, -0.75), new Vector3(3.0, 0.015, -0.72),
 ]);
 
-type Props = { on: boolean; onToggle: () => void; onReady: () => void };
+// The room version routes the cord over the rear edge of the cabinet.
+const cabinetCord = new CatmullRomCurve3([
+  new Vector3(0.11, 0.058, -0.17), new Vector3(0.35, 0.015, -0.34),
+  new Vector3(0.71, 0.015, -0.81), new Vector3(0.8, 0.01, -1.06),
+  new Vector3(0.8, -0.1, -1.13), new Vector3(0.72, -1.91, -1.13),
+]);
 
-export function TableLamp({ on, onToggle, onReady }: Props) {
+type Props = { on: boolean; onToggle: () => void; onReady: () => void; inRoom?: boolean };
+
+export function TableLamp({ on, onToggle, onReady, inRoom = false }: Props) {
   const wood = useSurfaceMap('wood', 1.5, 1);
   const linen = useSurfaceMap('weave', 8, 2);
   const shade = useMemo(pleatedShade, []);
@@ -49,11 +56,12 @@ export function TableLamp({ on, onToggle, onReady }: Props) {
     const remaining = Math.abs(level.current - target);
     level.current = remaining < 0.002 || reducedMotion.matches
       ? target : MathUtils.damp(level.current, target, 5.5, Math.min(delta, 0.08));
+    const lightScale = inRoom ? 0.31 : 1;
     fabric.current.emissiveIntensity = level.current * 2.8;
-    bulb.current.intensity = level.current * 2.1;
-    spill.current.intensity = level.current * 2.1;
-    downlight.current.intensity = level.current * 2.5;
-    uplight.current.intensity = level.current * 7.5;
+    bulb.current.intensity = level.current * lightScale * 2.1;
+    spill.current.intensity = level.current * lightScale * 2.1;
+    downlight.current.intensity = level.current * lightScale * 2.5;
+    uplight.current.intensity = level.current * lightScale * 7.5;
     if (level.current !== target) invalidate();
   });
 
@@ -92,7 +100,7 @@ export function TableLamp({ on, onToggle, onReady }: Props) {
         </mesh>
       </Select>
     </group>
-    <mesh castShadow><tubeGeometry args={[cord, 64, 0.009, 8, false]} />
+    <mesh castShadow><tubeGeometry args={[inRoom ? cabinetCord : cord, 64, 0.009, 8, false]} />
       <meshStandardMaterial color="#312923" roughness={0.88} />
     </mesh>
     <mesh position={[0.021, 0.002, -0.036]} rotation-x={-Math.PI / 2} renderOrder={1}>

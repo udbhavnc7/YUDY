@@ -28,3 +28,11 @@ h1 em { font-weight: normal; letter-spacing: -0.065em; }
   .imprint { font-size: 0.78rem; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; } }
+
+.room-tour { height: 620vh; height: 620svh; }
+.room-tour .exhibit { position: sticky; top: 0; touch-action: pan-y; }
+.scroll-instruction { margin: 0.55rem 0 0; font-size: 0.875rem; color: #e5d5bc; }
+@media (max-aspect-ratio: 57/50) {
+  .room-tour .label { text-shadow: 0 1px 14px #150f09, 0 1px 3px #150f09; top: min(var(--label-y, 59%), calc(100% - 10.3rem - env(safe-area-inset-bottom))); }
+  .scroll-instruction { margin-top: 0.2rem; }
+}
