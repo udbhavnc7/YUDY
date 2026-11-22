@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, PerspectiveCamera, Vector3 } from 'three';
-import { LAMP_POSITION, LAMP_SCALE, PILLOW_ANCHORS, PILLOW_HEIGHT, PILLOW_DEPTH } from '../../components/room/layout';
+import { LAMP_POSITION, LAMP_SCALE, PILLOW_ANCHORS } from '../../components/room/layout';
 import { roomPath, zoneIndex, zones } from './roomPath';
 import { chairAngle } from './chairTurn';
 
@@ -73,7 +73,7 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange }: 
     }
     if (education && host) {
       for (const pillow of PILLOW_ANCHORS) {
-        anchor.set(pillow.x, PILLOW_HEIGHT, PILLOW_DEPTH).project(lens);
+        anchor.set(pillow.x, pillow.y, pillow.z).project(lens);
         host.style.setProperty('--' + pillow.key + '-x', (1 + anchor.x) * 50 + '%');
         host.style.setProperty('--' + pillow.key + '-y', (1 - anchor.y) * 50 + '%');
       }

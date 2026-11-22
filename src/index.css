@@ -47,6 +47,7 @@ h1 em { font-weight: normal; letter-spacing: -0.065em; }
 .education-pillows { position: absolute; inset: 0; pointer-events: none; }
 .pillow-school, .note-school { --pillow-x: var(--school-x); --pillow-y: var(--school-y); }
 .pillow-college, .note-college { --pillow-x: var(--college-x); --pillow-y: var(--college-y); }
+.pillow-pu, .note-pu { --pillow-x: var(--pu-x); --pillow-y: var(--pu-y); }
 .pillow-button {
   position: absolute;
   left: var(--pillow-x);
@@ -113,4 +114,12 @@ h1 em { font-weight: normal; letter-spacing: -0.065em; }
   .illuminated .intro-identity { transition-delay: 0s; }
   .education-note-paper { animation: none; }
   .pillow-button:hover .pillow-tag, .pillow-button[aria-expanded="true"] .pillow-tag { transform: none; }
+}
+
+@media (max-width: 560px) {
+  .pillow-button { width: clamp(3rem, 16vw, 5.2rem); height: 2.75rem; grid-template-columns: minmax(0, 1fr); }
+  .pillow-tag { padding-inline: 0.35rem; white-space: nowrap; }
+  .pillow-tag i { display: none; }
+  .pillow-college { margin-top: 0.875rem; }
+  .pillow-college .pillow-tag { width: 5rem; justify-content: center; white-space: normal; }
 }

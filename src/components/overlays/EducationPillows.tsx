@@ -31,7 +31,7 @@ export function EducationPillows() {
 
   return <section className="education-pillows" aria-label="Education">
     {EDUCATION.map(item => (
-      <button key={item.id} type="button" className={'pillow-button pillow-' + item.type}
+      <button key={item.id} type="button" className={'pillow-button pillow-' + item.id}
         aria-expanded={selected === item.id} aria-controls="education-note"
         onPointerEnter={event => {
           if (event.pointerType !== 'mouse') return;
@@ -45,7 +45,7 @@ export function EducationPillows() {
           setPinned(current => current === item.id ? undefined : item.id);
         }}
       >
-        <span className="pillow-tag"><i aria-hidden="true" />{item.type === 'school' ? 'School' : 'College'}</span>
+        <span className="pillow-tag"><i aria-hidden="true" />{item.label}</span>
       </button>
     ))}
     <div id="education-note" className={'education-note' + (selected ? ' note-' + selected : '')}
