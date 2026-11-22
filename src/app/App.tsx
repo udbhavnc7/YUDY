@@ -22,6 +22,7 @@ export function App() {
   const [highlight, setHighlight] = useState<string>();
   const [soloShelf, setSoloShelf] = useState(false);
   const [bookHighlight, setBookHighlight] = useState<string>();
+  const [openBook, setOpenBook] = useState<string>();
   const [ready, setReady] = useState(false);
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -37,7 +38,7 @@ export function App() {
       <SceneBoundary onFailure={onFailure}>
         <MainRoom proof={proof} isolated={isolated} onIntroChange={setIntro} onEducationChange={setEducation}
           onGalleryChange={setGallery} highlight={gallery ? highlight : undefined}
-          onSoloShelfChange={setSoloShelf} bookHighlight={soloShelf ? bookHighlight : undefined}
+          onSoloShelfChange={setSoloShelf} bookHighlight={soloShelf ? bookHighlight : undefined} openBook={soloShelf ? openBook : undefined}
           on={on} onReady={onReady} onToggle={onToggle} />
       </SceneBoundary>
       <div className="vignette" aria-hidden="true" />
@@ -55,7 +56,7 @@ export function App() {
       </section>}
       {education && ready && !failed && <EducationPillows />}
       {gallery && ready && !failed && <AchievementPosters onHighlight={setHighlight} />}
-      {soloShelf && ready && !failed && <SoloShelfNotes onHighlight={setBookHighlight} />}
+      {soloShelf && ready && !failed && <SoloShelfNotes onHighlight={setBookHighlight} onRead={setOpenBook} />}
       {proof && failed && <p role="alert" className="label">The lighting proof couldn’t load.</p>}
     </div>
   </main>;
