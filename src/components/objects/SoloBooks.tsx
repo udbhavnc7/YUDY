@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { Color, Group, MathUtils, Mesh, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3, type BufferGeometry } from 'three';
+import { Group, MathUtils, Mesh, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3, type BufferGeometry, type Texture } from 'three';
 import { BOOK_FRONT, BOOK_PULL, SOLO_BOOKS } from '../room/soloShelfLayout';
+import { bookPaper } from './bookPaper';
 import { bookStamp } from './bookStamp';
 
 type Book = (typeof SOLO_BOOKS)[number];
@@ -11,10 +12,19 @@ type Part = { geometry: BufferGeometry; name: string };
 const spineThickness = 0.18;
 const boardHingeZ = 0.082;
 const readingDistance = 0.63;
-const paper = new Color('#eee0bf');
 const axisY = new Vector3(0, 1, 0);
 
-function Volume({ book, parts, active, reading }: { book: Book; parts: Part[]; active: boolean; reading: boolean }) {
+type VolumeProps = {
+  book: Book;
+  body: Part[];
+  front?: BufferGeometry;
+  endpaper: Texture;
+  readingPage: Texture;
+  active: boolean;
+  reading: boolean;
+};
+
+function Volume({ book, body, front, endpaper, readingPage, active, reading }: VolumeProps) {
   const root = useRef<Group>(null);
   const board = useRef<Group>(null);
   const progress = useRef(0);
@@ -78,10 +88,9 @@ function Volume({ book, parts, active, reading }: { book: Book; parts: Part[]; a
     if (opening !== target || pull.current !== pullTarget) invalidate();
   });
 
-  const front = parts.find(part => part.name === 'Front board');
   return <group ref={root}>
     <group position={[0.5, -0.5, 0]} rotation-y={-Math.PI / 2} scale={[spineThickness, 1, 1]}>
-      {parts.filter(part => part !== front).map(({ geometry, name }) => (
+      {body.map(({ geometry, name }) => (
         <mesh key={name} geometry={geometry} castShadow receiveShadow>
           <meshStandardMaterial color={name === 'Cover' ? cloth : name === 'Pages' ? '#d5c5a2' : '#9b8d70'}
             roughness={name === 'Cover' ? 0.9 : 1} />
@@ -93,12 +102,12 @@ function Volume({ book, parts, active, reading }: { book: Book; parts: Part[]; a
       <meshStandardMaterial map={spine} roughness={0.92} />
     </mesh>
     <mesh position={[0.5, 0, 0.074]}>
-      <planeGeometry args={[0.954, 0.964]} />
-      <meshStandardMaterial color={paper} roughness={0.96} emissive="#c8b694" emissiveIntensity={0.23} />
+      <planeGeometry args={[0.929, 0.958]} />
+      <meshStandardMaterial map={readingPage} roughness={0.96} emissive="#c8b694" emissiveIntensity={0.23} />
     </mesh>
     <group ref={board} position-z={boardHingeZ}>
       <group position={[0.5, -0.5, -boardHingeZ]} rotation-y={-Math.PI / 2} scale={[spineThickness, 1, 1]}>
-        {front && <mesh geometry={front.geometry} castShadow receiveShadow>
+        {front && <mesh geometry={front} castShadow receiveShadow>
           <meshStandardMaterial color={cloth} roughness={0.9} />
         </mesh>}
       </group>
@@ -108,7 +117,7 @@ function Volume({ book, parts, active, reading }: { book: Book; parts: Part[]; a
       </mesh>
       <mesh position={[0.5, 0, 0.071 - boardHingeZ]} rotation-y={Math.PI}>
         <planeGeometry args={[0.934, 0.948]} />
-        <meshStandardMaterial color={paper} roughness={0.96} emissive="#c8b694" emissiveIntensity={0.23} />
+        <meshStandardMaterial map={endpaper} roughness={0.96} emissive="#c8b694" emissiveIntensity={0.23} />
       </mesh>
     </group>
   </group>;
@@ -116,17 +125,25 @@ function Volume({ book, parts, active, reading }: { book: Book; parts: Part[]; a
 
 export function SoloBooks({ highlight, open }: { highlight?: string; open?: string }) {
   const { scene } = useGLTF('/models/project-book.glb', false, true);
-  const parts = useMemo(() => {
-    const surfaces: Part[] = [];
+  const { body, front } = useMemo(() => {
+    const body: Part[] = [];
+    let front: BufferGeometry | undefined;
     scene.traverse(object => {
-      if (object instanceof Mesh) surfaces.push({ geometry: object.geometry, name: (object.material as MeshStandardMaterial).name });
+      if (!(object instanceof Mesh)) return;
+      const name = (object.material as MeshStandardMaterial).name;
+      if (name === 'Front board') front = object.geometry;
+      else body.push({ geometry: object.geometry, name });
     });
-    return surfaces;
+    return { body, front };
   }, [scene]);
+  const endpaper = useMemo(() => bookPaper(false), []);
+  const readingPage = useMemo(() => bookPaper(true), []);
+  useEffect(() => () => { endpaper.dispose(); readingPage.dispose(); }, [endpaper, readingPage]);
 
   return <>
     {SOLO_BOOKS.map(book => (
-      <Volume key={book.project.id} book={book} parts={parts} reading={open === book.project.id} active={highlight === book.project.id} />
+      <Volume key={book.project.id} book={book} body={body} front={front} endpaper={endpaper} readingPage={readingPage}
+        reading={open === book.project.id} active={highlight === book.project.id} />
     ))}
   </>;
 }
