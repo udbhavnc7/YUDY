@@ -1,6 +1,6 @@
 # YUDY
 
-Udbhav NC’s portfolio takes place in one interior. Phase 5 adds the larger VAPORLOGIC project books in the right shelf bay.
+Udbhav NC’s portfolio takes place in one interior. Phase 6 adds a planted window alcove with objects from his hobbies.
 
 ## Run locally
 
@@ -13,7 +13,8 @@ From this checkout, run `npm ci` if dependencies are missing. Run `npm run dev` 
 - Scroll to the poster wall and hover a frame to brighten its status border. Click, tap or press Space on the frame to open its note. Escape or Close returns focus to the poster.
 - Continue to the left bookshelf bay. Hover to pull a book forward, then click, tap or press Enter to open its cover. Read the description and follow GitHub or a verified live deployment on its pages. Press Escape or Close book to return the volume to the shelf.
 - Scroll from the left bay to the right. Open any VAPORLOGIC book and check its team credit and links. Scroll beyond the bay and check that the book closes.
-- Continue past the window alcove. Press End for the full-room reveal or Home to return.
+- Continue to the window table. Hover a prop or use Tab to see its hobby label. Click, tap or press Enter to open the note, then press Escape or Close to dismiss it. Continue scrolling and check that the note closes as the camera leaves the table.
+- Press End for the full-room reveal or Home to return.
 - Open `/?proof=lamp` to inspect the isolated Phase 0 lamp.
 - Resize to a portrait viewport to check the lamp and full-room framing. With reduced motion enabled, scrolling steps between views.
 - Run `npm run build` and `npm run preview` to check the production bundle.

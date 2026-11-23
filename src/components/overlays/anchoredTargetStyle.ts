@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-export function anchoredTargetStyle(kind: 'poster' | 'book', index: number) {
+export function anchoredTargetStyle(kind: 'poster' | 'book' | 'hobby', index: number) {
   const target = '--' + kind + '-' + index;
   return {
     '--frame-left': 'var(' + target + '-left)',

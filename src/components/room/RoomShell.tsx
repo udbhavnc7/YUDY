@@ -6,6 +6,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { useSurfaceMap, useSurfaceMaps } from '../../systems/lighting/useSurfaceMap';
 import { CHAIR_POSITION, LAMP_POSITION, SHELF_X, SOFA_POSITION } from './layout';
 import { Seating } from './Seating';
+import { SHOWCASE_FACING, SHOWCASE_POSITION, SHOWCASE_RISER, SHOWCASE_TOP } from './showcaseLayout';
 
 extend({ RoundedBoxGeometry });
 declare module '@react-three/fiber' {
@@ -98,6 +99,19 @@ function Shelves({ wood, back }: { wood: MeshStandardMaterial; back: MeshStandar
   </group>;
 }
 
+function ShowcaseTable({ wood, back, brass }: { wood: MeshStandardMaterial; back: MeshStandardMaterial; brass: MeshStandardMaterial }) {
+  return <group position={SHOWCASE_POSITION} rotation-y={SHOWCASE_FACING}>
+    <Board at={[0, SHOWCASE_TOP - 0.024, 0]} size={[1.59, 0.048, 0.68]} material={wood} bevel={0.012} />
+    <Board at={[0, 0.80, 0.27]} size={[1.48, 0.12, 0.074]} material={wood} bevel={0.005} />
+    <Board at={[0, 0.80, -0.27]} size={[1.48, 0.12, 0.074]} material={back} bevel={0.005} />
+    {[-0.715, 0.715].flatMap(x => [-0.27, 0.27].map(z => (
+      <Board key={x + ',' + z} at={[x, 0.442, z]} size={[0.065, 0.884, 0.065]} material={wood} bevel={0.008} />
+    )))}
+    <Board at={[-0.055, SHOWCASE_RISER - 0.022, -0.13]} size={[1.37, 0.044, 0.31]} material={wood} bevel={0.009} />
+    {[-0.60, 0.50].map(x => <Board key={x} at={[x, 1.034, -0.197]} size={[0.041, 0.248, 0.078]} material={brass} bevel={0.004} />)}
+  </group>;
+}
+
 function Rug() {
   const [map, normalMap, roughnessMap] = useSurfaceMaps(['rug', 'rug-normal', 'rug-roughness'], 6, 4);
   const maps = useMemo(() => ({ map, normalMap, roughnessMap, normalScale: new Vector2(0.35, 0.35) }), [map, normalMap, roughnessMap]);
@@ -148,10 +162,12 @@ export function RoomShell({ view }: { view: MutableRefObject<RoomView> }) {
     <Rug />
     <Cabinet wood={wood} brass={brass} />
     <Shelves wood={wood} back={back} />
+    <ShowcaseTable wood={wood} back={back} brass={brass} />
     <FloorContact x={SOFA_POSITION[0]} z={SOFA_POSITION[2]} width={3.05} depth={1.1} strength={0.75} />
     <FloorContact x={CHAIR_POSITION[0]} z={CHAIR_POSITION[2]} width={0.83} depth={0.78} strength={0.52} />
     <FloorContact x={LAMP_POSITION[0]} z={LAMP_POSITION[2]} width={1.42} depth={0.96} strength={0.54} />
     <FloorContact x={SHELF_X} z={-2.16} width={2.38} depth={0.79} strength={0.66} />
+    <FloorContact x={SHOWCASE_POSITION[0]} z={SHOWCASE_POSITION[2]} width={0.89} depth={1.79} strength={0.48} />
     <Seating kind="sofa" />
     <Seating kind="chair" view={view} />
   </>;

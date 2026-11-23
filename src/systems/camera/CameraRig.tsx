@@ -4,6 +4,7 @@ import { MathUtils, PerspectiveCamera, Vector3 } from 'three';
 import { LAMP_POSITION, LAMP_SCALE, PILLOW_ANCHORS } from '../../components/room/layout';
 import { POSTER_WIDTH, POSTER_HEIGHT, posterPosition } from '../../components/room/galleryLayout';
 import { BOOK_FRONT, PROJECT_SHELVES } from '../../components/room/projectShelves';
+import { SHOWCASE_FACING, SHOWCASE_ITEMS } from '../../components/room/showcaseLayout';
 import type { ProjectType } from '../../data/projects';
 import { projectTarget } from './projectTarget';
 import { ACHIEVEMENTS } from '../../data/achievements';
@@ -18,9 +19,10 @@ type Props = {
   onEducationChange: (education: boolean) => void;
   onGalleryChange: (gallery: boolean) => void;
   onShelfChange: (shelf: ProjectType | undefined) => void;
+  onShowcaseChange: (showcase: boolean) => void;
 };
 
-export function CameraRig({ isolated, view, onIntroChange, onEducationChange, onGalleryChange, onShelfChange }: Props) {
+export function CameraRig({ isolated, view, onIntroChange, onEducationChange, onGalleryChange, onShelfChange, onShowcaseChange }: Props) {
   const { size, gl, invalidate } = useThree();
   const aspect = size.width / size.height;
   const path = useMemo(() => roomPath(aspect, isolated), [aspect, isolated]);
@@ -28,6 +30,7 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
   const inIntro = useRef(true);
   const inEducation = useRef(false);
   const inGallery = useRef(false);
+  const inShowcase = useRef(false);
   const currentShelf = useRef<ProjectType>();
   const look = useMemo(() => new Vector3(), []);
   const anchor = useMemo(() => new Vector3(), []);
@@ -68,6 +71,7 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
     const zone = zones[zoneIndex(p)][0];
     const education = !isolated && zone === 'Sofa';
     const gallery = !isolated && zone === 'Poster wall';
+    const showcase = !isolated && zone === 'Showcase';
     const shelf = isolated ? undefined : zone === 'Solo shelf' ? 'solo' : zone === 'Group shelf' ? 'group' : undefined;
     if (shelf !== currentShelf.current) {
       currentShelf.current = shelf;
@@ -80,6 +84,10 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
     if (education !== inEducation.current) {
       inEducation.current = education;
       onEducationChange(education);
+    }
+    if (showcase !== inShowcase.current) {
+      inShowcase.current = showcase;
+      onShowcaseChange(showcase);
     }
     if (intro !== inIntro.current) { inIntro.current = intro; onIntroChange(intro); }
     if (intro) {
@@ -106,6 +114,10 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
     if (shelf && host) {
       PROJECT_SHELVES[shelf].forEach((book, index) => projectTarget(host, '--book-' + index, lens, anchor,
         book.x, book.floor + book.height / 2, BOOK_FRONT, book.faceOut ? book.depth : book.thickness, book.height));
+    }
+    if (showcase && host) {
+      SHOWCASE_ITEMS.forEach(({ anchor: item }, index) =>
+        projectTarget(host, '--hobby-' + index, lens, anchor, ...item, SHOWCASE_FACING));
     }
     if (p !== dest) invalidate();
   }, -1);

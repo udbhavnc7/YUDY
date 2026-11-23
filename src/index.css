@@ -195,6 +195,72 @@ h1 em { font-weight: normal; letter-spacing: -0.065em; }
 }
 @media (prefers-reduced-motion: reduce) { .achievement-paper { animation: none; } }
 
+.hobby-notes { position: absolute; inset: 0; pointer-events: none; }
+.hobby-hit { min-width: 44px; min-height: 44px; overflow: visible; }
+.hobby-hit span {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 62%);
+  padding: 0.32rem 0.62rem;
+  white-space: nowrap;
+  background: #ede3cc;
+  color: #333a29;
+  border-top: 1px solid #8c8058;
+  font: 500 0.88rem/1.15 system-ui, sans-serif;
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+  pointer-events: none;
+}
+.hobby-hit:is(:hover, :focus-visible):not([aria-expanded="true"]) span { opacity: 1; }
+.hobby-note {
+  --note-width: min(18rem, 100% - 2rem);
+  --note-left: calc(var(--frame-left) + var(--frame-width) + 0.6rem);
+  position: absolute;
+  width: var(--note-width);
+  left: clamp(1rem, var(--note-left), calc(100% - var(--note-width) - 1rem));
+  top: clamp(1rem, var(--frame-top), calc(100% - 13rem));
+  visibility: var(--frame-visibility);
+  pointer-events: auto;
+  z-index: 1;
+}
+.hobby-note[data-side="left"] { --note-left: calc(var(--frame-left) - var(--note-width) - 0.6rem); }
+.hobby-paper {
+  padding: 0.52rem 1rem 0.95rem;
+  background: #eee6d2;
+  border-top: 3px solid #687354;
+  box-shadow: 0 7px 24px #1d150b54;
+  color: #352e22;
+  font-size: 1rem;
+  line-height: 1.48;
+  animation: note-in 180ms ease-out both;
+}
+.hobby-paper header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.hobby-paper h2 { margin: 0; font: 400 clamp(1.4rem, 3vw, 1.9rem)/1.05 Georgia, serif; }
+.hobby-paper p { margin: 0.25rem 0 0; }
+.hobby-paper button {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: #3e492f;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.hobby-paper button:focus-visible { outline: 2px solid #687354; outline-offset: 2px; }
+@media (max-aspect-ratio: 57/50) {
+  .hobby-note, .hobby-note[data-side="left"] {
+    --note-left: calc(var(--frame-left) + var(--frame-width) / 2 - var(--note-width) / 2);
+    top: clamp(1rem, calc(var(--frame-top) + var(--frame-height) + 0.65rem), calc(100% - 13rem));
+  }
+  .hobby-note[data-row="top"] {
+    top: auto;
+    bottom: clamp(1rem, calc(100% - var(--frame-top) + 0.65rem), calc(100% - 13rem));
+  }
+}
+@media (prefers-reduced-motion: reduce) { .hobby-paper { animation: none; } }
+
 .project-shelf-notes { position: absolute; inset: 0; pointer-events: none; }
 .book-hit { min-width: 44px; }
 

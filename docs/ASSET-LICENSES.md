@@ -14,3 +14,8 @@ Only files in `assets/` are copied into the production build. The lamp, joinery 
 | `textures/rug*.ktx2` | [Carpet 001, ambientCG](https://ambientcg.com/view?id=Carpet001) | CC0 | None required |
 | `textures/joinery.ktx2` | [Dark Wooden Planks, Poly Haven](https://polyhaven.com/a/dark_wooden_planks), cropped and toned | CC0 | None required |
 | `models/project-book.glb` | [Bound Three - Books, Innerscene](https://www.innerscene.com/tools/library/3d-parts/bound-three-books-b266be0c), one bound volume reoriented, with its hinged front board separated and the mesh compressed with Meshopt | CC0 | None required |
+| `models/potted-haworthia.glb`, `textures/showcase-plant*.ktx2` | [Potted Plant 04, Poly Haven](https://polyhaven.com/a/potted_plant_04), grounding plane omitted, with Meshopt geometry and KTX2 surface maps | CC0 | None required |
+| `models/trailing-pothos.glb` | [Potted trailing pothos, Innerscene](https://www.innerscene.com/tools/library/3d-parts/potted-trailing-pothos-bfe0ed29), Meshopt geometry and baked material colors | CC0 | None required |
+| `models/compact-camera.glb`, `textures/showcase-prop-normal.ktx2` | [Pocket Frame, Innerscene](https://www.innerscene.com/tools/library/3d-parts/pocket-frame-compact-camera-36d44b86), Meshopt geometry, baked material colors, and shared KTX2 normal map | CC0 | None required |
+| `models/cassette-player.glb` | [Pocket Tape, Innerscene](https://www.innerscene.com/tools/library/3d-parts/pocket-tape-cassette-player-71405909), Meshopt geometry and baked material colors | CC0 | None required |
+| `models/frying-pan.glb` | [Sear Pan, Innerscene](https://www.innerscene.com/tools/library/3d-parts/sear-pan-cookware-0b332c3a), Meshopt geometry and baked material colors | CC0 | None required |

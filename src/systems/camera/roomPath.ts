@@ -38,7 +38,7 @@ export function roomPath(aspect: number, isolated: boolean) {
     { at: 0.395, eye: [GALLERY_X, 1.82, 0.47], look: [GALLERY_X, GALLERY_Y - 0.08, POSTER_FRONT], fov: 39 },
     { at: 0.545, eye: [SOLO_SHELF_X - 0.31, 1.5, -0.47], look: [SOLO_SHELF_X, 1.39, BOOK_FRONT], fov: 42 },
     { at: 0.68, eye: [GROUP_SHELF_X - 0.10, 1.48, -0.32], look: [GROUP_SHELF_X, 1.41, BOOK_FRONT], fov: 41 },
-    { at: 0.805, eye: [1.41, 1.47, 1.18], look: [3.65, 1.50, -0.71], fov: 47 },
+    { at: 0.805, eye: [1.09, 1.64, 0.22], look: [3.26, 1.39, -0.43], fov: 48 },
     { at: 0.90, eye: [0.93, 1.63, 2.98], look: [0.93, 1.15, -1.42], fov: 49 },
     { at: 1, eye: [-0.77, 1.76, 5.37], look: [0.32, 1.23, -1.42], fov: 40 },
   ];
@@ -52,6 +52,8 @@ export function roomPath(aspect: number, isolated: boolean) {
     shots[3].fov = 66;
     shots[4].eye[2] = Math.max(-0.47, 0.54 / (aspect * 0.51) + BOOK_FRONT);
     shots[5].eye[2] = Math.max(-0.32, 0.54 / (aspect * 0.51) + BOOK_FRONT);
+    shots[6].eye[0] = Math.min(1.09, 3.25 - 0.92 / (aspect * 0.51));
+    shots[6].eye[2] = Math.min(0.22, 0.22 + shots[6].eye[0] * 0.22);
     shots[3].eye[2] = Math.max(0.47, 1.78 / (aspect * Math.tan(MathUtils.degToRad(33))) + POSTER_FRONT);
     shots[2].eye[2] = Math.max(0.52, 1.36 / (aspect * 0.51) + SOFA_POSITION[2]);
   }
@@ -67,7 +69,10 @@ export function roomPath(aspect: number, isolated: boolean) {
     let i = 0;
     while (i < shots.length - 2 && p > shots[i + 1].at) i++;
     const t = MathUtils.clamp((p - shots[i].at) / (shots[i + 1].at - shots[i].at), 0, 1);
-    const curveTime = (i + t) / (shots.length - 1);
+    // Ease into the window seat and linger there before starting the pullback.
+    const linger = 0.70 * t * (1 - t);
+    const travel = i === 5 ? t + linger : i === 6 ? t - linger : t;
+    const curveTime = (i + travel) / (shots.length - 1);
     eyes.getPoint(curveTime, eye);
     targets.getPoint(curveTime, look);
 

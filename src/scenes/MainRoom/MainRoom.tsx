@@ -7,6 +7,7 @@ import { CameraRig, type RoomView } from '../../systems/camera/CameraRig';
 import { Studio } from '../../systems/lighting/Studio';
 import { AchievementWall } from '../../components/objects/AchievementWall';
 import { ProjectBooks } from '../../components/objects/ProjectBooks';
+import { HobbyShowcase } from '../../components/objects/HobbyShowcase';
 import type { ProjectType } from '../../data/projects';
 import { TableLamp } from '../../components/objects/TableLamp';
 import { RoomShell } from '../../components/room/RoomShell';
@@ -23,12 +24,14 @@ type Props = {
   onShelfChange: (shelf: ProjectType | undefined) => void;
   bookHighlight?: string;
   openBook?: string;
+  onShowcaseChange: (showcase: boolean) => void;
+  hobbyHighlight?: string;
   on: boolean;
   onToggle: () => void;
   onReady: () => void;
 };
 
-function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, bookHighlight, openBook }: Props & { view: MutableRefObject<RoomView> }) {
+function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, bookHighlight, openBook, hobbyHighlight }: Props & { view: MutableRefObject<RoomView> }) {
   const fill = useMemo(() => new PointLight(0xffe6cc, 0.45), []);
   const bloomLights = useMemo(() => [fill], [fill]);
   return <Selection>
@@ -44,6 +47,7 @@ function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, boo
       <RoomShell view={view} />
       <AchievementWall highlight={highlight} />
       <ProjectBooks highlight={bookHighlight} open={openBook} />
+      <Suspense fallback={null}><HobbyShowcase highlight={hobbyHighlight} /></Suspense>
     </>}
     <primitive object={fill} position={[1.3, 2.2, 1.5]} />
     {proof ? <mesh position-y={0.45} rotation-y={0.38} castShadow receiveShadow>
@@ -67,7 +71,7 @@ export function MainRoom(props: Props) {
     onCreated={({ gl }) => { gl.toneMappingExposure = 1; }}>
     <CameraRig isolated={props.isolated} view={view}
       onIntroChange={props.onIntroChange} onEducationChange={props.onEducationChange}
-      onGalleryChange={props.onGalleryChange} onShelfChange={props.onShelfChange} />
+      onGalleryChange={props.onGalleryChange} onShelfChange={props.onShelfChange} onShowcaseChange={props.onShowcaseChange} />
     <Suspense fallback={null}><Exposure {...props} view={view} /></Suspense>
   </Canvas>;
 }

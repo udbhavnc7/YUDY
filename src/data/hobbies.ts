@@ -2,28 +2,32 @@ export type Hobby = {
   id: string;
   title: string;
   description: string;
-  asset?: string;
+  asset: string;
 };
 
 export const HOBBIES: Hobby[] = [
   {
     id: 'photography',
     title: 'Photography',
-    description: 'Street and architectural photography. Capturing light, geometry, and quiet moments in urban spaces.',
+    description: 'Street and architectural photography, with an eye for light, geometry, and quiet moments in urban spaces.',
+    asset: '/models/compact-camera.glb',
   },
   {
     id: 'music',
     title: 'Music',
-    description: 'Listening across genres — from ambient electronic to Indian classical. The cassette player on the terrace is not decorative.',
+    description: 'Listening across genres, from ambient electronic music to Indian classical.',
+    asset: '/models/cassette-player.glb',
   },
   {
     id: 'reading',
     title: 'Reading',
-    description: 'Systems design, sci-fi, and the occasional philosophy paper. The bookshelf in the room is not just a metaphor.',
+    description: 'Reading about systems design, along with science fiction and the occasional philosophy paper.',
+    asset: '/models/project-book.glb',
   },
   {
     id: 'cooking',
     title: 'Cooking',
-    description: 'Experimental home cooking. The dosa on the terrace loader was not a random choice — it is a Sunday ritual.',
+    description: 'Experimental home cooking and trying new recipes.',
+    asset: '/models/frying-pan.glb',
   },
 ];

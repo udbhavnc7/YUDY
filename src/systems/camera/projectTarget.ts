@@ -2,14 +2,20 @@ import type { PerspectiveCamera, Vector3 } from 'three';
 
 export function projectTarget(
   host: HTMLElement, prefix: string, lens: PerspectiveCamera, point: Vector3,
-  x: number, y: number, z: number, width: number, height: number,
+  x: number, y: number, z: number, width: number, height: number, yaw = 0,
 ) {
-  point.set(x - width / 2, y + height / 2, z).project(lens);
-  const left = (1 + point.x) * 50;
-  const top = (1 - point.y) * 50;
-  point.set(x + width / 2, y - height / 2, z).project(lens);
-  const right = (1 + point.x) * 50;
-  const bottom = (1 - point.y) * 50;
+  const halfX = width * Math.cos(yaw) / 2;
+  const halfZ = -width * Math.sin(yaw) / 2;
+  let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
+  for (const direction of [-1, 1]) {
+    for (const rise of [-height / 2, height / 2]) {
+      point.set(x + direction * halfX, y + rise, z + direction * halfZ).project(lens);
+      left = Math.min(left, (1 + point.x) * 50);
+      right = Math.max(right, (1 + point.x) * 50);
+      top = Math.min(top, (1 - point.y) * 50);
+      bottom = Math.max(bottom, (1 - point.y) * 50);
+    }
+  }
   const visible = left >= 0 && right <= 100 && top >= 0 && bottom <= 100;
 
   host.style.setProperty(prefix + '-left', left + '%');

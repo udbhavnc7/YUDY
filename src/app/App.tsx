@@ -3,6 +3,7 @@ import { MainRoom } from '../scenes/MainRoom/MainRoom';
 import { AchievementPosters } from '../components/overlays/AchievementPosters';
 import { EducationPillows } from '../components/overlays/EducationPillows';
 import { ProjectShelfNotes } from '../components/overlays/ProjectShelfNotes';
+import { HobbyNotes } from '../components/overlays/HobbyNotes';
 import type { ProjectType } from '../data/projects';
 import { PROFILE } from '../data/profile';
 
@@ -24,6 +25,8 @@ export function App() {
   const [shelf, setShelf] = useState<ProjectType>();
   const [bookHighlight, setBookHighlight] = useState<string>();
   const [openBook, setOpenBook] = useState<string>();
+  const [showcase, setShowcase] = useState(false);
+  const [hobbyHighlight, setHobbyHighlight] = useState<string>();
   const [ready, setReady] = useState(false);
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -45,6 +48,7 @@ export function App() {
         <MainRoom proof={proof} isolated={isolated} onIntroChange={setIntro} onEducationChange={setEducation}
           onGalleryChange={setGallery} highlight={gallery ? highlight : undefined}
           onShelfChange={onShelfChange} bookHighlight={bookHighlight} openBook={openBook}
+          onShowcaseChange={setShowcase} hobbyHighlight={showcase ? hobbyHighlight : undefined}
           on={on} onReady={onReady} onToggle={onToggle} />
       </SceneBoundary>
       <div className="vignette" aria-hidden="true" />
@@ -63,6 +67,7 @@ export function App() {
       {education && ready && !failed && <EducationPillows />}
       {gallery && ready && !failed && <AchievementPosters onHighlight={setHighlight} />}
       {shelf && ready && !failed && <ProjectShelfNotes key={shelf} shelf={shelf} onHighlight={setBookHighlight} onRead={setOpenBook} />}
+      {showcase && ready && !failed && <HobbyNotes onHighlight={setHobbyHighlight} />}
       {proof && failed && <p role="alert" className="label">The lighting proof couldn’t load.</p>}
     </div>
   </main>;
