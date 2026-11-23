@@ -20,9 +20,10 @@ type Props = {
   onGalleryChange: (gallery: boolean) => void;
   onShelfChange: (shelf: ProjectType | undefined) => void;
   onShowcaseChange: (showcase: boolean) => void;
+  onClosingChange: (closing: boolean) => void;
 };
 
-export function CameraRig({ isolated, view, onIntroChange, onEducationChange, onGalleryChange, onShelfChange, onShowcaseChange }: Props) {
+export function CameraRig({ isolated, view, onIntroChange, onEducationChange, onGalleryChange, onShelfChange, onShowcaseChange, onClosingChange }: Props) {
   const { size, gl, invalidate } = useThree();
   const aspect = size.width / size.height;
   const path = useMemo(() => roomPath(aspect, isolated), [aspect, isolated]);
@@ -31,6 +32,7 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
   const inEducation = useRef(false);
   const inGallery = useRef(false);
   const inShowcase = useRef(false);
+  const inClosing = useRef(false);
   const currentShelf = useRef<ProjectType>();
   const look = useMemo(() => new Vector3(), []);
   const anchor = useMemo(() => new Vector3(), []);
@@ -72,6 +74,7 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
     const education = !isolated && zone === 'Sofa';
     const gallery = !isolated && zone === 'Poster wall';
     const showcase = !isolated && zone === 'Showcase';
+    const closing = !isolated && zone === 'Room' && (motion.matches || p >= 0.956);
     const shelf = isolated ? undefined : zone === 'Solo shelf' ? 'solo' : zone === 'Group shelf' ? 'group' : undefined;
     if (shelf !== currentShelf.current) {
       currentShelf.current = shelf;
@@ -88,6 +91,10 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
     if (showcase !== inShowcase.current) {
       inShowcase.current = showcase;
       onShowcaseChange(showcase);
+    }
+    if (closing !== inClosing.current) {
+      inClosing.current = closing;
+      onClosingChange(closing);
     }
     if (intro !== inIntro.current) { inIntro.current = intro; onIntroChange(intro); }
     if (intro) {

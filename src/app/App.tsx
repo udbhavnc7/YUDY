@@ -4,6 +4,7 @@ import { AchievementPosters } from '../components/overlays/AchievementPosters';
 import { EducationPillows } from '../components/overlays/EducationPillows';
 import { ProjectShelfNotes } from '../components/overlays/ProjectShelfNotes';
 import { HobbyNotes } from '../components/overlays/HobbyNotes';
+import { ClosingSignature } from '../components/overlays/ClosingSignature';
 import type { ProjectType } from '../data/projects';
 import { PROFILE } from '../data/profile';
 
@@ -27,6 +28,7 @@ export function App() {
   const [openBook, setOpenBook] = useState<string>();
   const [showcase, setShowcase] = useState(false);
   const [hobbyHighlight, setHobbyHighlight] = useState<string>();
+  const [closing, setClosing] = useState(false);
   const [ready, setReady] = useState(false);
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -49,6 +51,7 @@ export function App() {
           onGalleryChange={setGallery} highlight={gallery ? highlight : undefined}
           onShelfChange={onShelfChange} bookHighlight={bookHighlight} openBook={openBook}
           onShowcaseChange={setShowcase} hobbyHighlight={showcase ? hobbyHighlight : undefined}
+          onClosingChange={setClosing}
           on={on} onReady={onReady} onToggle={onToggle} />
       </SceneBoundary>
       <div className="vignette" aria-hidden="true" />
@@ -68,6 +71,7 @@ export function App() {
       {gallery && ready && !failed && <AchievementPosters onHighlight={setHighlight} />}
       {shelf && ready && !failed && <ProjectShelfNotes key={shelf} shelf={shelf} onHighlight={setBookHighlight} onRead={setOpenBook} />}
       {showcase && ready && !failed && <HobbyNotes onHighlight={setHobbyHighlight} />}
+      {closing && ready && !failed && <ClosingSignature />}
       {proof && failed && <p role="alert" className="label">The lighting proof couldn’t load.</p>}
     </div>
   </main>;

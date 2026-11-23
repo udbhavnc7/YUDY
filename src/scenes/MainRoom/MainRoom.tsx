@@ -25,6 +25,7 @@ type Props = {
   bookHighlight?: string;
   openBook?: string;
   onShowcaseChange: (showcase: boolean) => void;
+  onClosingChange: (closing: boolean) => void;
   hobbyHighlight?: string;
   on: boolean;
   onToggle: () => void;
@@ -71,7 +72,8 @@ export function MainRoom(props: Props) {
     onCreated={({ gl }) => { gl.toneMappingExposure = 1; }}>
     <CameraRig isolated={props.isolated} view={view}
       onIntroChange={props.onIntroChange} onEducationChange={props.onEducationChange}
-      onGalleryChange={props.onGalleryChange} onShelfChange={props.onShelfChange} onShowcaseChange={props.onShowcaseChange} />
+      onGalleryChange={props.onGalleryChange} onShelfChange={props.onShelfChange}
+      onShowcaseChange={props.onShowcaseChange} onClosingChange={props.onClosingChange} />
     <Suspense fallback={null}><Exposure {...props} view={view} /></Suspense>
   </Canvas>;
 }

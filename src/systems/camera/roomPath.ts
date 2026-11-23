@@ -31,6 +31,10 @@ export function lampShot(aspect: number, isolated: boolean): Shot {
 export function roomPath(aspect: number, isolated: boolean) {
   const opening = lampShot(aspect, isolated);
   const portrait = aspect < 1.14;
+  // Fit the span through the near edge of the window table and leave floor beneath the chair.
+  const revealFov = MathUtils.clamp(MathUtils.radToDeg(2 * Math.atan(4.45 / (8.55 * aspect))), 40, 106);
+  const revealDepth = 4.45 / (aspect * Math.tan(MathUtils.degToRad(revealFov / 2)));
+  const revealTargetHeight = MathUtils.lerp(0.65, 1.02, MathUtils.smoothstep(aspect, 0.55, 1.42));
   const shots: Shot[] = [
     opening,
     { at: 0.151, eye: [-2.19, 1.34, 2.23], look: [-1.56, 0.88, 0.03], fov: 49 },
@@ -40,15 +44,11 @@ export function roomPath(aspect: number, isolated: boolean) {
     { at: 0.68, eye: [GROUP_SHELF_X - 0.10, 1.48, -0.32], look: [GROUP_SHELF_X, 1.41, BOOK_FRONT], fov: 41 },
     { at: 0.805, eye: [1.09, 1.64, 0.22], look: [3.26, 1.39, -0.43], fov: 48 },
     { at: 0.90, eye: [0.93, 1.63, 2.98], look: [0.93, 1.15, -1.42], fov: 49 },
-    { at: 1, eye: [-0.77, 1.76, 5.37], look: [0.32, 1.23, -1.42], fov: 40 },
+    { at: 1, eye: [-0.35, 1.86, Math.max(5.72, revealDepth - 0.70)],
+      look: [0.22, revealTargetHeight, -1.27], fov: revealFov },
   ];
-  // A narrow sensor needs more distance to hold both ends of the room in the closing frame.
-  const reveal = shots[shots.length - 1];
-  if (portrait) reveal.fov = MathUtils.clamp(MathUtils.radToDeg(2 * Math.atan(4.25 / (9.1 * aspect))), 54, 101);
-  const horizontalTangent = aspect * Math.tan(MathUtils.degToRad(reveal.fov) / 2);
-  reveal.eye[2] = Math.max(5.37, 4.25 / horizontalTangent + reveal.look[2]);
   if (portrait) {
-    for (const shot of shots.slice(1)) shot.fov = Math.max(shot.fov, 54);
+    for (const shot of shots.slice(1, -1)) shot.fov = Math.max(shot.fov, 54);
     shots[3].fov = 66;
     shots[4].eye[2] = Math.max(-0.47, 0.54 / (aspect * 0.51) + BOOK_FRONT);
     shots[5].eye[2] = Math.max(-0.32, 0.54 / (aspect * 0.51) + BOOK_FRONT);
