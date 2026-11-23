@@ -10,30 +10,36 @@ import { projectTarget } from './projectTarget';
 import { ACHIEVEMENTS } from '../../data/achievements';
 import { roomPath, zoneIndex, zones } from './roomPath';
 import { chairAngle } from './chairTurn';
+import { REVEAL_ASSETS, ROOM_ASSET, roomAssets } from '../../scenes/MainRoom/roomAssets';
 
-export type RoomView = { chairYaw: number };
+export type RoomView = { chairYaw: number; readyAssets: number };
+export type ClosingState = 'loading' | 'ready' | undefined;
 type Props = {
   isolated: boolean;
+  mobile: boolean;
   view: MutableRefObject<RoomView>;
+  onAssetsChange: (assets: number) => void;
   onIntroChange: (intro: boolean) => void;
   onEducationChange: (education: boolean) => void;
   onGalleryChange: (gallery: boolean) => void;
   onShelfChange: (shelf: ProjectType | undefined) => void;
   onShowcaseChange: (showcase: boolean) => void;
-  onClosingChange: (closing: boolean) => void;
+  onClosingChange: (closing: ClosingState) => void;
 };
 
-export function CameraRig({ isolated, view, onIntroChange, onEducationChange, onGalleryChange, onShelfChange, onShowcaseChange, onClosingChange }: Props) {
+export function CameraRig({ isolated, mobile, view, onAssetsChange, onIntroChange, onEducationChange,
+  onGalleryChange, onShelfChange, onShowcaseChange, onClosingChange }: Props) {
   const { size, gl, invalidate } = useThree();
   const aspect = size.width / size.height;
-  const path = useMemo(() => roomPath(aspect, isolated), [aspect, isolated]);
+  const path = useMemo(() => roomPath(aspect, isolated, mobile), [aspect, isolated, mobile]);
   const requested = useRef(0), current = useRef(0);
   const inIntro = useRef(true);
   const inEducation = useRef(false);
   const inGallery = useRef(false);
   const inShowcase = useRef(false);
-  const inClosing = useRef(false);
+  const inClosing = useRef<ClosingState>();
   const currentShelf = useRef<ProjectType>();
+  const currentAssets = useRef(0);
   const look = useMemo(() => new Vector3(), []);
   const anchor = useMemo(() => new Vector3(), []);
   const posterCenters = useMemo(() => ACHIEVEMENTS.map((_, index) => posterPosition(index)), []);
@@ -63,6 +69,11 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
     current.current = motion.matches || Math.abs(current.current - dest) < 0.00015 ? dest :
       MathUtils.damp(current.current, dest, 9, Math.min(delta, 0.1));
     const p = current.current;
+    const assets = isolated ? 0 : roomAssets(p, dest);
+    if (assets !== currentAssets.current) {
+      currentAssets.current = assets;
+      onAssetsChange(assets);
+    }
     view.current.chairYaw = chairAngle(p, motion.matches);
     const fov = path(p, motion.matches, lens.position, look);
     if (lens.fov !== fov) { lens.fov = fov; lens.updateProjectionMatrix(); }
@@ -71,11 +82,13 @@ export function CameraRig({ isolated, view, onIntroChange, onEducationChange, on
     const host = gl.domElement.closest<HTMLElement>('.exhibit');
     const intro = isolated || p < (motion.matches ? 0.10 : 0.077);
     const zone = zones[zoneIndex(p)][0];
-    const education = !isolated && zone === 'Sofa';
-    const gallery = !isolated && zone === 'Poster wall';
-    const showcase = !isolated && zone === 'Showcase';
-    const closing = !isolated && zone === 'Room' && (motion.matches || p >= 0.956);
-    const shelf = isolated ? undefined : zone === 'Solo shelf' ? 'solo' : zone === 'Group shelf' ? 'group' : undefined;
+    const ready = view.current.readyAssets;
+    const education = zone === 'Sofa' && !!(ready & ROOM_ASSET.sofa);
+    const gallery = zone === 'Poster wall' && !!(ready & ROOM_ASSET.posters);
+    const showcase = zone === 'Showcase' && !!(ready & ROOM_ASSET.showcase);
+    const atReveal = !isolated && zone === 'Room' && (motion.matches || p >= 0.956);
+    const closing = atReveal ? ((ready & REVEAL_ASSETS) === REVEAL_ASSETS ? 'ready' : 'loading') : undefined;
+    const shelf = ready & ROOM_ASSET.books ? (zone === 'Solo shelf' ? 'solo' : zone === 'Group shelf' ? 'group' : undefined) : undefined;
     if (shelf !== currentShelf.current) {
       currentShelf.current = shelf;
       onShelfChange(shelf);

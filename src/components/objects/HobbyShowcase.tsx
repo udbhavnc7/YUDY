@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useFrame, useLoader, useThree } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useFrame, useThree } from '@react-three/fiber';
 import { Box3, Group, MathUtils, Mesh, MeshStandardMaterial, Quaternion, Vector3 } from 'three';
-import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import { useRoomTextures } from '../../systems/lighting/useSurfaceMap';
 import { FLOOR_PLANT, HANGING_PLANT, SHOWCASE_FACING, SHOWCASE_ITEMS, SHOWCASE_POSITION } from '../room/showcaseLayout';
+import { preloadRoomModel, useRoomModel } from './useRoomModel';
 
-const texturePaths = ['showcase-plant', 'showcase-plant-normal', 'showcase-plant-arm', 'showcase-prop-normal']
-  .map(name => '/textures/' + name + '.ktx2');
+const textures = ['showcase-plant', 'showcase-plant-normal', 'showcase-plant-arm', 'showcase-prop-normal'];
+const haworthia = '/models/potted-haworthia.glb';
+const pothos = '/models/trailing-pothos.glb';
+const models = [haworthia, pothos, ...SHOWCASE_ITEMS.map(item => item.hobby.asset)];
 
 type XYZ = [number, number, number];
 type ModelProps = {
@@ -20,7 +22,7 @@ type ModelProps = {
 };
 
 function ShowcaseModel({ asset, position, rotation, scale, surface, colors, active = false }: ModelProps) {
-  const { scene } = useGLTF(asset, false, true);
+  const scene = useRoomModel(asset);
   const root = useRef<Group>(null);
   const invalidate = useThree(s => s.invalidate);
   const motion = useMemo(() => matchMedia('(prefers-reduced-motion: reduce)'), []);
@@ -88,14 +90,14 @@ const cords = [0.3, 2.40, 4.49].map(angle => {
 });
 
 export function HobbyShowcase({ highlight }: { highlight?: string }) {
-  const gl = useThree(state => state.gl);
-  const [map, normalMap, arm, propNormal] = useLoader(KTX2Loader, texturePaths, loader => loader.detectSupport(gl));
+  models.forEach(preloadRoomModel);
+  const [map, normalMap, arm, propNormal] = useRoomTextures(textures);
   const plantSurface = useMemo(() => ({ map, normalMap, roughnessMap: arm, aoMap: arm }), [map, normalMap, arm]);
   const propSurface = useMemo(() => ({ normalMap: propNormal }), [propNormal]);
   return <>
-    <ShowcaseModel asset="/models/potted-haworthia.glb" position={FLOOR_PLANT}
+    <ShowcaseModel asset={haworthia} position={FLOOR_PLANT}
       rotation={pottedRotation} scale={pottedScale} surface={plantSurface} />
-    <ShowcaseModel asset="/models/trailing-pothos.glb" position={HANGING_PLANT} rotation={hangingRotation}
+    <ShowcaseModel asset={pothos} position={HANGING_PLANT} rotation={hangingRotation}
       scale={hangingScale} colors={hangingColors} />
     <group position={HANGING_PLANT}>
       {cords.map(({ center, length, rotation }, index) => <mesh key={index} position={center} quaternion={rotation}>

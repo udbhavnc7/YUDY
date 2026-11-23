@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Select } from '@react-three/postprocessing';
 import { CatmullRomCurve3, DoubleSide, MathUtils, MeshStandardMaterial, Object3D, PointLight, SpotLight, Vector2, Vector3 } from 'three';
-import { useSurfaceMap } from '../../systems/lighting/useSurfaceMap';
+import { useTiledSurfaces } from '../../systems/lighting/useSurfaceMap';
 import { linenTransmission, pleatedShade } from './pleatedShade';
 
 // A turned shoulder, narrow neck and recessed foot, sampled along the wood lathe.
@@ -30,11 +30,11 @@ const cabinetCord = new CatmullRomCurve3([
   new Vector3(0.8, -0.1, -1.13), new Vector3(0.72, -1.91, -1.13),
 ]);
 
-type Props = { on: boolean; onToggle: () => void; onReady: () => void; inRoom?: boolean };
+const finish = [['wood', 1.5, 1], ['weave', 8, 2]] as const;
+type Props = { on: boolean; onToggle: () => void; onReady: () => void; inRoom?: boolean; mobile?: boolean };
 
-export function TableLamp({ on, onToggle, onReady, inRoom = false }: Props) {
-  const wood = useSurfaceMap('wood', 1.5, 1);
-  const linen = useSurfaceMap('weave', 8, 2);
+export function TableLamp({ on, onToggle, onReady, inRoom = false, mobile = false }: Props) {
+  const [wood, linen] = useTiledSurfaces(finish);
   const shade = useMemo(pleatedShade, []);
   const fabric = useRef<MeshStandardMaterial>(null!);
   const bulb = useRef<PointLight>(null!);
@@ -59,9 +59,9 @@ export function TableLamp({ on, onToggle, onReady, inRoom = false }: Props) {
     const lightScale = inRoom ? 0.31 : 1;
     fabric.current.emissiveIntensity = level.current * 2.8;
     bulb.current.intensity = level.current * lightScale * 2.1;
-    spill.current.intensity = level.current * lightScale * 2.1;
-    downlight.current.intensity = level.current * lightScale * 2.5;
-    uplight.current.intensity = level.current * lightScale * 7.5;
+    if (spill.current) spill.current.intensity = level.current * lightScale * 2.1;
+    if (downlight.current) downlight.current.intensity = level.current * lightScale * 2.5;
+    uplight.current.intensity = level.current * lightScale * (mobile ? 8.9 : 7.5);
     if (level.current !== target) invalidate();
   });
 
@@ -70,7 +70,7 @@ export function TableLamp({ on, onToggle, onReady, inRoom = false }: Props) {
       onPointerOver={() => { document.body.classList.add('over-lamp'); }}
       onPointerOut={() => { document.body.classList.remove('over-lamp'); }}>
       <mesh castShadow receiveShadow>
-        <latheGeometry args={[baseProfile, 128]} />
+        <latheGeometry args={[baseProfile, mobile ? 64 : 128]} />
         <meshPhysicalMaterial map={wood} color="#bdad98" roughness={0.58} clearcoat={0.08} clearcoatRoughness={0.51} />
       </mesh>
       <mesh position-y={0.822} castShadow>
@@ -118,9 +118,9 @@ export function TableLamp({ on, onToggle, onReady, inRoom = false }: Props) {
     <primitive object={upTarget} />
     <spotLight ref={uplight} position={[0, 1.56, -0.1]} target={upTarget}
       angle={0.72} penumbra={0.95} color="#ffce8c" intensity={0} />
-    <spotLight ref={downlight} position={[-0.18, 1.04, -0.15]} angle={1.14} penumbra={0.88}
-      color="#ffcf91" intensity={0} />
+    {!mobile && <spotLight ref={downlight} position={[-0.18, 1.04, -0.15]} angle={1.14} penumbra={0.88}
+      color="#ffcf91" intensity={0} />}
     <pointLight ref={bulb} position={[0, 1.16, 0]} intensity={0} color="#ffd19a" />
-    <pointLight ref={spill} position={[0, 1.5, -0.32]} intensity={0} color="#ffca91" />
+    {!mobile && <pointLight ref={spill} position={[0, 1.5, -0.32]} intensity={0} color="#ffca91" />}
   </>;
 }

@@ -1,15 +1,29 @@
 import { useLoader, useThree } from '@react-three/fiber';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { LinearFilter, LinearMipmapLinearFilter, RepeatWrapping } from 'three';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import { retainAsset } from './retainAsset';
+
+export function useRoomTextures(names: readonly string[]) {
+  const gl = useThree(s => s.gl);
+  const paths = names.map(name => '/textures/' + name + '.ktx2');
+  const textures = useLoader(KTX2Loader, paths, loader => loader.detectSupport(gl));
+  useEffect(() => retainAsset(textures, () => {
+    useLoader.clear(KTX2Loader, paths);
+    textures.forEach(texture => texture.dispose());
+  }), [textures]);
+  return textures;
+}
+
+type Surface = readonly [name: string, repeatX: number, repeatY: number];
 
 // Each KTX2 records its transfer function: sRGB for colour, linear for normals.
-export function useSurfaceMaps(names: string[], repeatX: number, repeatY: number) {
+export function useTiledSurfaces(surfaces: readonly Surface[]) {
   const gl = useThree(s => s.gl);
-  const textures = useLoader(KTX2Loader, names.map(name => '/textures/' + name + '.ktx2'), loader => loader.detectSupport(gl));
-  return useMemo(() => textures.map(texture => {
+  const textures = useRoomTextures(surfaces.map(surface => surface[0]));
+  return useMemo(() => textures.map((texture, index) => {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-    texture.repeat.set(repeatX, repeatY);
+    texture.repeat.set(surfaces[index][1], surfaces[index][2]);
     texture.mipmaps = [];
     texture.generateMipmaps = true;
     texture.minFilter = LinearMipmapLinearFilter;
@@ -17,9 +31,10 @@ export function useSurfaceMaps(names: string[], repeatX: number, repeatY: number
     texture.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
     return texture;
-  }), [textures, repeatX, repeatY, gl]);
+  }), [textures, surfaces, gl]);
 }
 
-export function useSurfaceMap(name: string, repeatX: number, repeatY: number) {
-  return useSurfaceMaps([name], repeatX, repeatY)[0];
+export function useSurfaceMaps(names: readonly string[], repeatX: number, repeatY: number) {
+  const surfaces = useMemo(() => names.map(name => [name, repeatX, repeatY] as const), [names, repeatX, repeatY]);
+  return useTiledSurfaces(surfaces);
 }

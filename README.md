@@ -1,6 +1,6 @@
 # YUDY
 
-Udbhav NC’s portfolio takes place in one interior. Phase 7 closes the tour with a full-room view and Udbhav’s contact details.
+Udbhav NC’s portfolio takes place in one interior. Phase 8 adds a lighter mobile room and a static `/work/` reading mode.
 
 ## Run locally
 
@@ -17,6 +17,8 @@ From this checkout, run `npm ci` if dependencies are missing. Run `npm run dev` 
 - Press End for the full-room reveal. Check that the lamp, chair, sofa, posters, bookshelf and planted window alcove are all visible. Tab through GitHub, LinkedIn and Email, then scroll back toward the window table to check the signature disappears. Press Home to return to the lamp.
 - Open `/?proof=lamp` to inspect the isolated Phase 0 lamp.
 - Resize to a portrait viewport to check the lamp and full-room framing. With reduced motion enabled, scrolling steps between views.
+- Test at phone width with touch emulation. Tap an education tag, poster, book and showcase object. Scroll to the closing shot, then back to confirm the room reloads its earlier objects as needed.
+- Open `/work/` with JavaScript disabled. Check that all four sections and the contact links remain usable. The same page is linked from the lamp introduction and the no-JavaScript entry.
 - Run `npm run build` and `npm run preview` to check the production bundle.
 
 ## Project documents

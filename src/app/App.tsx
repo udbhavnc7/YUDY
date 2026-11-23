@@ -1,12 +1,14 @@
-import { Component, type ReactNode, useCallback, useEffect, useState } from 'react';
-import { MainRoom } from '../scenes/MainRoom/MainRoom';
+import { Component, lazy, Suspense, type ReactNode, useCallback, useEffect, useState } from 'react';
 import { AchievementPosters } from '../components/overlays/AchievementPosters';
 import { EducationPillows } from '../components/overlays/EducationPillows';
 import { ProjectShelfNotes } from '../components/overlays/ProjectShelfNotes';
 import { HobbyNotes } from '../components/overlays/HobbyNotes';
 import { ClosingSignature } from '../components/overlays/ClosingSignature';
 import type { ProjectType } from '../data/projects';
+import type { ClosingState } from '../systems/camera/CameraRig';
 import { PROFILE } from '../data/profile';
+
+const MainRoom = lazy(() => import('../scenes/MainRoom/MainRoom').then(module => ({ default: module.MainRoom })));
 
 class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
   state = { failed: false };
@@ -28,7 +30,7 @@ export function App() {
   const [openBook, setOpenBook] = useState<string>();
   const [showcase, setShowcase] = useState(false);
   const [hobbyHighlight, setHobbyHighlight] = useState<string>();
-  const [closing, setClosing] = useState(false);
+  const [closing, setClosing] = useState<ClosingState>();
   const [ready, setReady] = useState(false);
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -46,14 +48,14 @@ export function App() {
 
   return <main className={!isolated && !failed ? 'room-tour' : undefined}>
     <div className={'exhibit' + (on || failed ? ' illuminated' : '')}>
-      <SceneBoundary onFailure={onFailure}>
+      <SceneBoundary onFailure={onFailure}><Suspense fallback={null}>
         <MainRoom proof={proof} isolated={isolated} onIntroChange={setIntro} onEducationChange={setEducation}
           onGalleryChange={setGallery} highlight={gallery ? highlight : undefined}
           onShelfChange={onShelfChange} bookHighlight={bookHighlight} openBook={openBook}
           onShowcaseChange={setShowcase} hobbyHighlight={showcase ? hobbyHighlight : undefined}
           onClosingChange={setClosing}
           on={on} onReady={onReady} onToggle={onToggle} />
-      </SceneBoundary>
+      </Suspense></SceneBoundary>
       <div className="vignette" aria-hidden="true" />
       {!proof && <section hidden={!intro && !failed} className="label" aria-label="Portfolio introduction">
         <p className="imprint"><span>YUDY</span><i aria-hidden="true" />Portfolio</p>
@@ -65,13 +67,17 @@ export function App() {
             <span className="switch-track" aria-hidden="true"><span /></span>
             {ready ? 'Lamp ' + (on ? 'on' : 'off') : 'Preparing light…'}
           </button>}
-        {!isolated && ready && !failed && <p className="scroll-instruction">Scroll to explore the room</p>}
+        {!isolated && <div className="intro-ways">
+          {ready && !failed && <p className="scroll-instruction">Scroll to explore the room</p>}
+          <a className="work-link" href="/work/">Read the portfolio</a>
+        </div>}
       </section>}
       {education && ready && !failed && <EducationPillows />}
       {gallery && ready && !failed && <AchievementPosters onHighlight={setHighlight} />}
       {shelf && ready && !failed && <ProjectShelfNotes key={shelf} shelf={shelf} onHighlight={setBookHighlight} onRead={setOpenBook} />}
       {showcase && ready && !failed && <HobbyNotes onHighlight={setHobbyHighlight} />}
-      {closing && ready && !failed && <ClosingSignature />}
+      {closing === 'ready' && ready && !failed && <ClosingSignature />}
+      {closing === 'loading' && ready && !failed && <p className="room-status" role="status">Loading the room…</p>}
       {proof && failed && <p role="alert" className="label">The lighting proof couldn’t load.</p>}
     </div>
   </main>;

@@ -28,7 +28,7 @@ export function lampShot(aspect: number, isolated: boolean): Shot {
     eye: [offset[0] + x * scale, offset[1] + (y + d * 0.115) * scale, offset[2] + d * scale], fov: 33 };
 }
 
-export function roomPath(aspect: number, isolated: boolean) {
+export function roomPath(aspect: number, isolated: boolean, mobile = false) {
   const opening = lampShot(aspect, isolated);
   const portrait = aspect < 1.14;
   // Fit the span through the near edge of the window table and leave floor beneath the chair.
@@ -59,12 +59,23 @@ export function roomPath(aspect: number, isolated: boolean) {
   }
   const eyes = new CatmullRomCurve3(shots.map(s => new Vector3(...s.eye)));
   const targets = new CatmullRomCurve3(shots.map(s => new Vector3(...s.look)));
+  const touchShots = shots.filter(shot => shot.at !== 0.90).map(shot => ({ ...shot,
+    position: new Vector3(...shot.eye), target: new Vector3(...shot.look) }));
   const facing = new Vector3();
   return (progress: number, reducedMotion: boolean, eye: Vector3, look: Vector3) => {
     let p = isolated ? 0 : progress;
     if (reducedMotion && !isolated) {
       const index = zoneIndex(p);
       p = index === zones.length - 1 ? 1 : shots[index].at;
+    }
+    if (mobile && !isolated) {
+      const next = touchShots.findIndex(shot => p < shot.at);
+      const end = touchShots[next === -1 ? touchShots.length - 1 : next];
+      const start = touchShots[(next === -1 ? touchShots.length - 1 : next) - 1];
+      const blend = MathUtils.smoothstep(p, start.at, end.at);
+      eye.lerpVectors(start.position, end.position, blend);
+      look.lerpVectors(start.target, end.target, blend);
+      return MathUtils.lerp(start.fov, end.fov, blend);
     }
     let i = 0;
     while (i < shots.length - 2 && p > shots[i + 1].at) i++;

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
 import { Group, MathUtils, Mesh, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3, type BufferGeometry, type Texture } from 'three';
 import { BOOK_FRONT, BOOK_PULL, PROJECT_SHELVES, type ShelfBook } from '../room/projectShelves';
 import { bookPaper } from './bookPaper';
 import { bookStamp } from './bookStamp';
+import { useRoomModel } from './useRoomModel';
 
 type Part = { geometry: BufferGeometry; name: string };
 
@@ -127,7 +127,7 @@ function Volume({ book, body, front, endpaper, readingPage, active, reading }: V
 const books = [...PROJECT_SHELVES.solo, ...PROJECT_SHELVES.group];
 
 export function ProjectBooks({ highlight, open }: { highlight?: string; open?: string }) {
-  const { scene } = useGLTF('/models/project-book.glb', false, true);
+  const scene = useRoomModel('/models/project-book.glb');
   const { body, front } = useMemo(() => {
     const body: Part[] = [];
     let front: BufferGeometry | undefined;

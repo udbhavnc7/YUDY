@@ -1,12 +1,11 @@
-import type { RoomView } from '../../systems/camera/CameraRig';
-import { useLayoutEffect, useMemo, type MutableRefObject } from 'react';
+import { Suspense, useLayoutEffect, useMemo } from 'react';
 import { extend, type ReactThreeFiber } from '@react-three/fiber';
 import { MeshStandardMaterial, Vector2 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { useSurfaceMap, useSurfaceMaps } from '../../systems/lighting/useSurfaceMap';
+import { useSurfaceMaps, useTiledSurfaces } from '../../systems/lighting/useSurfaceMap';
 import { CHAIR_POSITION, LAMP_POSITION, SHELF_X, SOFA_POSITION } from './layout';
-import { Seating } from './Seating';
 import { SHOWCASE_FACING, SHOWCASE_POSITION, SHOWCASE_RISER, SHOWCASE_TOP } from './showcaseLayout';
+import { ROOM_ASSET } from '../../scenes/MainRoom/roomAssets';
 
 extend({ RoundedBoxGeometry });
 declare module '@react-three/fiber' {
@@ -112,8 +111,12 @@ function ShowcaseTable({ wood, back, brass }: { wood: MeshStandardMaterial; back
   </group>;
 }
 
-function Rug() {
-  const [map, normalMap, roughnessMap] = useSurfaceMaps(['rug', 'rug-normal', 'rug-roughness'], 6, 4);
+const rugMaps = ['rug', 'rug-normal', 'rug-roughness'];
+const floorMaps = ['boards', 'boards-normal', 'boards-roughness'];
+const roomMaps = [['plaster', 4, 2], ['plaster-normal', 4, 2], ['joinery', 1, 1]] as const;
+
+export function Rug() {
+  const [map, normalMap, roughnessMap] = useSurfaceMaps(rugMaps, 6, 4);
   const maps = useMemo(() => ({ map, normalMap, roughnessMap, normalScale: new Vector2(0.35, 0.35) }), [map, normalMap, roughnessMap]);
   return <group position={[-0.33, 0.007, -0.41]} rotation-x={-Math.PI / 2}>
     <mesh receiveShadow><planeGeometry args={[3.9, 2.31]} />
@@ -128,10 +131,15 @@ function Rug() {
   </group>;
 }
 
-export function RoomShell({ view }: { view: MutableRefObject<RoomView> }) {
-  const [plaster, plasterNormal] = useSurfaceMaps(['plaster', 'plaster-normal'], 4, 2);
-  const timber = useSurfaceMap('joinery', 1, 1);
-  const [boards, boardNormal, boardRoughness] = useSurfaceMaps(['boards', 'boards-normal', 'boards-roughness'], 4.4, 5.83);
+function FloorMaterial() {
+  const [map, normalMap, roughnessMap] = useSurfaceMaps(floorMaps, 4.4, 5.83);
+  const floor = useMemo(() => ({ map, normalMap, roughnessMap,
+    normalScale: new Vector2(0.45, 0.45) }), [map, normalMap, roughnessMap]);
+  return <meshStandardMaterial args={[floor]} color="#897c66" />;
+}
+
+export function RoomShell({ assets }: { assets: number }) {
+  const [plaster, plasterNormal, timber] = useTiledSurfaces(roomMaps);
   const paint = useMemo(() => new MeshStandardMaterial({ color: '#938774', map: plaster, normalMap: plasterNormal,
     normalScale: new Vector2(0.42, 0.42), roughness: 0.92 }), [plaster, plasterNormal]);
   const trim = useMemo(() => new MeshStandardMaterial({ color: '#777263', roughness: 0.66 }), []);
@@ -145,11 +153,12 @@ export function RoomShell({ view }: { view: MutableRefObject<RoomView> }) {
     back.dispose();
     brass.dispose();
   }, [paint, trim, wood, back, brass]);
-  const floor = useMemo(() => ({ map: boards, normalMap: boardNormal, roughnessMap: boardRoughness,
-    normalScale: new Vector2(0.45, 0.45) }), [boards, boardNormal, boardRoughness]);
   return <>
     <mesh rotation-x={-Math.PI / 2} position={[0, -0.005, 3.8]} receiveShadow>
-      <planeGeometry args={[15, 14]} /><meshStandardMaterial args={[floor]} color="#897c66" />
+      <planeGeometry args={[15, 14]} />
+      <Suspense fallback={<meshStandardMaterial color="#5d4f3e" roughness={0.76} />}>
+        {assets ? <FloorMaterial /> : <meshStandardMaterial color="#5d4f3e" roughness={0.76} />}
+      </Suspense>
     </mesh>
     <Board at={[0, 1.6, -2.57]} size={[7.84, 3.2, 0.14]} material={paint} casts={false} />
     <Board at={[-3.88, 1.6, 3.8]} size={[0.14, 3.2, 12.74]} material={paint} casts={false} />
@@ -159,16 +168,13 @@ export function RoomShell({ view }: { view: MutableRefObject<RoomView> }) {
     <Board at={[-3.79, 0.08, 3.8]} size={[0.065, 0.16, 12.74]} material={trim} />
     <Board at={[3.77, 0.08, 3.8]} size={[0.065, 0.16, 12.74]} material={trim} />
     <Board at={[0, 3.12, -2.46]} size={[7.8, 0.11, 0.09]} material={trim} />
-    <Rug />
     <Cabinet wood={wood} brass={brass} />
     <Shelves wood={wood} back={back} />
     <ShowcaseTable wood={wood} back={back} brass={brass} />
-    <FloorContact x={SOFA_POSITION[0]} z={SOFA_POSITION[2]} width={3.05} depth={1.1} strength={0.75} />
-    <FloorContact x={CHAIR_POSITION[0]} z={CHAIR_POSITION[2]} width={0.83} depth={0.78} strength={0.52} />
+    {!!(assets & ROOM_ASSET.sofa) && <FloorContact x={SOFA_POSITION[0]} z={SOFA_POSITION[2]} width={3.05} depth={1.1} strength={0.75} />}
+    {!!(assets & ROOM_ASSET.chair) && <FloorContact x={CHAIR_POSITION[0]} z={CHAIR_POSITION[2]} width={0.83} depth={0.78} strength={0.52} />}
     <FloorContact x={LAMP_POSITION[0]} z={LAMP_POSITION[2]} width={1.42} depth={0.96} strength={0.54} />
     <FloorContact x={SHELF_X} z={-2.16} width={2.38} depth={0.79} strength={0.66} />
     <FloorContact x={SHOWCASE_POSITION[0]} z={SHOWCASE_POSITION[2]} width={0.89} depth={1.79} strength={0.48} />
-    <Seating kind="sofa" />
-    <Seating kind="chair" view={view} />
   </>;
 }

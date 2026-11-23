@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { Environment } from '@react-three/drei';
 import { Vector2 } from 'three';
-import { useSurfaceMap } from './useSurfaceMap';
+import { useSurfaceMaps } from './useSurfaceMap';
 
 const relief = new Vector2(0.45, 0.45);
+const finish = ['plaster', 'plaster-normal'];
 export function Studio() {
-  const plaster = useSurfaceMap('plaster', 10, 5);
-  const normal = useSurfaceMap('plaster-normal', 10, 5);
+  const [plaster, normal] = useSurfaceMaps(finish, 10, 5);
   // R3F 8 tags RGBA8 texture props as sRGB. Constructor parameters preserve the
   // KTX2 transfer functions for both the colour map and the linear normal map.
   const surface = useMemo(() => ({
