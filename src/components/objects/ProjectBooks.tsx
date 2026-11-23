@@ -2,11 +2,10 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { Group, MathUtils, Mesh, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3, type BufferGeometry, type Texture } from 'three';
-import { BOOK_FRONT, BOOK_PULL, SOLO_BOOKS } from '../room/soloShelfLayout';
+import { BOOK_FRONT, BOOK_PULL, PROJECT_SHELVES, type ShelfBook } from '../room/projectShelves';
 import { bookPaper } from './bookPaper';
 import { bookStamp } from './bookStamp';
 
-type Book = (typeof SOLO_BOOKS)[number];
 type Part = { geometry: BufferGeometry; name: string };
 
 const spineThickness = 0.18;
@@ -15,7 +14,7 @@ const readingDistance = 0.63;
 const axisY = new Vector3(0, 1, 0);
 
 type VolumeProps = {
-  book: Book;
+  book: ShelfBook;
   body: Part[];
   front?: BufferGeometry;
   endpaper: Texture;
@@ -32,7 +31,8 @@ function Volume({ book, body, front, endpaper, readingPage, active, reading }: V
   const invalidate = useThree(state => state.invalidate);
   const reduced = useMemo(() => matchMedia('(prefers-reduced-motion: reduce)'), []);
   const { project, cloth, faceOut } = book;
-  const cover = useMemo(() => bookStamp(project.title, project.author, cloth, true), [project, cloth]);
+  const teamEdition = project.type === 'group';
+  const cover = useMemo(() => bookStamp(project.title, project.author, cloth, true, teamEdition), [project, cloth, teamEdition]);
   const spine = useMemo(() => bookStamp(project.title, project.author, cloth, false), [project, cloth]);
   const restingZ = BOOK_FRONT - (faceOut ? book.thickness : book.depth) / 2;
   const rest = useMemo(() => new Vector3(book.x - (faceOut ? book.depth / 2 : 0),
@@ -68,8 +68,9 @@ function Volume({ book, body, front, endpaper, readingPage, active, reading }: V
     if (opening > 0 || reading) {
       // The lifted volume follows the camera. Its screen dimensions also place
       // the selectable HTML text directly on the two paper surfaces.
-      const width = Math.min(726, size.width - 28);
-      const height = Math.min(size.width < 550 ? 394 : 422, size.height - 25);
+      const width = Math.min(teamEdition ? 790 : 726, size.width - 28);
+      const desktopHeight = teamEdition ? 460 : 422;
+      const height = Math.min(size.width < 550 ? 394 : desktopHeight, size.height - 25);
       const fov = MathUtils.degToRad((camera as PerspectiveCamera).fov);
       const pixel = 2 * readingDistance * Math.tan(fov / 2) / size.height;
       camera.getWorldQuaternion(targetRotation);
@@ -123,7 +124,9 @@ function Volume({ book, body, front, endpaper, readingPage, active, reading }: V
   </group>;
 }
 
-export function SoloBooks({ highlight, open }: { highlight?: string; open?: string }) {
+const books = [...PROJECT_SHELVES.solo, ...PROJECT_SHELVES.group];
+
+export function ProjectBooks({ highlight, open }: { highlight?: string; open?: string }) {
   const { scene } = useGLTF('/models/project-book.glb', false, true);
   const { body, front } = useMemo(() => {
     const body: Part[] = [];
@@ -141,7 +144,7 @@ export function SoloBooks({ highlight, open }: { highlight?: string; open?: stri
   useEffect(() => () => { endpaper.dispose(); readingPage.dispose(); }, [endpaper, readingPage]);
 
   return <>
-    {SOLO_BOOKS.map(book => (
+    {books.map(book => (
       <Volume key={book.project.id} book={book} body={body} front={front} endpaper={endpaper} readingPage={readingPage}
         reading={open === book.project.id} active={highlight === book.project.id} />
     ))}

@@ -1,6 +1,6 @@
 import { CanvasTexture, SRGBColorSpace } from 'three';
 
-export function bookStamp(title: string, author: string, cloth: string, faceOut: boolean) {
+export function bookStamp(title: string, author: string, cloth: string, faceOut: boolean, teamEdition = false) {
   const canvas = document.createElement('canvas');
   canvas.width = faceOut ? 384 : 192;
   canvas.height = 576;
@@ -24,14 +24,28 @@ export function bookStamp(title: string, author: string, cloth: string, faceOut:
   ctx.textBaseline = 'middle';
 
   if (faceOut) {
-    ctx.font = '27px Georgia, serif';
+    if (teamEdition) {
+      ctx.strokeStyle = '#e2c48b88';
+      ctx.strokeRect(22, 26, width - 44, height - 52);
+      ctx.lineWidth = 1;
+    }
+    ctx.font = teamEdition ? '600 26px Segoe UI, sans-serif' : '27px Georgia, serif';
     ctx.fillText(author, width / 2, 72, width - 72);
     ctx.font = '600 54px Georgia, serif';
     ctx.fillText(title, width / 2, 177, width - 68);
     ctx.translate(width / 2, 342);
     for (let i = 0; i < 12; i++) {
       ctx.beginPath();
-      ctx.ellipse(0, 0, 109, 25 + i * 3, i * Math.PI / 12, 0, Math.PI * 2);
+      if (teamEdition) {
+        const span = 108 - i * 5.5;
+        ctx.moveTo(0, -span);
+        ctx.lineTo(span, 0);
+        ctx.lineTo(0, span);
+        ctx.lineTo(-span, 0);
+        ctx.closePath();
+      } else {
+        ctx.ellipse(0, 0, 109, 25 + i * 3, i * Math.PI / 12, 0, Math.PI * 2);
+      }
       ctx.stroke();
     }
   } else {

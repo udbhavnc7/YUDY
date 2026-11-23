@@ -6,7 +6,8 @@ import { ACESFilmicToneMapping, PCFSoftShadowMap, SRGBColorSpace, PointLight } f
 import { CameraRig, type RoomView } from '../../systems/camera/CameraRig';
 import { Studio } from '../../systems/lighting/Studio';
 import { AchievementWall } from '../../components/objects/AchievementWall';
-import { SoloBooks } from '../../components/objects/SoloBooks';
+import { ProjectBooks } from '../../components/objects/ProjectBooks';
+import type { ProjectType } from '../../data/projects';
 import { TableLamp } from '../../components/objects/TableLamp';
 import { RoomShell } from '../../components/room/RoomShell';
 import { LAMP_POSITION, LAMP_SCALE } from '../../components/room/layout';
@@ -19,7 +20,7 @@ type Props = {
   onEducationChange: (education: boolean) => void;
   onGalleryChange: (gallery: boolean) => void;
   highlight?: string;
-  onSoloShelfChange: (soloShelf: boolean) => void;
+  onShelfChange: (shelf: ProjectType | undefined) => void;
   bookHighlight?: string;
   openBook?: string;
   on: boolean;
@@ -42,7 +43,7 @@ function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, boo
       <directionalLight position={[-1.7, 2.7, 5.8]} intensity={0.23} color="#f0dcca" />
       <RoomShell view={view} />
       <AchievementWall highlight={highlight} />
-      <SoloBooks highlight={bookHighlight} open={openBook} />
+      <ProjectBooks highlight={bookHighlight} open={openBook} />
     </>}
     <primitive object={fill} position={[1.3, 2.2, 1.5]} />
     {proof ? <mesh position-y={0.45} rotation-y={0.38} castShadow receiveShadow>
@@ -66,7 +67,7 @@ export function MainRoom(props: Props) {
     onCreated={({ gl }) => { gl.toneMappingExposure = 1; }}>
     <CameraRig isolated={props.isolated} view={view}
       onIntroChange={props.onIntroChange} onEducationChange={props.onEducationChange}
-      onGalleryChange={props.onGalleryChange} onSoloShelfChange={props.onSoloShelfChange} />
+      onGalleryChange={props.onGalleryChange} onShelfChange={props.onShelfChange} />
     <Suspense fallback={null}><Exposure {...props} view={view} /></Suspense>
   </Canvas>;
 }

@@ -16,11 +16,12 @@ export const PROJECTS: Project[] = [
   {
     id: 'kawach',
     title: 'KAWACH',
-    type: 'solo',
-    author: 'Udbhav NC',
-    github: 'https://github.com/udbhavnc7/KAWACH',
-    description: 'Personal safety & emergency BLE mesh — SOS relay across offline phones. Distress packets hop across BLE nodes when cell towers collapse. Lock-screen tri-tap and accelerometer shake trigger SOS. K-d tree clustering matches victims to nearest volunteer. Gemini AI triages audio streams into structured dispatcher briefs.',
-    technologies: ['Flutter', 'Dart', 'BLE Mesh', 'Python', 'Google Gemini AI'],
+    type: 'group',
+    author: 'VAPORLOGIC',
+    github: 'https://github.com/sharonjoseph12/Kawach_new',
+    description: 'A Flutter safety companion that relays SOS messages over nearby devices when cellular coverage is unavailable.',
+    technologies: ['Flutter', 'Supabase', 'Bluetooth Low Energy'],
+    live: 'https://kawach-safety.netlify.app/',
   },
   {
     id: 'vortex',
@@ -28,17 +29,17 @@ export const PROJECTS: Project[] = [
     type: 'group',
     author: 'VAPORLOGIC',
     github: 'https://github.com/sharonjoseph12/vortex_reva',
-    description: 'Decentralized escrow — Algorand smart contracts with automated verification. Funds locked in immutable Algorand escrow vault on deal initiation. Docker-sandboxed test runner verifies code submissions automatically. Zero-custody instant payout once criteria pass on-chain.',
-    technologies: ['Algorand', 'PyTeal', 'Docker', 'Oracle Consensus'],
+    description: 'An Algorand escrow prototype for freelance bounties that combines on-chain settlement with automated submission checks.',
+    technologies: ['Algorand', 'Algorand Python', 'FastAPI', 'Next.js'],
   },
   {
     id: 'nayana',
     title: 'NAYANA',
-    type: 'solo',
-    author: 'Udbhav NC',
+    type: 'group',
+    author: 'VAPORLOGIC',
     github: 'https://github.com/udbhavnc7/Nayana',
     description: 'A gaze-tracking communication tool for people with limited mobility or speech, with a monitoring dashboard for caregivers.',
-    technologies: ['Gaze tracking', 'JavaScript'],
+    technologies: ['React', 'MediaPipe', 'WebRTC'],
   },
   {
     id: 'medaether',
@@ -84,8 +85,8 @@ export const PROJECTS: Project[] = [
     type: 'group',
     author: 'VAPORLOGIC',
     github: 'https://github.com/sharonjoseph12/Vaidya',
-    description: 'Contactless health screening — smartphone camera and mic only. ASHA workers lack diagnostic hardware in remote villages. rPPG measures heart rate from facial video, no sensors needed. Acoustic cough analysis screens for respiratory obstruction. ABDM-aligned for direct field deployment.',
-    technologies: ['Python', 'Computer Vision', 'Audio ML', 'Flask', 'Android'],
+    description: 'A contactless screening prototype that explores how a smartphone camera and microphone can collect signals for health triage.',
+    technologies: ['Flutter', 'Python', 'FastAPI', 'MediaPipe'],
   },
   {
     id: 'smartcart',
@@ -117,5 +118,9 @@ export const PROJECTS: Project[] = [
 ];
 
 // This shelf uses the projects with reachable public repositories and solo credits.
-const soloShelfOrder = ['nayana', 'lume', 'medaether', 'sanchay', 'smartcart'];
+const soloShelfOrder = ['lume', 'medaether', 'sanchay', 'smartcart'];
 export const SOLO_PROJECTS = soloShelfOrder.flatMap(id => PROJECTS.filter(project => project.type === 'solo' && project.id === id));
+
+// Team credits follow the portfolio project records and teammate write-ups.
+const groupShelfOrder = ['vortex', 'kawach', 'nayana', 'prism'];
+export const GROUP_PROJECTS = groupShelfOrder.flatMap(id => PROJECTS.filter(project => project.type === 'group' && project.id === id));

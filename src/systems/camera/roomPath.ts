@@ -1,7 +1,7 @@
 import { CatmullRomCurve3, MathUtils, Vector3 } from 'three';
 import { CHAIR_POSITION, LAMP_POSITION, LAMP_SCALE, SOFA_POSITION } from '../../components/room/layout';
 import { GALLERY_X, GALLERY_Y, POSTER_FRONT } from '../../components/room/galleryLayout';
-import { BOOK_FRONT, SOLO_SHELF_X, SOLO_SHELF_Y } from '../../components/room/soloShelfLayout';
+import { BOOK_FRONT, GROUP_SHELF_X, SOLO_SHELF_X } from '../../components/room/projectShelves';
 import { chairAngle, chairTurn, CHAIR_START, SOFA_START } from './chairTurn';
 
 type XYZ = [number, number, number];
@@ -36,8 +36,8 @@ export function roomPath(aspect: number, isolated: boolean) {
     { at: 0.151, eye: [-2.19, 1.34, 2.23], look: [-1.56, 0.88, 0.03], fov: 49 },
     { at: 0.27, eye: [-0.37, 1.15, 0.52], look: [SOFA_POSITION[0], 0.78, SOFA_POSITION[2]], fov: 42 },
     { at: 0.395, eye: [GALLERY_X, 1.82, 0.47], look: [GALLERY_X, GALLERY_Y - 0.08, POSTER_FRONT], fov: 39 },
-    { at: 0.545, eye: [SOLO_SHELF_X - 0.31, 1.5, -0.47], look: [SOLO_SHELF_X, SOLO_SHELF_Y, BOOK_FRONT], fov: 42 },
-    { at: 0.68, eye: [2.25, 1.45, 0.22], look: [2.92, 1.28, -2.24], fov: 46 },
+    { at: 0.545, eye: [SOLO_SHELF_X - 0.31, 1.5, -0.47], look: [SOLO_SHELF_X, 1.39, BOOK_FRONT], fov: 42 },
+    { at: 0.68, eye: [GROUP_SHELF_X - 0.10, 1.48, -0.32], look: [GROUP_SHELF_X, 1.41, BOOK_FRONT], fov: 41 },
     { at: 0.805, eye: [1.41, 1.47, 1.18], look: [3.65, 1.50, -0.71], fov: 47 },
     { at: 0.90, eye: [0.93, 1.63, 2.98], look: [0.93, 1.15, -1.42], fov: 49 },
     { at: 1, eye: [-0.77, 1.76, 5.37], look: [0.32, 1.23, -1.42], fov: 40 },
@@ -51,6 +51,7 @@ export function roomPath(aspect: number, isolated: boolean) {
     for (const shot of shots.slice(1)) shot.fov = Math.max(shot.fov, 54);
     shots[3].fov = 66;
     shots[4].eye[2] = Math.max(-0.47, 0.54 / (aspect * 0.51) + BOOK_FRONT);
+    shots[5].eye[2] = Math.max(-0.32, 0.54 / (aspect * 0.51) + BOOK_FRONT);
     shots[3].eye[2] = Math.max(0.47, 1.78 / (aspect * Math.tan(MathUtils.degToRad(33))) + POSTER_FRONT);
     shots[2].eye[2] = Math.max(0.52, 1.36 / (aspect * 0.51) + SOFA_POSITION[2]);
   }
