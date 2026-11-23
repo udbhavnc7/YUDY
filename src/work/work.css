@@ -1,0 +1,23 @@
+:root { color-scheme: light; background: #f6f0e5; color: #2b221a; font: 1rem/1.6 system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { max-width: 51rem; margin: auto; padding: 0 clamp(1.1rem, 5vw, 3rem) 4rem; }
+a { color: #5d3e25; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+a:hover { color: #23180f; text-decoration-thickness: 2px; }
+a:focus-visible { outline: 2px solid #674624; outline-offset: 4px; }
+.skip { position: absolute; top: 0.85rem; left: 1rem; padding: 0.7rem 1rem; background: #fff8ec; transform: translateY(-180%); }
+.skip:focus { transform: none; }
+.page-header { padding: clamp(2rem, 8vw, 5rem) 0 1.6rem; border-bottom: 2px solid #7e6348; }
+.page-header h1 { margin: 0; font: 400 clamp(2.7rem, 9vw, 5.1rem)/1.02 Georgia, serif; letter-spacing: -0.055em; }
+.identity p { margin: 0.55rem 0 0.8rem; color: #534234; }
+.links { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 1.15rem; }
+.links a { display: inline-flex; align-items: center; min-height: 44px; }
+.contacts { gap: 0 clamp(0.8rem, 4vw, 1.55rem); }
+section { margin-top: 2.75rem; }
+h2 { margin: 0 0 0.65rem; font: 400 clamp(1.9rem, 6vw, 2.55rem)/1.15 Georgia, serif; }
+h3, h4 { margin: 0; font-size: 1.12rem; line-height: 1.35; }
+section > h3 { margin-top: 1.3rem; color: #514033; }
+.entries { list-style: none; margin: 0.55rem 0 0; padding: 0; }
+.entries li { padding: 1rem 0 0.77rem; border-top: 1px solid #d7c8b4; }
+.entries p { margin: 0.33rem 0 0; }
+.entries .meta { color: #5c4b3e; font-size: 0.92rem; }
+.entries .links { margin-top: 0.2rem; }
