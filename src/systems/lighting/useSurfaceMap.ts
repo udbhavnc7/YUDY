@@ -1,12 +1,20 @@
 import { useLoader, useThree } from '@react-three/fiber';
-import { useEffect, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 import { LinearFilter, LinearMipmapLinearFilter, RepeatWrapping } from 'three';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import { retainAsset } from './retainAsset';
 
+export const MobileTextures = createContext(false);
+
+const mobileVariants = new Set([
+  'boards', 'boards-normal', 'chair', 'chair-normal', 'plaster-normal', 'rug', 'rug-normal',
+  'showcase-plant', 'showcase-plant-normal', 'showcase-plant-arm', 'sofa', 'sofa-normal',
+]);
+
 export function useRoomTextures(names: readonly string[]) {
   const gl = useThree(s => s.gl);
-  const paths = names.map(name => '/textures/' + name + '.ktx2');
+  const mobile = useContext(MobileTextures);
+  const paths = names.map(name => '/textures/' + (mobile && mobileVariants.has(name) ? 'mobile/' : '') + name + '.ktx2');
   const textures = useLoader(KTX2Loader, paths, loader => loader.detectSupport(gl));
   useEffect(() => retainAsset(textures, () => {
     useLoader.clear(KTX2Loader, paths);

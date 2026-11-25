@@ -5,6 +5,7 @@ import { ToneMappingMode } from 'postprocessing';
 import { ACESFilmicToneMapping, PCFSoftShadowMap, SRGBColorSpace, PointLight } from 'three';
 import { CameraRig, type ClosingState, type RoomView } from '../../systems/camera/CameraRig';
 import { Studio } from '../../systems/lighting/Studio';
+import { MobileTextures } from '../../systems/lighting/useSurfaceMap';
 import { AchievementWall } from '../../components/objects/AchievementWall';
 import { ProjectBooks } from '../../components/objects/ProjectBooks';
 import { HobbyShowcase } from '../../components/objects/HobbyShowcase';
@@ -122,6 +123,6 @@ export function MainRoom(props: Props) {
     shadows={mobile ? false : { type: PCFSoftShadowMap }} aria-label={props.proof ? 'Grey box lighting proof' : props.isolated ? 'A pleated linen table lamp' : 'A room with a lamp, chair, sofa and two shelf bays'}
     gl={{ antialias: true, alpha: false, outputColorSpace: SRGBColorSpace, toneMapping: ACESFilmicToneMapping }}
     onCreated={({ gl }) => { gl.toneMappingExposure = 1; }}>
-    <RoomScene {...props} mobile={mobile} />
+    <MobileTextures.Provider value={mobile}><RoomScene {...props} mobile={mobile} /></MobileTextures.Provider>
   </Canvas>;
 }

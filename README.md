@@ -18,6 +18,7 @@ From this checkout, run `npm ci` if dependencies are missing. Run `npm run dev` 
 - Open `/?proof=lamp` to inspect the isolated Phase 0 lamp.
 - Resize to a portrait viewport to check the lamp and full-room framing. With reduced motion enabled, scrolling steps between views.
 - Test at phone width with touch emulation. Tap an education tag, poster, book and showcase object. Scroll to the closing shot, then back to confirm the room reloads its earlier objects as needed.
+- For a cold-load check, disable HTTP caching and use Fast 4G emulation. The lamp should appear before the furniture downloads. Scroll to the end and check that the Network panel requests the lighter files under `/textures/mobile/`.
 - Open `/work/` with JavaScript disabled. Check that all four sections and the contact links remain usable. The same page is linked from the lamp introduction and the no-JavaScript entry.
 - Run `npm run build` and `npm run preview` to check the production bundle.
 

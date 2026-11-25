@@ -2,6 +2,8 @@
 
 Only files in `assets/` are copied into the production build. The lamp, joinery and room geometry are authored in the scene. The chair and sofa use Meshopt-compressed geometry and separate KTX2 surface maps.
 
+The reduced-resolution copies in `textures/mobile/` use the same sources and licences as the matching files below.
+
 | Shipped file | Source | Licence | Attribution |
 | --- | --- | --- | --- |
 | `environment/venice_sunset_1k.hdr`, `environment/venice_sunset_512.hdr` | [Venice Sunset, Poly Haven](https://polyhaven.com/a/venice_sunset), with a downsampled 512-pixel copy for mobile | CC0 | None required |
