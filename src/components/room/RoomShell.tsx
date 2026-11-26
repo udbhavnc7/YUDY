@@ -1,6 +1,6 @@
 import { Suspense, useLayoutEffect, useMemo } from 'react';
 import { extend, type ReactThreeFiber } from '@react-three/fiber';
-import { MeshStandardMaterial, Vector2 } from 'three';
+import { BufferAttribute, CanvasTexture, Color, DoubleSide, MeshStandardMaterial, PlaneGeometry, SRGBColorSpace, Vector2 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { useSurfaceMaps, useTiledSurfaces } from '../../systems/lighting/useSurfaceMap';
 import { CHAIR_POSITION, LAMP_POSITION, SHELF_X, SOFA_POSITION } from './layout';
@@ -111,6 +111,96 @@ function ShowcaseTable({ wood, back, brass }: { wood: MeshStandardMaterial; back
   </group>;
 }
 
+function makeCeilingGeometry() {
+  const geometry = new PlaneGeometry(7.56, 12.40, 32, 48);
+  const positions = geometry.attributes.position;
+  const colors = new Float32Array(positions.count * 3);
+  const edge = new Color('#cbb79a');
+  const windowSide = new Color('#e4d8c5');
+  const backSide = new Color('#d8c4a7');
+  const color = new Color();
+  for (let index = 0; index < positions.count; index++) {
+    const x = Math.abs(positions.getX(index) / 3.78);
+    const z = positions.getY(index) / 6.2;
+    const edgeFade = Math.max(0, Math.min(1, (Math.max(x, Math.abs(z)) - 0.54) / 0.46));
+    color.lerpColors(windowSide, backSide, (z + 1) * 0.5).lerp(edge, edgeFade * 0.54);
+    colors[index * 3] = color.r;
+    colors[index * 3 + 1] = color.g;
+    colors[index * 3 + 2] = color.b;
+  }
+  geometry.setAttribute('color', new BufferAttribute(colors, 3));
+  return geometry;
+}
+
+function wallPrintTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 384;
+  canvas.height = 512;
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('Canvas is unavailable for the wall print.');
+  const paper = context.createLinearGradient(0, 0, 384, 512);
+  paper.addColorStop(0, '#efe4d1');
+  paper.addColorStop(1, '#cfb99b');
+  context.fillStyle = paper;
+  context.fillRect(0, 0, 384, 512);
+  context.fillStyle = '#c58b63';
+  context.beginPath();
+  context.arc(250, 135, 55, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = '#526b60';
+  context.beginPath();
+  context.moveTo(48, 398);
+  context.lineTo(48, 275);
+  context.quadraticCurveTo(48, 202, 132, 202);
+  context.quadraticCurveTo(216, 202, 216, 275);
+  context.lineTo(216, 398);
+  context.fill();
+  context.fillStyle = '#8a6047';
+  context.beginPath();
+  context.moveTo(165, 398);
+  context.lineTo(165, 307);
+  context.quadraticCurveTo(165, 245, 235, 245);
+  context.quadraticCurveTo(305, 245, 305, 307);
+  context.lineTo(305, 398);
+  context.fill();
+  context.fillStyle = '#f3e8d5';
+  context.fillRect(48, 426, 258, 3);
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
+function RoomCeiling({ paint, trim }: { paint: MeshStandardMaterial; trim: MeshStandardMaterial }) {
+  const geometry = useMemo(makeCeilingGeometry, []);
+  const material = useMemo(() => new MeshStandardMaterial({ map: paint.map, normalMap: paint.normalMap,
+    normalScale: new Vector2(0.24, 0.24), color: '#ffffff', vertexColors: true,
+    roughness: 0.94, side: DoubleSide }), [paint]);
+  useLayoutEffect(() => () => { geometry.dispose(); material.dispose(); }, [geometry, material]);
+  return <group>
+    <mesh geometry={geometry} position={[0, 3.16, 3.8]} rotation-x={Math.PI / 2} material={material} />
+    {[-2.18, 2.18].map(x => <Board key={`ceiling-x-${x}`} at={[x, 3.115, 3.8]}
+      size={[0.035, 0.055, 12.18]} material={trim} casts={false} />)}
+    {[-1.83, 0.63, 3.09, 5.55, 8.01, 9.82].map(z => <Board key={`ceiling-z-${z}`} at={[0, 3.115, z]}
+      size={[4.42, 0.055, 0.035]} material={trim} casts={false} />)}
+  </group>;
+}
+
+function WallDecor({ wood, brass }: { wood: MeshStandardMaterial; brass: MeshStandardMaterial }) {
+  const art = useMemo(wallPrintTexture, []);
+  useLayoutEffect(() => () => { art.dispose(); }, [art]);
+  return <group position={[-3.785, 2.12, 3.38]} rotation-y={Math.PI / 2}>
+    {[-0.88, 0, 0.88].map((z, index) => <group key={z} position={[0, index === 1 ? 0.02 : 0, z]}
+      rotation-z={index === 0 ? -0.022 : index === 2 ? 0.018 : 0}>
+      <Board at={[0, 0, 0]} size={[0.66, 0.92, 0.066]} material={wood} bevel={0.009} />
+      <Board at={[0, 0, 0.039]} size={[0.59, 0.85, 0.022]} material={brass} bevel={0.004} />
+      <mesh position={[0, 0, 0.053]} receiveShadow>
+        <planeGeometry args={[0.52, 0.75]} />
+        <meshStandardMaterial map={art} roughness={0.96} />
+      </mesh>
+    </group>)}
+  </group>;
+}
+
 const rugMaps = ['rug', 'rug-normal', 'rug-roughness'];
 const floorMaps = ['boards', 'boards-normal', 'boards-roughness'];
 const roomMaps = [['plaster', 4, 2], ['plaster-normal', 4, 2], ['joinery', 1, 1]] as const;
@@ -140,8 +230,23 @@ function FloorMaterial() {
 
 export function RoomShell({ assets }: { assets: number }) {
   const [plaster, plasterNormal, timber] = useTiledSurfaces(roomMaps);
-  const paint = useMemo(() => new MeshStandardMaterial({ color: '#938774', map: plaster, normalMap: plasterNormal,
-    normalScale: new Vector2(0.42, 0.42), roughness: 0.92 }), [plaster, plasterNormal]);
+  const paint = useMemo(() => {
+    const material = new MeshStandardMaterial({ color: '#c4b9a4', map: plaster, normalMap: plasterNormal,
+      normalScale: new Vector2(0.42, 0.42), roughness: 0.92 });
+    const low = new Color('#c1a184');
+    const high = new Color('#f0e6d2');
+    const tint = `mix(vec3(${low.r}, ${low.g}, ${low.b}), vec3(${high.r}, ${high.g}, ${high.b}), smoothstep(0.22, 2.92, vRoomPaintY))`;
+    material.onBeforeCompile = shader => {
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying float vRoomPaintY;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvRoomPaintY = (modelMatrix * vec4(position, 1.0)).y;');
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', '#include <common>\nvarying float vRoomPaintY;')
+        .replace('#include <color_fragment>', `#include <color_fragment>\ndiffuseColor.rgb *= ${tint};`);
+    };
+    material.customProgramCacheKey = () => 'yudy-warm-wall-gradient-v1';
+    return material;
+  }, [plaster, plasterNormal]);
   const trim = useMemo(() => new MeshStandardMaterial({ color: '#777263', roughness: 0.66 }), []);
   const wood = useMemo(() => new MeshStandardMaterial({ color: '#baa186', map: timber, roughness: 0.48 }), [timber]);
   const back = useMemo(() => new MeshStandardMaterial({ color: '#8a755e', map: timber, roughness: 0.81 }), [timber]);
@@ -168,9 +273,11 @@ export function RoomShell({ assets }: { assets: number }) {
     <Board at={[-3.79, 0.08, 3.8]} size={[0.065, 0.16, 12.74]} material={trim} />
     <Board at={[3.77, 0.08, 3.8]} size={[0.065, 0.16, 12.74]} material={trim} />
     <Board at={[0, 3.12, -2.46]} size={[7.8, 0.11, 0.09]} material={trim} />
+    <RoomCeiling paint={paint} trim={trim} />
     <Cabinet wood={wood} brass={brass} />
     <Shelves wood={wood} back={back} />
     <ShowcaseTable wood={wood} back={back} brass={brass} />
+    <WallDecor wood={wood} brass={brass} />
     {!!(assets & ROOM_ASSET.sofa) && <FloorContact x={SOFA_POSITION[0]} z={SOFA_POSITION[2]} width={3.05} depth={1.1} strength={0.75} />}
     {!!(assets & ROOM_ASSET.chair) && <FloorContact x={CHAIR_POSITION[0]} z={CHAIR_POSITION[2]} width={0.83} depth={0.78} strength={0.52} />}
     <FloorContact x={LAMP_POSITION[0]} z={LAMP_POSITION[2]} width={1.42} depth={0.96} strength={0.54} />

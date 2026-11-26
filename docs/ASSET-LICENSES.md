@@ -11,7 +11,10 @@ The reduced-resolution copies in `textures/mobile/` use the same sources and lic
 | `textures/weave.ktx2` | [Fabric 025, ambientCG](https://ambientcg.com/view?id=Fabric025), cropped and recoloured | CC0 | None required |
 | `textures/wood.ktx2` | [Dark Wooden Planks, Poly Haven](https://polyhaven.com/a/dark_wooden_planks), cropped to a single board and recoloured | CC0 | None required |
 | `models/chair.glb`, `textures/chair*.ktx2` | [Wooden Chair 01, Poly Haven](https://polyhaven.com/a/WoodenChair_01) | CC0 | None required |
+| `models/royal-chair.glb` | [Victorian armchair, Poly Haven via Innerscene](https://www.innerscene.com/tools/library/3d-parts/victorian-armchair-f000c44f) | CC0 | None required |
 | `models/sofa.glb`, `textures/sofa*.ktx2` | [Sofa 03, Poly Haven](https://polyhaven.com/a/sofa_03) | CC0 | None required |
+| `models/chandelier.glb` | [Six-arm brass chandelier, Poly Haven via Innerscene](https://www.innerscene.com/tools/library/3d-parts/six-arm-brass-chandelier-774aa284) | CC0 | None required |
+| `models/corner-computer-desk.glb`, `models/monitor-27.glb` | [APEX 120 computer desk](https://www.innerscene.com/tools/library/3d-parts/apex-120-corner-computer-desk-140591fe), [27 inch monitor](https://www.innerscene.com/tools/library/3d-parts/27-inch-monitor-office-technology-961fb20e), Innerscene original models | CC0 | None required |
 | `textures/boards*.ktx2` | [Wood Floor 042, ambientCG](https://ambientcg.com/view?id=WoodFloor042) | CC0 | None required |
 | `textures/rug*.ktx2` | [Carpet 001, ambientCG](https://ambientcg.com/view?id=Carpet001) | CC0 | None required |
 | `textures/joinery.ktx2` | [Dark Wooden Planks, Poly Haven](https://polyhaven.com/a/dark_wooden_planks), cropped and toned | CC0 | None required |

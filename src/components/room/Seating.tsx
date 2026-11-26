@@ -25,6 +25,8 @@ export function Seating({ kind, view }: {
       if (!(object instanceof Mesh)) return;
       object.castShadow = object.receiveShadow = true;
       const material = object.material as MeshStandardMaterial;
+      if (kind === 'sofa' && material.name === 'sofa_03') material.color.set('#668477');
+      if (kind === 'sofa' && material.name === 'sofa_03_fringe') material.color.set('#a78060');
       material.map = map;
       material.normalMap = normal;
       material.roughnessMap = roughness;

@@ -14,6 +14,7 @@ import { RoomShell, Rug } from '../../components/room/RoomShell';
 import { Seating } from '../../components/room/Seating';
 import { CoffeeTable } from '../../components/room/CoffeeTable';
 import { ReadingCorner } from '../../components/room/ReadingCorner';
+import { CeilingChandelier, ComputerNook, RoyalChair } from '../../components/room/FinishingTouches';
 import { ROOM_ASSET } from './roomAssets';
 import { LAMP_POSITION, LAMP_SCALE } from '../../components/room/layout';
 import { Environment, useProgress } from '@react-three/drei';
@@ -76,6 +77,9 @@ function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, boo
       {!!(assets & ROOM_ASSET.sofa) && <SceneAsset view={view} asset={ROOM_ASSET.sofa}><Seating kind="sofa" /></SceneAsset>}
       {!!(assets & ROOM_ASSET.coffeeTable) && <SceneAsset view={view} asset={ROOM_ASSET.coffeeTable}><CoffeeTable /></SceneAsset>}
       {!!(assets & ROOM_ASSET.readingCorner) && <SceneAsset view={view} asset={ROOM_ASSET.readingCorner}><ReadingCorner /></SceneAsset>}
+      {!!(assets & ROOM_ASSET.chandelier) && <SceneAsset view={view} asset={ROOM_ASSET.chandelier}><CeilingChandelier mobile={mobile} /></SceneAsset>}
+      {!!(assets & ROOM_ASSET.workstation) && <SceneAsset view={view} asset={ROOM_ASSET.workstation}><ComputerNook /></SceneAsset>}
+      {!!(assets & ROOM_ASSET.royalChair) && <SceneAsset view={view} asset={ROOM_ASSET.royalChair}><RoyalChair /></SceneAsset>}
       {!!(assets & ROOM_ASSET.posters) && <SceneAsset view={view} asset={ROOM_ASSET.posters}><AchievementWall highlight={highlight} /></SceneAsset>}
       {!!(assets & ROOM_ASSET.books) && <SceneAsset view={view} asset={ROOM_ASSET.books}><ProjectBooks highlight={bookHighlight} open={openBook} /></SceneAsset>}
       {!!(assets & ROOM_ASSET.showcase) && <SceneAsset view={view} asset={ROOM_ASSET.showcase}><HobbyShowcase highlight={hobbyHighlight} /></SceneAsset>}
@@ -120,7 +124,7 @@ export function MainRoom(props: Props) {
   }, []);
   const mobile = compact && !props.isolated;
   return <Canvas frameloop="demand" dpr={[1, mobile ? 1.25 : 1.5]}
-    shadows={mobile ? false : { type: PCFSoftShadowMap }} aria-label={props.proof ? 'Grey box lighting proof' : props.isolated ? 'A pleated linen table lamp' : 'A room with a lamp, chair, sofa and two shelf bays'}
+    shadows={mobile ? false : { type: PCFSoftShadowMap }} aria-label={props.proof ? 'Grey box lighting proof' : props.isolated ? 'A pleated linen table lamp' : 'A furnished room with a sofa, ornate armchair, computer desk, shelves and chandelier'}
     gl={{ antialias: true, alpha: false, outputColorSpace: SRGBColorSpace, toneMapping: ACESFilmicToneMapping }}
     onCreated={({ gl }) => { gl.toneMappingExposure = 1; }}>
     <MobileTextures.Provider value={mobile}><RoomScene {...props} mobile={mobile} /></MobileTextures.Provider>

@@ -36,6 +36,10 @@ h1 em { font-weight: normal; letter-spacing: -0.065em; }
 }
 .coffee-action:hover, .coffee-action[aria-expanded="true"] { background: #ead5b2; color: #372519; transform: translateY(-2px); }
 .coffee-action:focus-visible { outline: 2px solid #ffe5b4; outline-offset: 3px; }
+.monitor-actions { display: flex; align-items: center; gap: 0.45rem; pointer-events: auto; }
+.monitor-actions .monitor-link { display: inline-flex; align-items: center; text-decoration: none; }
+.monitor-actions .monitor-link:hover { background: #ead5b2; color: #372519; transform: translateY(-2px); }
+.monitor-actions a:focus-visible { outline: 2px solid #ffe5b4; outline-offset: 3px; }
 .notice { max-width: 20rem; }
 .notice button { background: none; font: inherit; color: inherit; border: none; text-decoration: underline; cursor: pointer; }
 @media (max-aspect-ratio: 57/50) {
