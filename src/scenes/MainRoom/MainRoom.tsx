@@ -14,7 +14,7 @@ import { RoomShell, Rug } from '../../components/room/RoomShell';
 import { Seating } from '../../components/room/Seating';
 import { CoffeeTable } from '../../components/room/CoffeeTable';
 import { ReadingCorner } from '../../components/room/ReadingCorner';
-import { CeilingChandelier, ComputerNook, RoyalChair } from '../../components/room/FinishingTouches';
+import { CeilingChandelier, ComputerNook, RoyalChair, WindowCurtains } from '../../components/room/FinishingTouches';
 import { ROOM_ASSET } from './roomAssets';
 import { LAMP_POSITION, LAMP_SCALE } from '../../components/room/layout';
 import { Environment, useProgress } from '@react-three/drei';
@@ -77,7 +77,8 @@ function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, boo
       {!!(assets & ROOM_ASSET.sofa) && <SceneAsset view={view} asset={ROOM_ASSET.sofa}><Seating kind="sofa" /></SceneAsset>}
       {!!(assets & ROOM_ASSET.coffeeTable) && <SceneAsset view={view} asset={ROOM_ASSET.coffeeTable}><CoffeeTable /></SceneAsset>}
       {!!(assets & ROOM_ASSET.readingCorner) && <SceneAsset view={view} asset={ROOM_ASSET.readingCorner}><ReadingCorner /></SceneAsset>}
-      {!!(assets & ROOM_ASSET.chandelier) && <SceneAsset view={view} asset={ROOM_ASSET.chandelier}><CeilingChandelier mobile={mobile} /></SceneAsset>}
+      {!!(assets & ROOM_ASSET.curtains) && <SceneAsset view={view} asset={ROOM_ASSET.curtains}><WindowCurtains /></SceneAsset>}
+      {!!(assets & ROOM_ASSET.chandelier) && <SceneAsset view={view} asset={ROOM_ASSET.chandelier}><CeilingChandelier mobile={mobile} view={view} /></SceneAsset>}
       {!!(assets & ROOM_ASSET.workstation) && <SceneAsset view={view} asset={ROOM_ASSET.workstation}><ComputerNook /></SceneAsset>}
       {!!(assets & ROOM_ASSET.royalChair) && <SceneAsset view={view} asset={ROOM_ASSET.royalChair}><RoyalChair /></SceneAsset>}
       {!!(assets & ROOM_ASSET.posters) && <SceneAsset view={view} asset={ROOM_ASSET.posters}><AchievementWall highlight={highlight} /></SceneAsset>}
@@ -99,7 +100,7 @@ function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, boo
 const mobileQuery = '(pointer: coarse), (max-width: 600px)';
 
 function RoomScene({ mobile, ...props }: Props & { mobile: boolean }) {
-  const view = useRef<RoomView>({ chairYaw: 0, readyAssets: 0 });
+  const view = useRef<RoomView>({ chairYaw: 0, readyAssets: 0, progress: 0 });
   const [assets, setAssets] = useState(0);
   const completedLoads = useProgress(progress => progress.loaded);
   const invalidate = useThree(state => state.invalidate);

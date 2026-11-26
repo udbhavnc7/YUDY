@@ -1,6 +1,6 @@
 export const ROOM_ASSET = {
   rug: 1, chair: 2, sofa: 4, posters: 8, books: 16, showcase: 32,
-  coffeeTable: 64, readingCorner: 128, royalChair: 256, workstation: 512, chandelier: 1024,
+  coffeeTable: 64, readingCorner: 128, royalChair: 256, workstation: 512, chandelier: 1024, curtains: 2048,
 } as const;
 
 const ranges = [
@@ -14,6 +14,7 @@ const ranges = [
   [ROOM_ASSET.readingCorner, 0.15, 0.59], [ROOM_ASSET.readingCorner, 0.78, 1],
   [ROOM_ASSET.royalChair, 0.78, 1], [ROOM_ASSET.workstation, 0.78, 1],
   [ROOM_ASSET.chandelier, 0.66, 1],
+  [ROOM_ASSET.curtains, 0.15, 0.59], [ROOM_ASSET.curtains, 0.78, 1],
 ] as const;
 
 export const REVEAL_ASSETS = roomAssets(1, 1);

@@ -1,15 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { CanvasTexture, CatmullRomCurve3, Group, MathUtils, Mesh, MeshStandardMaterial,
+import { CanvasTexture, CatmullRomCurve3, Group, MathUtils, Mesh, MeshStandardMaterial, PointLight,
   SRGBColorSpace, TubeGeometry, Vector3, type Material } from 'three';
 import { PROFILE } from '../../data/profile';
+import type { RoomView } from '../../systems/camera/CameraRig';
 import { useRoomModel } from '../objects/useRoomModel';
 
 const CHANDELIER = '/models/chandelier.glb';
 const ROYAL_CHAIR = '/models/royal-chair.glb';
 const DESK = '/models/corner-computer-desk.glb';
 const MONITOR = '/models/monitor-27.glb';
+const CURTAINS = '/models/window-curtains.glb';
 
 function cloneLitModel(source: Group) {
   const clone = source.clone(true);
@@ -19,14 +21,33 @@ function cloneLitModel(source: Group) {
   return clone;
 }
 
-export function CeilingChandelier({ mobile }: { mobile: boolean }) {
+export function CeilingChandelier({ mobile, view }: { mobile: boolean; view: MutableRefObject<RoomView> }) {
   const source = useRoomModel(CHANDELIER);
   const model = useMemo(() => cloneLitModel(source), [source]);
+  const light = useRef<PointLight>(null);
+  const glow = useRef(0);
+  const reduced = useMemo(() => matchMedia('(prefers-reduced-motion: reduce)'), []);
+  const invalidate = useThree(state => state.invalidate);
+  useFrame((_, delta) => {
+    const target = MathUtils.smoothstep(view.current.progress, 0.76, 0.99);
+    glow.current = reduced.matches || Math.abs(glow.current - target) < 0.001
+      ? target : MathUtils.damp(glow.current, target, 4.8, Math.min(delta, 0.075));
+    if (light.current) light.current.intensity = (mobile ? 2.2 : 4.5) * glow.current;
+    if (glow.current !== target) invalidate();
+  });
   return <>
     <group position={[0.1, 2.35, 0.25]} scale={0.8}><primitive object={model} /></group>
-    <pointLight position={[0.1, 2.72, 0.25]} color="#ffe2b7" intensity={mobile ? 2.2 : 4.5}
+    <pointLight ref={light} position={[0.1, 2.72, 0.25]} color="#ffe2b7" intensity={0}
       distance={4.2} decay={2} />
   </>;
+}
+
+export function WindowCurtains() {
+  const source = useRoomModel(CURTAINS);
+  const model = useMemo(() => cloneLitModel(source), [source]);
+  return <group position={[3.78, 0.68, -0.48]} rotation-y={-Math.PI / 2}>
+    <primitive object={model} />
+  </group>;
 }
 
 export function RoyalChair() {
@@ -102,7 +123,7 @@ export function ComputerNook() {
     return { model, screenMaterial, owned };
   }, [monitorSource, screenMap]);
   const [powered, setPowered] = useState(true);
-  const brightness = useRef(1);
+  const brightness = useRef(0);
   const motion = useMemo(() => matchMedia('(prefers-reduced-motion: reduce)'), []);
   const invalidate = useThree(state => state.invalidate);
   const cable = useMemo(() => new TubeGeometry(new CatmullRomCurve3([

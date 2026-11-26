@@ -21,6 +21,7 @@ From this checkout, run `npm ci` if dependencies are missing. Run `npm run dev` 
 - At the sofa view, activate the coffee-table drawer with mouse, touch, and keyboard. It should slide open to reveal the sourced project book and snap open with reduced motion enabled.
 - At the same view, toggle the side-table reading light. Its shade and nearby light should fade together, or switch immediately with reduced motion enabled.
 - At the room reveal, check the shaded ceiling gradient, coffer trim, chandelier and framed wall prints. Toggle the monitor and open `/work/` from its screen control.
+- At the sofa view, confirm the open curtains frame the window; scroll through the final reveal and watch the chandelier warm up with the room.
 - For a cold-load check, disable HTTP caching and use Fast 4G emulation. The lamp should appear before the furniture downloads. Scroll to the end and check that the Network panel requests the lighter files under `/textures/mobile/`.
 - Open `/work/` with JavaScript disabled. Check that all four sections and the contact links remain usable. The same page is linked from the lamp introduction and the no-JavaScript entry.
 - Run `npm run build` and `npm run preview` to check the production bundle.

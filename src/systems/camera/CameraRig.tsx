@@ -12,7 +12,7 @@ import { roomPath, zoneIndex, zones } from './roomPath';
 import { chairAngle } from './chairTurn';
 import { REVEAL_ASSETS, ROOM_ASSET, roomAssets } from '../../scenes/MainRoom/roomAssets';
 
-export type RoomView = { chairYaw: number; readyAssets: number };
+export type RoomView = { chairYaw: number; readyAssets: number; progress: number };
 export type ClosingState = 'loading' | 'ready' | undefined;
 type Props = {
   isolated: boolean;
@@ -69,6 +69,7 @@ export function CameraRig({ isolated, mobile, view, onAssetsChange, onIntroChang
     current.current = motion.matches || Math.abs(current.current - dest) < 0.00015 ? dest :
       MathUtils.damp(current.current, dest, 9, Math.min(delta, 0.1));
     const p = current.current;
+    view.current.progress = p;
     const assets = isolated ? 0 : roomAssets(p, dest);
     if (assets !== currentAssets.current) {
       currentAssets.current = assets;

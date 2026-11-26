@@ -14,6 +14,7 @@ The reduced-resolution copies in `textures/mobile/` use the same sources and lic
 | `models/royal-chair.glb` | [Victorian armchair, Poly Haven via Innerscene](https://www.innerscene.com/tools/library/3d-parts/victorian-armchair-f000c44f) | CC0 | None required |
 | `models/sofa.glb`, `textures/sofa*.ktx2` | [Sofa 03, Poly Haven](https://polyhaven.com/a/sofa_03) | CC0 | None required |
 | `models/chandelier.glb` | [Six-arm brass chandelier, Poly Haven via Innerscene](https://www.innerscene.com/tools/library/3d-parts/six-arm-brass-chandelier-774aa284) | CC0 | None required |
+| `models/window-curtains.glb` | [Curtain pair open, Innerscene original model](https://www.innerscene.com/tools/library/3d-parts/curtain-pair-open-original-interior-furnishing-8c8dbd3d) | CC0 | None required |
 | `models/corner-computer-desk.glb`, `models/monitor-27.glb` | [APEX 120 computer desk](https://www.innerscene.com/tools/library/3d-parts/apex-120-corner-computer-desk-140591fe), [27 inch monitor](https://www.innerscene.com/tools/library/3d-parts/27-inch-monitor-office-technology-961fb20e), Innerscene original models | CC0 | None required |
 | `textures/boards*.ktx2` | [Wood Floor 042, ambientCG](https://ambientcg.com/view?id=WoodFloor042) | CC0 | None required |
 | `textures/rug*.ktx2` | [Carpet 001, ambientCG](https://ambientcg.com/view?id=Carpet001) | CC0 | None required |
