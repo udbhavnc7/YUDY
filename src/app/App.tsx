@@ -20,7 +20,7 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
 export function App() {
   const proofMode = new URLSearchParams(window.location.search).get('proof');
   const proof = proofMode === 'grey';
-  const isolated = proof || proofMode === 'lamp';
+  const isolated = true;
   const [intro, setIntro] = useState(true);
   const [education, setEducation] = useState(false);
   const [gallery, setGallery] = useState(false);
