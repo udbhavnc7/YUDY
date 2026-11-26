@@ -1,7 +1,6 @@
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { EffectComposer, Selection, SelectiveBloom, ToneMapping } from '@react-three/postprocessing';
-import { ToneMappingMode } from 'postprocessing';
+import { Selection } from '@react-three/postprocessing';
 import { ACESFilmicToneMapping, PCFSoftShadowMap, SRGBColorSpace, PointLight } from 'three';
 import { CameraRig, type ClosingState, type RoomView } from '../../systems/camera/CameraRig';
 import { Studio } from '../../systems/lighting/Studio';
@@ -16,6 +15,8 @@ import { Seating } from '../../components/room/Seating';
 import { ROOM_ASSET } from './roomAssets';
 import { LAMP_POSITION, LAMP_SCALE } from '../../components/room/layout';
 import { Environment, useProgress } from '@react-three/drei';
+
+const DesktopPostProcessing = lazy(() => import('../../systems/lighting/DesktopPostProcessing'));
 
 type Props = {
   proof: boolean;
@@ -55,7 +56,6 @@ function SceneAsset({ view, asset, children }: { view: MutableRefObject<RoomView
 function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, bookHighlight, openBook, hobbyHighlight, assets, mobile }:
   Props & { view: MutableRefObject<RoomView>; assets: number; mobile: boolean }) {
   const fill = useMemo(() => new PointLight(0xffe6cc, 0.45), []);
-  const bloomLights = useMemo(() => [fill], [fill]);
   return <Selection>
     {isolated ? <Suspense fallback={null}><Studio /></Suspense> : <>
       <color attach="background" args={['#1a1814']} />
@@ -84,11 +84,7 @@ function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, boo
         <TableLamp on={on} onToggle={onToggle} onReady={onReady} inRoom={!isolated} mobile={mobile} />
       </group>
     </Suspense>}
-    {!mobile && <EffectComposer multisampling={2}>
-      <SelectiveBloom lights={bloomLights} luminanceThreshold={0.60} luminanceSmoothing={0.4}
-        intensity={0.17} mipmapBlur radius={0.54} />
-      <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-    </EffectComposer>}
+    {!mobile && <Suspense fallback={null}><DesktopPostProcessing light={fill} /></Suspense>}
   </Selection>;
 }
 
