@@ -13,6 +13,7 @@ import { TableLamp } from '../../components/objects/TableLamp';
 import { RoomShell, Rug } from '../../components/room/RoomShell';
 import { Seating } from '../../components/room/Seating';
 import { CoffeeTable } from '../../components/room/CoffeeTable';
+import { ReadingCorner } from '../../components/room/ReadingCorner';
 import { ROOM_ASSET } from './roomAssets';
 import { LAMP_POSITION, LAMP_SCALE } from '../../components/room/layout';
 import { Environment, useProgress } from '@react-three/drei';
@@ -74,6 +75,7 @@ function Exposure({ proof, isolated, on, onToggle, onReady, view, highlight, boo
       {!!(assets & ROOM_ASSET.chair) && <SceneAsset view={view} asset={ROOM_ASSET.chair}><Seating kind="chair" view={view} /></SceneAsset>}
       {!!(assets & ROOM_ASSET.sofa) && <SceneAsset view={view} asset={ROOM_ASSET.sofa}><Seating kind="sofa" /></SceneAsset>}
       {!!(assets & ROOM_ASSET.coffeeTable) && <SceneAsset view={view} asset={ROOM_ASSET.coffeeTable}><CoffeeTable /></SceneAsset>}
+      {!!(assets & ROOM_ASSET.readingCorner) && <SceneAsset view={view} asset={ROOM_ASSET.readingCorner}><ReadingCorner /></SceneAsset>}
       {!!(assets & ROOM_ASSET.posters) && <SceneAsset view={view} asset={ROOM_ASSET.posters}><AchievementWall highlight={highlight} /></SceneAsset>}
       {!!(assets & ROOM_ASSET.books) && <SceneAsset view={view} asset={ROOM_ASSET.books}><ProjectBooks highlight={bookHighlight} open={openBook} /></SceneAsset>}
       {!!(assets & ROOM_ASSET.showcase) && <SceneAsset view={view} asset={ROOM_ASSET.showcase}><HobbyShowcase highlight={hobbyHighlight} /></SceneAsset>}
