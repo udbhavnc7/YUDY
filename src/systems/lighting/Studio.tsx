@@ -5,7 +5,7 @@ import { useSurfaceMaps } from './useSurfaceMap';
 
 const relief = new Vector2(0.45, 0.45);
 const finish = ['plaster', 'plaster-normal'];
-export function Studio() {
+export function Studio({ mobile = false }: { mobile?: boolean }) {
   const [plaster, normal] = useSurfaceMaps(finish, 10, 5);
   // R3F 8 tags RGBA8 texture props as sRGB. Constructor parameters preserve the
   // KTX2 transfer functions for both the colour map and the linear normal map.
@@ -14,7 +14,7 @@ export function Studio() {
   }), [plaster, normal]);
   return <>
     <color attach="background" args={['#1a1814']} />
-    <Environment files="/environment/venice_sunset_1k.hdr" environmentIntensity={0.22} />
+    <Environment files={mobile ? '/environment/venice_sunset_512.hdr' : '/environment/venice_sunset_1k.hdr'} environmentIntensity={0.22} />
     <spotLight position={[-2.5, 3.7, 2.3]} intensity={11} color="#ffe0bc"
       angle={1.04} penumbra={1} castShadow shadow-mapSize={[1024, 1024]}
       shadow-camera-near={0.2} shadow-camera-far={12} shadow-bias={-0.0002} shadow-normalBias={0.008} />
