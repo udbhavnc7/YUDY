@@ -29,7 +29,8 @@ export function CeilingChandelier({ mobile, view }: { mobile: boolean; view: Mut
   const reduced = useMemo(() => matchMedia('(prefers-reduced-motion: reduce)'), []);
   const invalidate = useThree(state => state.invalidate);
   useFrame((_, delta) => {
-    const target = MathUtils.smoothstep(view.current.progress, 0.76, 0.99);
+    // Keep a faint warm pool in the room, then bring the chandelier up as the camera reveals it.
+    const target = 0.07 + 0.93 * MathUtils.smoothstep(view.current.progress, 0.45, 0.96);
     glow.current = reduced.matches || Math.abs(glow.current - target) < 0.001
       ? target : MathUtils.damp(glow.current, target, 4.8, Math.min(delta, 0.075));
     if (light.current) light.current.intensity = (mobile ? 2.2 : 4.5) * glow.current;
@@ -124,6 +125,7 @@ export function ComputerNook() {
   }, [monitorSource, screenMap]);
   const [powered, setPowered] = useState(true);
   const brightness = useRef(0);
+  const screenGlow = useRef<PointLight>(null);
   const motion = useMemo(() => matchMedia('(prefers-reduced-motion: reduce)'), []);
   const invalidate = useThree(state => state.invalidate);
   const cable = useMemo(() => new TubeGeometry(new CatmullRomCurve3([
@@ -144,12 +146,15 @@ export function ComputerNook() {
       screenModel.screenMaterial.color.setScalar(0.035 + brightness.current * 0.965);
       screenModel.screenMaterial.emissiveIntensity = brightness.current * 0.62;
     }
+    if (screenGlow.current) screenGlow.current.intensity = brightness.current * 0.42;
     if (brightness.current !== target) invalidate();
   });
 
   return <group position={[3.28, 0, 1.55]} rotation-y={-Math.PI / 2}>
     <primitive object={desk} />
     <group position={[0, 0.75, -0.13]}><primitive object={screenModel.model} /></group>
+    <pointLight ref={screenGlow} position={[0, 1.07, 0.06]} color="#bfd2a5"
+      intensity={0} distance={1.8} decay={2} />
     <mesh position={[0.08, 0.772, 0.27]} castShadow>
       <boxGeometry args={[0.43, 0.018, 0.145]} />
       <meshStandardMaterial color="#2b302e" roughness={0.74} />

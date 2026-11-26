@@ -1,15 +1,29 @@
 # YUDY
 
-YUDY is being rebuilt from the room outward. The current milestone is Phase 0: prove one lamp in a dark, correctly lit scene before adding room objects.
+Udbhav NC’s portfolio takes place in one interior. Phase 8 adds a lighter mobile room and a static `/work/` reading mode.
 
 ## Run locally
 
 From this checkout, run `npm ci` if dependencies are missing. Run `npm run dev` and open the local URL printed by Vite.
 
-- Open `/?proof=grey` first. Check that the box reads as an object in a real studio space under the same HDRI and tone mapping.
-- Open `/`. Watch the lamp turn on. Inspect the linen weave, pleated shade edges, brass reflections, wood grain, contact shadow and light falloff. Compare it with a photograph of a lamp in a dark room; if it still reads like a Three.js demo, stop and identify whether the asset, material or lighting needs work.
-- Click the lamp or focus the power switch with Tab and press Space. Check the light and name reveal with the lamp both on and off.
-- Enable reduced motion and toggle the lamp again. The state should change immediately.
+- Open `/?proof=grey` to inspect the plain grey box under the same HDRI, studio light, tone mapping and camera.
+- Open `/` to see the lamp warm up. Click the shade or focus the power switch and press Space.
+- Scroll slowly past the lamp and toward the chair. Pause mid-turn and reverse to check that the chair follows the same path back. Continue toward the sofa.
+- Hover or click School, Engineering College or PU College on the pillows. On a touch screen, tap a tag. Use Tab and Space to open a note with the keyboard and Escape to dismiss it.
+- Scroll to the poster wall and hover a frame to brighten its status border. Click, tap or press Space on the frame to open its note. Escape or Close returns focus to the poster.
+- Continue to the left bookshelf bay. Hover to pull a book forward, then click, tap or press Enter to open its cover. Read the description and follow GitHub or a verified live deployment on its pages. Press Escape or Close book to return the volume to the shelf.
+- Scroll from the left bay to the right. Open any VAPORLOGIC book and check its team credit and links. Scroll beyond the bay and check that the book closes.
+- Continue to the window table. Hover a prop or use Tab to see its hobby label. Click, tap or press Enter to open the note, then press Escape or Close to dismiss it. Continue scrolling and check that the note closes as the camera leaves the table.
+- Press End for the full-room reveal. Check that the lamp, chair, sofa, posters, bookshelf and planted window alcove are all visible. Tab through GitHub, LinkedIn and Email, then scroll back toward the window table to check the signature disappears. Press Home to return to the lamp.
+- Open `/?proof=lamp` to inspect the isolated Phase 0 lamp.
+- Resize to a portrait viewport to check the lamp and full-room framing. With reduced motion enabled, scrolling steps between views.
+- Test at phone width with touch emulation. Tap an education tag, poster, book and showcase object. Scroll to the closing shot, then back to confirm the room reloads its earlier objects as needed.
+- At the sofa view, activate the coffee-table drawer with mouse, touch, and keyboard. It should slide open to reveal the sourced project book and snap open with reduced motion enabled.
+- At the same view, toggle the side-table reading light. Its shade and nearby light should fade together, or switch immediately with reduced motion enabled.
+- At the room reveal, check the shaded ceiling gradient, coffer trim, chandelier and framed wall prints. Toggle the monitor and open `/work/` from its screen control.
+- At the sofa view, confirm the open curtains frame the window; scroll through the final reveal and watch the chandelier warm up with the room.
+- For a cold-load check, disable HTTP caching and use Fast 4G emulation. The lamp should appear before the furniture downloads. Scroll to the end and check that the Network panel requests the lighter files under `/textures/mobile/`.
+- Open `/work/` with JavaScript disabled. Check that all four sections and the contact links remain usable. The same page is linked from the lamp introduction and the no-JavaScript entry.
 - Run `npm run build` and `npm run preview` to check the production bundle.
 
 ## Project documents
