@@ -17,7 +17,7 @@ import { ReadingCorner } from '../../components/room/ReadingCorner';
 import { CeilingChandelier, ComputerNook, RoyalChair, WindowCurtains } from '../../components/room/FinishingTouches';
 import { ROOM_ASSET } from './roomAssets';
 import { LAMP_POSITION, LAMP_SCALE } from '../../components/room/layout';
-import { Environment, useProgress } from '@react-three/drei';
+import { Environment, SoftShadows, useProgress } from '@react-three/drei';
 
 const DesktopPostProcessing = lazy(() => import('../../systems/lighting/DesktopPostProcessing'));
 
@@ -106,6 +106,7 @@ function RoomScene({ mobile, ...props }: Props & { mobile: boolean }) {
   // The demand loop can stop before delayed texture and mesh requests finish.
   useLayoutEffect(() => { invalidate(); }, [completedLoads, invalidate]);
   return <>
+    {!mobile && <SoftShadows size={17} samples={8} focus={0.18} />}
     <CameraRig isolated={props.isolated} mobile={mobile} view={view} onAssetsChange={setAssets}
       onIntroChange={props.onIntroChange} onEducationChange={props.onEducationChange}
       onGalleryChange={props.onGalleryChange} onShelfChange={props.onShelfChange}
