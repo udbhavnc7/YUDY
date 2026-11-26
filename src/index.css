@@ -20,6 +20,22 @@ h1 em { font-weight: normal; letter-spacing: -0.065em; }
 .power[aria-checked="true"] .switch-track span { transform: translateX(0.93rem); background: #ffdfa8; }
 .power:hover { color: #fff4e2; }
 .over-lamp canvas { cursor: pointer; }
+.coffee-action {
+  min-height: 44px;
+  padding: 0.48rem 0.72rem;
+  border: 1px solid #b69b76;
+  border-radius: 2px;
+  background: #281e16eF;
+  color: #f1dfc0;
+  font: 500 0.76rem/1.2 'Segoe UI', sans-serif;
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 3px 12px #140d0980;
+  transition: background-color 180ms, color 180ms, transform 220ms;
+}
+.coffee-action:hover, .coffee-action[aria-expanded="true"] { background: #ead5b2; color: #372519; transform: translateY(-2px); }
+.coffee-action:focus-visible { outline: 2px solid #ffe5b4; outline-offset: 3px; }
 .notice { max-width: 20rem; }
 .notice button { background: none; font: inherit; color: inherit; border: none; text-decoration: underline; cursor: pointer; }
 @media (max-aspect-ratio: 57/50) {
